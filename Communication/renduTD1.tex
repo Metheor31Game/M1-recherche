@@ -1,0 +1,87 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+}
+
+% Couleurs personnalisées
+\definecolor{sectioncolor}{RGB}{50, 70, 120}
+\definecolor{subsectioncolor}{RGB}{80, 80, 80}
+
+\title{\textbf{Unification de termes en logique du premier ordre}}
+\author{potel, abogounrin, vigneres}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\vspace{1cm}
+\begin{center}
+    {\Large\bfseries\color{sectioncolor} Sommaire}
+\end{center}
+\vspace{0.8cm}
+
+\noindent{Introduction} \dotfill 
+
+\vspace{0.5cm}
+\noindent{\bfseries\color{sectioncolor} I. Généralités} \dotfill 
+\begin{quote}
+    \begin{enumerate}[label=\arabic*., leftmargin=1.5em, itemsep=0.1em]
+        \item Présentation de la logique de premier ordre
+        \item Présentation des termes
+        \item Introduction à l'unification
+    \end{enumerate}
+\end{quote}
+
+\vspace{0.3cm}
+\noindent{\bfseries\color{sectioncolor} II. Structures de données} \dotfill 
+\begin{quote}
+    \begin{enumerate}[label=\arabic*., leftmargin=1.5em, itemsep=0.1em]
+        \item Structure de données pour les termes
+        \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
+            \item Arbre avec étiquettes
+            \item AST (\textit{Abstract Syntax Tree})
+        \end{enumerate}
+        \item Structure de données pour un ensemble de termes
+        \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
+            \item Liste
+            \item Ensemble
+            \item Dictionnaire
+            \item \textit{Discrimination Tree}
+        \end{enumerate}
+    \end{enumerate}
+\end{quote}
+
+\vspace{0.3cm}
+\noindent{\bfseries\color{sectioncolor} III. Présentation des algorithmes} \dotfill 
+\begin{quote}
+    \begin{enumerate}[label=\arabic*., leftmargin=1.5em, itemsep=0.1em]
+        \item Algorithmes d'unification
+        \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
+            \item Martelli-Montanari
+            \item Robinson
+            \item \textit{Discrimination Tree Unification}
+        \end{enumerate}
+        \item Choix de la meilleure structure
+        \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
+            \item Meilleure structure pour Martelli-Montanari
+            \item Meilleure structure pour Robinson
+        \end{enumerate}
+    \end{enumerate}
+\end{quote}
+
+\vspace{0.5cm}
+\noindent{Conclusion} \dotfill 
+
+\end{document}

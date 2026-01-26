@@ -1,0 +1,41 @@
+# Ignore everything
+*
+
+# But not these files...
+!.gitignore
+!*.tex
+!*.pdf
+
+# ...even if they are in subdirectories
+!*/
+
+# TeX auxiliary files (explicitly ignore in case of nested .gitignore issues)
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.bbl
+*.blg
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ilg
+*.ind
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+*.run.xml
+*.bcf
+*-blx.bib
+*.dvi
+*.xdv
