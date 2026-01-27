@@ -8,6 +8,15 @@ VAR_TAG = "var"
 CONSTS_DOMAIN = ['a', 'b', 'c', 'd', 'e']
 VARS_DOMAIN = ['U', 'V', 'W','X', 'Y', 'Z']
 FUNCTIONS_DOMAIN = ['f', 'g', 'h', 'i', 'j', 'k', 'l']
+ARITIES = {
+    'f': random.randint(1, DEFAULT_MAX_ARITY),
+    'g': random.randint(1, DEFAULT_MAX_ARITY),
+    'h': random.randint(1, DEFAULT_MAX_ARITY),
+    'i': random.randint(1, DEFAULT_MAX_ARITY),
+    'j': random.randint(1, DEFAULT_MAX_ARITY),
+    'k': random.randint(1, DEFAULT_MAX_ARITY),
+    'l': random.randint(1, DEFAULT_MAX_ARITY),
+}
 
 class NodeTerm:
     """
@@ -88,7 +97,9 @@ class RandomTermGenerator:
     
     def _generate_func(self, current_depth: int) -> NodeTerm:
         name = random.choice(self.funcs)
-        arity = random.randint(1, self.max_arity)
+        arity = ARITIES.get(name)
+        if arity is None:
+            arity = 1
         children = [self.generate_random_term(current_depth + 1) for _ in range(arity)]
         return TermFactory.create_func(name, arity, children)
     
