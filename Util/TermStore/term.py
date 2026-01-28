@@ -105,8 +105,16 @@ class RandomTermGenerator:
     
     def generate_terms(self, n: int) -> List[NodeTerm]:
         return [self.generate_random_term() for _ in range(n)]
-    
-generator = RandomTermGenerator(max_depth=3, max_arity=3)
-random_terms = generator.generate_terms(10)
-for term in random_terms:
-    print(term)
+
+# Example:
+if __name__ == "__main__":
+    # Create a generator
+    generator = RandomTermGenerator(max_depth=3, max_arity=3)
+
+    # Generate terms
+    random_terms = generator.generate_terms(10)
+
+    # Print terms
+    print("Generated terms:")
+    for term in random_terms:
+        print(term)
