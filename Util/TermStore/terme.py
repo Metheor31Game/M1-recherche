@@ -23,7 +23,7 @@ class NoeudTerme:
     Classe représentant un noeud de terme.
     Peut représenter une constante, une variable ou une fonction.
 
-    Attributs:
+    Attributes:
         nom (str): Le nom du terme (ex : "a", "X" ou "f").
         etiquette (Union[str, int]): Etiquette pour identifier le type du terme, ou l'arité dans le cas d'une fonction ("cons", "var", ou 3 pour une fonction à 3 arguments).
         enfants (Optional[List['NoeudTerme']]): Liste des NoeudTerme enfants pour les fonctions.
@@ -64,7 +64,7 @@ class GenerateurDeTermesAleatoires:
     """
     Classe générant des termes aléatoires.
 
-    Attributs:
+    Attributes:
         profondeur_max (int): Profondeur maximale du terme généré (par défaut 3).
         arite_max (int): Arité maximale des fonctions générées (par défaut 3).
     """
@@ -131,10 +131,10 @@ class GenerateurDeTermesAleatoires:
 # Exemple d'utilisation
 if __name__ == "__main__":
     # Créer le générateur de termes aléatoires
-    generator = GenerateurDeTermesAleatoires(profondeur_max=3, arite_max=3)
+    generateur = GenerateurDeTermesAleatoires(profondeur_max=3, arite_max=3)
 
     # Générer autant de termes aléatoires que souhaité
-    termes_aleatoires = generator.generer_termes(10)
+    termes_aleatoires = generateur.generer_termes(10)
 
     # Afficher les termes générés
     print("Termes générés :")

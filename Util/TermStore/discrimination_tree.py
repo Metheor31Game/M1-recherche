@@ -2,14 +2,13 @@ from typing import List, Dict, Any, Optional
 from terme import NoeudTerme, ETIQUETTE_CONS, ETIQUETTE_VAR
 
 
-class NoeudDiscriminationTree:
+class NoeudArbreDeDiscrimination:
     """
     Classe d'un noeud dans l'arbre de discrimination.
 
-    Attributs:
-        symbole (Optional[str]): Symbole représentant le noeud (ex : X, f, a, etc.).
-                                 'None' pour le noeud racine.
-        enfants (Dict[str, 'NoeudDiscriminationTree']): Noeuds enfants, indexés par leur symbole.
+    Attributes:
+        symbole (Optional[str]): Symbole représentant le noeud (ex : X, f, a, etc.). 'None' pour le noeud racine.
+        enfants (Dict[str, 'NoeudArbreDeDiscrimination']): Noeuds enfants, indexés par leur symbole.
         pointeurs (List[Any]): Pointeurs vers les termes associés à ce noeud.
     """
     def __init__(self, symbole: Optional[str] = None) -> None:
@@ -18,18 +17,17 @@ class NoeudDiscriminationTree:
         self.pointeurs = [] # Pointeurs vers les termes associés à ce noeud
 
 
-class DiscriminationTree:
+class ArbreDeDiscrimination:
     """
     Discrimination tree pour stocker des termes.
     (Et par la suite chercher des termes unifiables.)
     
-    Attributs:
-        racine ('NoeudDiscriminationTree'): Noeud racine de l'arbre, 'None' par défaut
+    Attributes:
+        racine ('NoeudArbreDeDiscrimination'): Noeud racine de l'arbre. 'None' par défaut
     """
     
     def __init__(self) -> None:
-        """Initialise un arbre de discrimination vide."""
-        self.racine = NoeudDiscriminationTree()
+        self.racine = NoeudArbreDeDiscrimination()
 
     def inserer(self, terme: NoeudTerme, pointeur: Any) -> None:
         """
@@ -51,7 +49,7 @@ class DiscriminationTree:
         noeud_courant = self.racine
         for symbole in sequence:
             if symbole not in noeud_courant.enfants:
-                noeud_courant.enfants[symbole] = NoeudDiscriminationTree(symbole)
+                noeud_courant.enfants[symbole] = NoeudArbreDeDiscrimination(symbole)
             noeud_courant = noeud_courant.enfants[symbole]
         
         # Ajout du pointeur au noeud feuille
@@ -90,13 +88,13 @@ class DiscriminationTree:
         
         return resultat
     
-    def affichage_arbre(self, noeud: Optional[NoeudDiscriminationTree] = None, niveau: int = 0, prefixe: str = "", est_dernier: bool = True, chemin: str = "") -> None:
+    def affichage_arbre(self, noeud: Optional[NoeudArbreDeDiscrimination] = None, niveau: int = 0, prefixe: str = "", est_dernier: bool = True, chemin: str = "") -> None:
         """
         Affiche l'arbre de discrimination de manière lisible dans la console.
         Structure de la fonction générée par IA.
         
         Args:
-            noeud (Optional['NoeudDiscriminationTree']): Le noeud courant à afficher. 'None' pour commencer à la racine.
+            noeud (Optional['NoeudArbreDeDiscrimination']): Le noeud courant à afficher. 'None' pour commencer à la racine.
             niveau (int): Niveau actuel dans l'arbre, utilisé pour l'indentation.
             prefixe (str): Chaîne de préfixe pour formater la structure de l'arbre.
             est_dernier (bool): Indique si le noeud courant est le dernier enfant de son parent.
@@ -106,7 +104,7 @@ class DiscriminationTree:
             # Commencer à la racine
             noeud = self.racine
             print("╔" + "═" * 58 + "╗")
-            print("║" + " " * 16 + "DISCRIMINATION TREE" + " " * 23 + "║")
+            print("║" + " " * 16 + "ARBRE DE DISCRIMINATION" + " " * 19 + "║")
             print("╚" + "═" * 58 + "╝")
             print("\nROOT")
             liste_enfants = list(noeud.enfants.values())
@@ -145,7 +143,7 @@ class DiscriminationTree:
 if __name__ == "__main__":
     from terme import FabriqueDeTermes
 
-    dt = DiscriminationTree()
+    dt = ArbreDeDiscrimination()
 
     # terme1 : f(X, g(Y))
     term1 = FabriqueDeTermes.creer_fonc("f", 2, [
