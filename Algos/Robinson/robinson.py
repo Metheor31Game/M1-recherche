@@ -8,11 +8,17 @@ from Util.TermStore.TermStore import TermStore
 from Util.TermStore.ListStore import ListStore
 from Util.TermStore.SetStore import SetStore
 from Util.TermStore.terme import NoeudTerme, ETIQUETTE_VAR
-from Util.TermStore import Equation
+from Util.TermStore.TermList import Equation
 
 
 Substitution = Dict[str, NoeudTerme]
 
+"""
+Docstrings prégénérés par IA, puis modifiés ensuite pour être plus exactes.
+sources utilisées : 
+https://stackoverflow.com/questions/1396558/how-can-i-implement-the-unification-algorithm-in-a-language-like-java-or-c
+
+"""
 
 def occurs_check(var_name: str, term: NoeudTerme, subst: Substitution) -> bool:
     """
@@ -43,16 +49,35 @@ def occurs_check(var_name: str, term: NoeudTerme, subst: Substitution) -> bool:
 
 def apply_subst(term: NoeudTerme, subst: Substitution) -> NoeudTerme:
     """
-    Applique une substitution à un terme.
+    Applique une substitution à un terme. Peux faire une substitution chainée.
     
     Args:
         term: Le terme auquel appliquer la substitution.
         subst: La substitution à appliquer.
-    
+
+    Example:
+        >>> terme = f(X, Y)
+        >>> subst = {X -> a}
+        >>> apply_subst(f(X, Y), subst):
+            f est une fonction :
+                apply_subst(X, subst) → X ∈ subst → retourne a
+                apply_subst(Y, subst) → Y ∉ subst → retourne Y
+            
+        Substitution chainee : 
+        >>> terme = g(X)
+        >>> subst = {X → Y, Y → a}
+            g est une fonction : 
+                >>> apply_subst(X, susbt):
+                >>> X ∈ subst → subst[X] = Y
+                >>> return apply_subst(Y, susbt):
+                    >>> Y ∈ susbt → susbt[Y] = a
+                    >>> return apply_susbt(a, susbt):
+                        >>> a est un terme et n'est pas dans susbt : return a
     Returns:
         Le terme avec les variables substituées.
     """
     if term.etiquette == ETIQUETTE_VAR:
+
         if term.nom in subst:
             # Appliquer récursivement pour les substitutions chaînées
             return apply_subst(subst[term.nom], subst)
@@ -67,7 +92,7 @@ def apply_subst(term: NoeudTerme, subst: Substitution) -> NoeudTerme:
 
 def unify(t1: NoeudTerme, t2: NoeudTerme, store: TermStore) -> Optional[Substitution]:
     """
-    Algorithme d'unification de Robinson (version itérative).
+    Algorithme d'unification de Robinson. Unifie uniquement deux termes ensemble. (si possible)
     
     Args:
         t1: Premier terme à unifier.
