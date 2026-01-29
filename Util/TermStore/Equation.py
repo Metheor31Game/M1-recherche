@@ -1,4 +1,4 @@
-from term import NodeTerm
+from Util.TermStore.terme import NoeudTerme
 
 class Equation:
     """
@@ -12,6 +12,6 @@ class Equation:
         >>> eq = Equation(TermFactory.create_var("X"), TermFactory.create_const("a"))
         >>> # Représente l'équation X = a
     """
-    def __init__(self, left: NodeTerm, right: NodeTerm):
+    def __init__(self, left: NoeudTerme, right: NoeudTerme):
         self.left = left
         self.right = right

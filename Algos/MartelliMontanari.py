@@ -1,5 +1,5 @@
 from typing import List, Union
-from Util.TermStore.term import NodeTerm, TermFactory, VAR_TAG, CONST_TAG
+from Util.TermStore.terme import NoeudTerme, FabriqueDeTermes, ETIQUETTE_VAR, ETIQUETTE_CONS
 from Util.TermStore.TermList import TermSystem
 
 
@@ -12,24 +12,24 @@ class MartelliMontanari:
         self.system = system
         self.equations = system.equations 
 
-    def get_variables(self, term: NodeTerm) -> set:
+    def get_variables(self, term: NoeudTerme) -> set:
         """Récupère toutes les variables d'un terme."""
-        if term.tag == VAR_TAG:
-            return {term.name}
-        if term.tag == CONST_TAG:
+        if term.etiquette == ETIQUETTE_VAR:
+            return {term.nom}
+        if term.etiquette == ETIQUETTE_CONS:
             return set()
         variables = set()
-        for child in term.children:
+        for child in term.enfants:
             variables.update(self.get_variables(child))
         return variables
 
-    def substitution(self, term: NodeTerm, var_name: str, replacement: NodeTerm) -> NodeTerm:
-        if term.tag == VAR_TAG:
-            return replacement if term.name == var_name else term
-        if term.tag == CONST_TAG:
+    def substitution(self, term: NoeudTerme, var_name: str, replacement: NoeudTerme) -> NoeudTerme:
+        if term.etiquette == ETIQUETTE_VAR:
+            return replacement if term.nom == var_name else term
+        if term.etiquette == ETIQUETTE_CONS:
             return term
-        new_children = [self.substitution(c, var_name, replacement) for c in term.children]
-        return TermFactory.create_func(term.name, term.tag, new_children)
+        new_children = [self.substitution(c, var_name, replacement) for c in term.enfants]
+        return FabriqueDeTermes.creer_fonc(term.nom, int(term.etiquette), new_children)
 
     def solve(self) -> TermSystem:   
         changed = True
@@ -42,45 +42,45 @@ class MartelliMontanari:
                 left, right = eq.left, eq.right
 
                 # Règle 1 : DELETE (x = x)
-                if left.tag == right.tag and left.name == right.name and left.tag in [VAR_TAG, CONST_TAG]:
+                if left.etiquette == right.etiquette and left.nom == right.nom and left.etiquette in [ETIQUETTE_VAR, ETIQUETTE_CONS]:
                     print(f"[DELETE] Suppression de {eq}")
                     self.equations.pop(i)
                     changed = True
                     break
 
                 # Règle 2 : DECOMPOSITION (f(s1..sn) = f(t1..tn))
-                elif isinstance(left.tag, int) and isinstance(right.tag, int):
-                    if left.name == right.name and left.tag == right.tag:
+                elif isinstance(left.etiquette, int) and isinstance(right.etiquette, int):
+                    if left.nom == right.nom and left.etiquette == right.etiquette:
                         print(f"[DECOMPOSITION] {eq}")
                         self.equations.pop(i)
-                        for s, t in zip(left.children, right.children):
+                        for s, t in zip(left.enfants, right.enfants):
                             self.system.add(s, t)
                         changed = True
                         break
                     else:
-                        raise UnificationError(f"CLASH : Fonctions différentes '{left.name}' et '{right.name}'")
+                        raise UnificationError(f"CLASH : Fonctions différentes '{left.nom}' et '{right.nom}'")
 
                 # Règle 3 : CLASH (Types incompatibles)
-                elif left.tag == CONST_TAG and right.tag == CONST_TAG:
-                    if left.name != right.name:
-                     raise UnificationError(f"CLASH : Constantes différentes '{left.name}' et '{right.name}'")
-                elif (left.tag == CONST_TAG and right.tag != CONST_TAG and right.tag != VAR_TAG) or \
-                     (isinstance(left.tag, int) and right.tag == CONST_TAG):
-                    raise UnificationError(f"CLASH : Impossible d'unifier {left} (type {left.tag}) et {right} (type {right.tag})")
+                elif left.etiquette == ETIQUETTE_CONS and right.etiquette == ETIQUETTE_CONS:
+                    if left.nom != right.nom:
+                     raise UnificationError(f"CLASH : Constantes différentes '{left.nom}' et '{right.nom}'")
+                elif (left.etiquette == ETIQUETTE_CONS and right.etiquette != ETIQUETTE_CONS and right.etiquette != ETIQUETTE_VAR) or \
+                     (isinstance(left.etiquette, int) and right.etiquette == ETIQUETTE_CONS):
+                    raise UnificationError(f"CLASH : Impossible d'unifier {left} (type {left.etiquette}) et {right} (type {right.etiquette})")
 
                 # Règle 4 : ORIENT (t = x devient x = t)
-                elif left.tag != VAR_TAG and right.tag == VAR_TAG:
+                elif left.etiquette != ETIQUETTE_VAR and right.etiquette == ETIQUETTE_VAR:
                     print(f"[ORIENT] Inversion de {eq}")
                     self.equations[i].left, self.equations[i].right = right, left
                     changed = True
                     break
 
-                elif left.tag == VAR_TAG:
-                    x_name = left.name
+                elif left.etiquette == ETIQUETTE_VAR:
+                    x_name = left.nom
                     vars_right = self.get_variables(right)
 
                     # Occur Check 
-                    if x_name in vars_right and right.tag != VAR_TAG:
+                    if x_name in vars_right and right.etiquette != ETIQUETTE_VAR:
                         raise UnificationError(f"OCCUR CHECK : La variable {x_name} apparaît dans {right}")
 
                     # Substitution

@@ -1,190 +1,196 @@
 from typing import List, Dict, Any, Optional
-from term import NodeTerm, CONST_TAG, VAR_TAG
+from terme import NoeudTerme, ETIQUETTE_CONS, ETIQUETTE_VAR
 
 
-class DiscriminationTreeNode:
+class NoeudDiscriminationTree:
     """
-    A node in the discrimination tree.
+    Classe d'un noeud dans l'arbre de discrimination.
 
-    Attributes:
-        symbol (Optional[str]): The symbol or variable represented by this node.
-                                'None' for the root node.
-        children (Dict[str, 'DiscriminationTreeNode']): Child nodes, indexed by their symbol.
-        pointers (List[Any]): Pointers to terms associated with this node.
+    Attributs:
+        symbole (Optional[str]): Symbole représentant le noeud (ex : X, f, a, etc.).
+                                 'None' pour le noeud racine.
+        enfants (Dict[str, 'NoeudDiscriminationTree']): Noeuds enfants, indexés par leur symbole.
+        pointeurs (List[Any]): Pointeurs vers les termes associés à ce noeud.
     """
-    def __init__(self, symbol: Optional[str] = None) -> None:
-        self.symbol = symbol # The symbol that represents the node (e.g. X, f, a, etc.)
-        self.children = {} # Child nodes
-        self.pointers = [] # Represent terms associated to the node
+    def __init__(self, symbole: Optional[str] = None) -> None:
+        self.symbole = symbole # Symbole du noeud (None pour la racine)
+        self.enfants = {} # Noeuds enfants
+        self.pointeurs = [] # Pointeurs vers les termes associés à ce noeud
 
 
 class DiscriminationTree:
-    """Discrimination tree for indexing unifiable terms.
+    """
+    Discrimination tree pour stocker des termes.
+    (Et par la suite chercher des termes unifiables.)
     
-    Attributes:
-        root ('DiscriminationTreeNode'): Tree's root, 'None' by default
+    Attributs:
+        racine ('NoeudDiscriminationTree'): Noeud racine de l'arbre, 'None' par défaut
     """
     
     def __init__(self) -> None:
-        """Initialize the discrimination tree with an empty root node."""
-        self.root = DiscriminationTreeNode()
+        """Initialise un arbre de discrimination vide."""
+        self.racine = NoeudDiscriminationTree()
 
-    def insert(self, term: NodeTerm, pointer: Any) -> None:
+    def inserer(self, terme: NoeudTerme, pointeur: Any) -> None:
         """
-        Insert a term into the discrimination tree and associate a pointer with it.
-        
-        The term is traversed in preorder to create a single path through the tree.
-        For example, f(X, g(Y)) creates the path: f -> *1 -> g -> *2
+        Insère un terme dans l'arbre de discrimination avec un pointeur associé.
+
+        Le terme est parcouru en ordre préfixe pour créer un seul chemin dans l'arbre.
+        Par exemple, f(X, g(Y)) crée le chemin : f -> *1 -> g -> *2
 
         Args:
-            term (NodeTerm): The term to insert into the tree.
-            pointer (Any): A pointer to associate with this term.
+            terme (NoeudTerme): Le terme à insérer dans l'arbre.
+            pointeur (Any): Un pointeur à associer avec ce terme.
         """
         var_map = {}
-        # Flatten the term into a sequence using preorder traversal
-        sequence = self._flatten_term(term, var_map)
+        # Mise à plat du terme en une séquence de symboles issue d'un parcours préfixe
+        # On normalise aussi les variables
+        sequence = self._mise_a_plat(terme, var_map)
         
-        # Insert the sequence as a path in the tree
-        current_node = self.root
-        for symbol in sequence:
-            if symbol not in current_node.children:
-                current_node.children[symbol] = DiscriminationTreeNode(symbol)
-            current_node = current_node.children[symbol]
+        # Insertion dans l'arbre
+        noeud_courant = self.racine
+        for symbole in sequence:
+            if symbole not in noeud_courant.enfants:
+                noeud_courant.enfants[symbole] = NoeudDiscriminationTree(symbole)
+            noeud_courant = noeud_courant.enfants[symbole]
         
-        # Add pointer at the end of the path
-        if pointer not in current_node.pointers:
-            current_node.pointers.append(pointer)
-    
-    def _flatten_term(self, term: NodeTerm, var_map: Dict[str, str]) -> List[str]:
+        # Ajout du pointeur au noeud feuille
+        if pointeur not in noeud_courant.pointeurs:
+            noeud_courant.pointeurs.append(pointeur)
+
+    def _mise_a_plat(self, terme: NoeudTerme, var_map: Dict[str, str]) -> List[str]:
         """
-        Flatten a term into a sequence of symbols using preorder traversal.
+        Mise à plat d'un terme en une séquence de symboles en ordre préfixe.
+        Les variables sont normalisées en *1, *2, etc.
         
-        For f(X, g(Y)), returns: ['f', '*1', 'g', '*2']
+        Pour f(X, g(Y)), retourne: ['f', '*1', 'g', '*2']
         
         Args:
-            term (NodeTerm): The term to flatten.
-            var_map (Dict[str, str]): Variable normalization mapping.
-            
+            terme (NoeudTerme): Le terme à aplatir.
+            var_map (Dict[str, str]): Mapping de normalisation des variables.
         Returns:
-            List[str]: Sequence of symbols in preorder.
+            List[str]: Séquence aplatie de symboles.
         """
-        result = []
+        resultat = []
         
-        # Add the current symbol
-        if term.tag == VAR_TAG:
-            if term.name not in var_map:
-                var_map[term.name] = f"*{len(var_map) + 1}"
-            result.append(var_map[term.name])
+        # Ajout du symbole du terme courant
+        if terme.etiquette == ETIQUETTE_VAR:
+            # Si c'est une variable, on la normalise
+            if terme.nom not in var_map: # Nouvelle variable rencontrée
+                var_map[terme.nom] = f"*{len(var_map) + 1}"
+            resultat.append(var_map[terme.nom])
         else:
-            result.append(term.name)
+            # Constante ou fonction, on ajoute le nom tel quel
+            resultat.append(terme.nom)
         
-        # Add children recursively (preorder)
-        if term.tag not in [CONST_TAG, VAR_TAG]:
-            for child in term.children:
-                result.extend(self._flatten_term(child, var_map))
+        # Ajout des enfants
+        if terme.etiquette not in [ETIQUETTE_CONS, ETIQUETTE_VAR]:
+            for enfant in terme.enfants:
+                resultat.extend(self._mise_a_plat(enfant, var_map))
         
-        return result
+        return resultat
     
-    def print_tree(self, node: Optional[DiscriminationTreeNode] = None, level: int = 0, prefix: str = "", is_last: bool = True, path: str = "") -> None:
-        """Print the tree structure.
+    def affichage_arbre(self, noeud: Optional[NoeudDiscriminationTree] = None, niveau: int = 0, prefixe: str = "", est_dernier: bool = True, chemin: str = "") -> None:
+        """
+        Affiche l'arbre de discrimination de manière lisible dans la console.
+        Structure de la fonction générée par IA.
         
         Args:
-            node (Optional['DiscriminationTreeNode']): The node to print, usefull for recursive printing, 'None' by default.
-            level (int): Current level in the tree, used for indentation.
-            prefix (str): Prefix string for formatting the tree structure.
-            is_last (bool): Whether the current node is the last child of its parent.
-            path (str): The path to the current node.
+            noeud (Optional['NoeudDiscriminationTree']): Le noeud courant à afficher. 'None' pour commencer à la racine.
+            niveau (int): Niveau actuel dans l'arbre, utilisé pour l'indentation.
+            prefixe (str): Chaîne de préfixe pour formater la structure de l'arbre.
+            est_dernier (bool): Indique si le noeud courant est le dernier enfant de son parent.
+            chemin (str): Le chemin vers le noeud courant.
         """
-        if node is None:
-            # Starting at the root
-            node = self.root
+        if noeud is None:
+            # Commencer à la racine
+            noeud = self.racine
             print("╔" + "═" * 58 + "╗")
             print("║" + " " * 16 + "DISCRIMINATION TREE" + " " * 23 + "║")
             print("╚" + "═" * 58 + "╝")
             print("\nROOT")
-            children_list = list(node.children.values())
-            for i, child_node in enumerate(children_list):
-                is_last_child = (i == len(children_list) - 1)
-                self.print_tree(child_node, level + 1, "", is_last_child, child_node.symbol)
+            liste_enfants = list(noeud.enfants.values())
+            for i, noeud_enfant in enumerate(liste_enfants):
+                est_dernier_enfant = (i == len(liste_enfants) - 1)
+                self.affichage_arbre(noeud_enfant, niveau + 1, "", est_dernier_enfant, noeud_enfant.symbole)
             return
         
-        # Determine the connector symbols
-        connector = "└── " if is_last else "├── "
-        extension = "    " if is_last else "│   "
+        # Déterminer les connecteurs pour l'affichage
+        connecteur = "└── " if est_dernier else "├── "
+        extension = "    " if est_dernier else "│   "
+
+        # Afficher le noeud courant
+        symbole_affiche = noeud.symbole
         
-        # Display the current node with path information
-        symbol_display = node.symbol
-        
-        if node.pointers:
-            # Leaf node with pointers
-            print(f"{prefix}{connector}[{symbol_display}]")
-            for i, pointer in enumerate(node.pointers):
-                is_last_pointer = (i == len(node.pointers) - 1)
-                pointer_connector = "    └─→ " if is_last_pointer else "    ├─→ "
-                pointer_prefix = prefix + extension if not is_last else prefix + "    "
-                print(f"{pointer_prefix}{pointer_connector}{pointer}")
+        if noeud.pointeurs:
+            # Feuille avec pointeurs
+            print(f"{prefixe}{connecteur}[{symbole_affiche}]")
+            for i, pointeur in enumerate(noeud.pointeurs):
+                est_dernier_pointeur = (i == len(noeud.pointeurs) - 1)
+                connecteur_pointeur = "    └─→ " if est_dernier_pointeur else "    ├─→ "
+                prefixe_pointeur = prefixe + extension if not est_dernier else prefixe + "    "
+                print(f"{prefixe_pointeur}{connecteur_pointeur}{pointeur}")
         else:
-            # Internal node
-            print(f"{prefix}{connector}{symbol_display}")
+            # Noeud interne
+            print(f"{prefixe}{connecteur}{symbole_affiche}")
         
-        # Process children
-        children_list = list(node.children.values())
-        for i, child_node in enumerate(children_list):
-            is_last_child = (i == len(children_list) - 1)
-            child_path = f"{path}/{child_node.symbol}"
-            self.print_tree(child_node, level + 1, prefix + extension, is_last_child, child_path)
+        # Afficher les enfants
+        liste_enfants = list(noeud.enfants.values())
+        for i, noeud_enfant in enumerate(liste_enfants):
+            est_dernier_enfant = (i == len(liste_enfants) - 1)
+            chemin_enfant = f"{chemin}/{noeud_enfant.symbole}"
+            self.affichage_arbre(noeud_enfant, niveau + 1, prefixe + extension, est_dernier_enfant, chemin_enfant)
 
-
-# Example usage
+# Exemple d'utilisation
 if __name__ == "__main__":
-    from term import TermFactory
+    from terme import FabriqueDeTermes
 
     dt = DiscriminationTree()
 
-    # term1: f(X, g(Y))
-    term1 = TermFactory.create_func("f", 2, [
-        TermFactory.create_var("X"),
-        TermFactory.create_func("g", 1, [TermFactory.create_var("Y")])
+    # terme1 : f(X, g(Y))
+    term1 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("X"),
+        FabriqueDeTermes.creer_fonc("g", 1, [FabriqueDeTermes.creer_var("Y")])
     ])
     
-    # term2: f(Z, g(W)) - identical to term1 modulo variable renaming
-    term2 = TermFactory.create_func("f", 2, [
-        TermFactory.create_var("Z"),
-        TermFactory.create_func("g", 1, [TermFactory.create_var("W")])
-    ])
-    
-    # term3: f(a, g(b)) - concrete instance
-    term3 = TermFactory.create_func("f", 2, [
-        TermFactory.create_const("a"),
-        TermFactory.create_func("g", 1, [TermFactory.create_const("b")])
-    ])
-    
-    # term4: f(a, g(X)) - partially instantiated
-    term4 = TermFactory.create_func("f", 2, [
-        TermFactory.create_const("a"),
-        TermFactory.create_func("g", 1, [TermFactory.create_var("X")])
-    ])
-    
-    # term5: f(X, Y) - very general
-    term5 = TermFactory.create_func("f", 2, [
-        TermFactory.create_var("X"),
-        TermFactory.create_var("Y")
-    ])
-    
-    # term6: f(Y, X) - opposite of term5
-    term6 = TermFactory.create_func("f", 2, [
-        TermFactory.create_var("Y"),
-        TermFactory.create_var("X")
+    # terme2 : f(Z, g(W)) - Identique à terme1 mais avec d'autres variables
+    term2 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("Z"),
+        FabriqueDeTermes.creer_fonc("g", 1, [FabriqueDeTermes.creer_var("W")])
     ])
 
-    # Insert terms
-    dt.insert(term1, "term1: f(X, g(Y))")
-    dt.insert(term2, "term2: f(Z, g(W))")
-    dt.insert(term3, "term3: f(a, g(b))")
-    dt.insert(term4, "term4: f(a, g(X))")
-    dt.insert(term5, "term5: f(X, Y)")
-    dt.insert(term6, "term6: f(Y, X)")
+    # terme3 : f(a, g(b)) - Instance concrète
+    term3 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_cons("a"),
+        FabriqueDeTermes.creer_fonc("g", 1, [FabriqueDeTermes.creer_cons("b")])
+    ])
 
-    # Display
-    dt.print_tree()
+    # terme4 : f(a, g(X)) - Partiellement concrète
+    term4 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_cons("a"),
+        FabriqueDeTermes.creer_fonc("g", 1, [FabriqueDeTermes.creer_var("X")])
+    ])
+
+    # terme5 : f(X, Y) - très général
+    term5 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("X"),
+        FabriqueDeTermes.creer_var("Y")
+    ])
+
+    # terme6 : f(Y, X) - Inverse des variables de terme5
+    term6 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("Y"),
+        FabriqueDeTermes.creer_var("X")
+    ])
+
+    # Insertion des termes dans l'arbre
+    dt.inserer(term1, "terme1 : f(X, g(Y))")
+    dt.inserer(term2, "terme2 : f(Z, g(W))")
+    dt.inserer(term3, "terme3 : f(a, g(b))")
+    dt.inserer(term4, "terme4 : f(a, g(X))")
+    dt.inserer(term5, "terme5 : f(X, Y)")
+    dt.inserer(term6, "terme6 : f(Y, X)")
+
+    # Affichage
+    dt.affichage_arbre()
 

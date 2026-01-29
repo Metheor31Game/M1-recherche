@@ -7,14 +7,14 @@ from typing import Optional, Dict
 from Util.TermStore.TermStore import TermStore
 from Util.TermStore.ListStore import ListStore
 from Util.TermStore.SetStore import SetStore
-from Util.TermStore.term import NodeTerm, VAR_TAG
+from Util.TermStore.terme import NoeudTerme, ETIQUETTE_VAR
 from Util.TermStore import Equation
 
 
-Substitution = Dict[str, NodeTerm]
+Substitution = Dict[str, NoeudTerme]
 
 
-def occurs_check(var_name: str, term: NodeTerm, subst: Substitution) -> bool:
+def occurs_check(var_name: str, term: NoeudTerme, subst: Substitution) -> bool:
     """
     Vérifie si une variable apparaît dans un terme (après application de la substitution).
     Empêche les unifications cycliques comme X = f(X).
@@ -27,21 +27,21 @@ def occurs_check(var_name: str, term: NodeTerm, subst: Substitution) -> bool:
     Returns:
         True si la variable apparaît dans le terme, False sinon.
     """
-    if term.tag == VAR_TAG:
-        if term.name == var_name:
+    if term.etiquette == ETIQUETTE_VAR:
+        if term.nom == var_name:
             return True
         # Si la variable est dans la substitution, vérifier récursivement
-        if term.name in subst:
-            return occurs_check(var_name, subst[term.name], subst)
+        if term.nom in subst:
+            return occurs_check(var_name, subst[term.nom], subst)
         return False
-    elif term.tag == "const":
+    elif term.etiquette == "const":
         return False
     else:
         # C'est une fonction, vérifier tous les enfants
-        return any(occurs_check(var_name, child, subst) for child in term.children)
+        return any(occurs_check(var_name, child, subst) for child in term.enfants)
 
 
-def apply_subst(term: NodeTerm, subst: Substitution) -> NodeTerm:
+def apply_subst(term: NoeudTerme, subst: Substitution) -> NoeudTerme:
     """
     Applique une substitution à un terme.
     
@@ -52,20 +52,20 @@ def apply_subst(term: NodeTerm, subst: Substitution) -> NodeTerm:
     Returns:
         Le terme avec les variables substituées.
     """
-    if term.tag == VAR_TAG:
-        if term.name in subst:
+    if term.etiquette == ETIQUETTE_VAR:
+        if term.nom in subst:
             # Appliquer récursivement pour les substitutions chaînées
-            return apply_subst(subst[term.name], subst)
+            return apply_subst(subst[term.nom], subst)
         return term
-    elif term.tag == "const":
+    elif term.etiquette == "const":
         return term
     else:
         # C'est une fonction, appliquer aux enfants
-        new_children = [apply_subst(child, subst) for child in term.children]
-        return NodeTerm(term.name, term.tag, new_children)
+        new_children = [apply_subst(child, subst) for child in term.enfants]
+        return NoeudTerme(term.nom, term.etiquette, new_children)
 
 
-def unify(t1: NodeTerm, t2: NodeTerm, store: TermStore) -> Optional[Substitution]:
+def unify(t1: NoeudTerme, t2: NoeudTerme, store: TermStore) -> Optional[Substitution]:
     """
     Algorithme d'unification de Robinson (version itérative).
     
@@ -86,26 +86,26 @@ def unify(t1: NodeTerm, t2: NodeTerm, store: TermStore) -> Optional[Substitution
         right = apply_subst(eq.right, subst)
         
         # Cas 1: Les termes sont identiques (même nom et même tag)
-        if left.name == right.name and left.tag == right.tag:
-            if left.tag not in [VAR_TAG, "const"]:
+        if left.nom == right.nom and left.etiquette == right.etiquette:
+            if left.etiquette not in [ETIQUETTE_VAR, "const"]:
                 # C'est une fonction, ajouter les équations pour les enfants
-                for child_left, child_right in zip(left.children, right.children):
+                for child_left, child_right in zip(left.enfants, right.enfants):
                     store.push(Equation(child_left, child_right))
             # Sinon (const ou var identiques), rien à faire
             continue
         
         # Cas 2: Le terme gauche est une variable
-        if left.tag == VAR_TAG:
-            if occurs_check(left.name, right, subst):
+        if left.etiquette == ETIQUETTE_VAR:
+            if occurs_check(left.nom, right, subst):
                 return None  # Échec: cycle détecté
-            subst[left.name] = right
+            subst[left.nom] = right
             continue
         
         # Cas 3: Le terme droit est une variable
-        if right.tag == VAR_TAG:
-            if occurs_check(right.name, left, subst):
+        if right.etiquette == ETIQUETTE_VAR:
+            if occurs_check(right.nom, left, subst):
                 return None  # Échec: cycle détecté
-            subst[right.name] = left
+            subst[right.nom] = left
             continue
         
         # Cas 4: Symboles différents ou arités différentes (a remplacer par une vérification de clash)

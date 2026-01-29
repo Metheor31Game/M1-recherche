@@ -1,8 +1,8 @@
-from .term import NodeTerm
+from .terme import NoeudTerme
 from typing import List
 
 class Equation:
-    def __init__(self, left: NodeTerm, right: NodeTerm):
+    def __init__(self, left: NoeudTerme, right: NoeudTerme):
         self.left = left
         self.right = right
 
@@ -14,7 +14,7 @@ class TermSystem:
     def __init__(self, equations: List[Equation] = None):
         self.equations = equations if equations is not None else []
 
-    def add(self, left: NodeTerm, right: NodeTerm):
+    def add(self, left: NoeudTerme, right: NoeudTerme):
         self.equations.append(Equation(left, right))
 
     def is_empty(self) -> bool:
