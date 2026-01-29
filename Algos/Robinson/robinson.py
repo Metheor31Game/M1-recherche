@@ -72,7 +72,7 @@ def unify(t1: NodeTerm, t2: NodeTerm, store: TermStore) -> Optional[Substitution
     Args:
         t1: Premier terme à unifier.
         t2: Second terme à unifier.
-        store: Structure de données pour stocker les équations à traiter.
+        store: Structure de données pour stocker les équations
     
     Returns:
         La substitution unificatrice si elle existe, None sinon.
@@ -108,7 +108,7 @@ def unify(t1: NodeTerm, t2: NodeTerm, store: TermStore) -> Optional[Substitution
             subst[right.name] = left
             continue
         
-        # Cas 4: Symboles différents ou arités différentes → échec
+        # Cas 4: Symboles différents ou arités différentes (a remplacer par une vérification de clash)
         return None
     
     return subst
