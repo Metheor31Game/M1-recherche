@@ -11,6 +11,8 @@ from Util.TermStore.terme import NoeudTerme, ETIQUETTE_VAR
 from Util.TermStore.TermList import Equation
 
 
+# La substitution est un dictionnaire avec comme clé le nom, et valeur le terme
+# Exemple : {"X" : a}
 Substitution = Dict[str, NoeudTerme]
 
 """
