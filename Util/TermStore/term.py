@@ -40,6 +40,7 @@ class NodeTerm:
             children_repr = ", ".join(repr(child) for child in self.children)
             return f"{self.name}({children_repr})"
         
+        
 class TermFactory:
     """
     Utility class for creating NodeTerm instances representing constants, variables, and functions.
