@@ -7,9 +7,9 @@ class NoeudArbreDeDiscrimination:
     Classe d'un noeud dans l'arbre de discrimination.
 
     Attributes:
-        symbole (Optional[str]): Symbole représentant le noeud (ex : X, f, a, etc.). 'None' pour le noeud racine.
-        enfants (Dict[str, 'NoeudArbreDeDiscrimination']): Noeuds enfants, indexés par leur symbole.
-        pointeurs (List[Any]): Pointeurs vers les termes associés à ce noeud.
+        symbole (Optional[str]) : Symbole représentant le noeud (ex : X, f, a, etc.). 'None' pour le noeud racine.
+        enfants (Dict[str, 'NoeudArbreDeDiscrimination']) : Noeuds enfants, indexés par leur symbole.
+        pointeurs (List[Any]) : Pointeurs vers les termes associés à ce noeud.
     """
     def __init__(self, symbole: Optional[str] = None) -> None:
         self.symbole = symbole # Symbole du noeud (None pour la racine)
@@ -19,11 +19,11 @@ class NoeudArbreDeDiscrimination:
 
 class ArbreDeDiscrimination:
     """
-    Discrimination tree pour stocker des termes.
+    Arbre de discrimination pour stocker des termes.
     (Et par la suite chercher des termes unifiables.)
     
     Attributes:
-        racine ('NoeudArbreDeDiscrimination'): Noeud racine de l'arbre. 'None' par défaut
+        racine ('NoeudArbreDeDiscrimination') : Noeud racine de l'arbre. 'None' par défaut
     """
     
     def __init__(self) -> None:
@@ -37,7 +37,7 @@ class ArbreDeDiscrimination:
         Par exemple, f(X, g(Y)) crée le chemin : f -> *1 -> g -> *2
 
         Args:
-            terme (NoeudTerme): Le terme à insérer dans l'arbre.
+            terme (NoeudTerme) : Le terme à insérer dans l'arbre.
             pointeur (Any): Un pointeur à associer avec ce terme.
         """
         var_map = {}
@@ -61,13 +61,13 @@ class ArbreDeDiscrimination:
         Mise à plat d'un terme en une séquence de symboles en ordre préfixe.
         Les variables sont normalisées en *1, *2, etc.
         
-        Pour f(X, g(Y)), retourne: ['f', '*1', 'g', '*2']
+        Pour f(X, g(Y)), retourne : ['f', '*1', 'g', '*2']
         
         Args:
-            terme (NoeudTerme): Le terme à aplatir.
-            var_map (Dict[str, str]): Mapping de normalisation des variables.
+            terme (NoeudTerme) : Le terme à aplatir.
+            var_map (Dict[str, str]) : Mapping de normalisation des variables.
         Returns:
-            List[str]: Séquence aplatie de symboles.
+            List[str] : Séquence aplatie de symboles.
         """
         resultat = []
         
@@ -90,23 +90,28 @@ class ArbreDeDiscrimination:
     
     def affichage_arbre(self, noeud: Optional[NoeudArbreDeDiscrimination] = None, niveau: int = 0, prefixe: str = "", est_dernier: bool = True, chemin: str = "") -> None:
         """
+        ╔════════════════════════════════════════════════════════════════╗
+        ║                                                                ║
+        ║      Structure de la fonction générée par IA (ClaudeCode).     ║
+        ║                                                                ║
+        ╚════════════════════════════════════════════════════════════════╝
+
         Affiche l'arbre de discrimination de manière lisible dans la console.
-        Structure de la fonction générée par IA.
         
         Args:
-            noeud (Optional['NoeudArbreDeDiscrimination']): Le noeud courant à afficher. 'None' pour commencer à la racine.
-            niveau (int): Niveau actuel dans l'arbre, utilisé pour l'indentation.
-            prefixe (str): Chaîne de préfixe pour formater la structure de l'arbre.
-            est_dernier (bool): Indique si le noeud courant est le dernier enfant de son parent.
-            chemin (str): Le chemin vers le noeud courant.
+            noeud (Optional['NoeudArbreDeDiscrimination']) : Le noeud courant à afficher. 'None' pour commencer à la racine.
+            niveau (int) : Niveau actuel dans l'arbre, utilisé pour l'indentation.
+            prefixe (str) : Chaîne de préfixe pour formater la structure de l'arbre.
+            est_dernier (bool) : Indique si le noeud courant est le dernier enfant de son parent.
+            chemin (str) : Le chemin vers le noeud courant.
         """
         if noeud is None:
             # Commencer à la racine
             noeud = self.racine
-            print("╔" + "═" * 58 + "╗")
-            print("║" + " " * 16 + "ARBRE DE DISCRIMINATION" + " " * 19 + "║")
-            print("╚" + "═" * 58 + "╝")
-            print("\nROOT")
+            print("╔" + "═" * 61 + "╗")
+            print("║" + " " * 19 + "ARBRE DE DISCRIMINATION" + " " * 19 + "║")
+            print("╚" + "═" * 61 + "╝")
+            print("\nRACINE")
             liste_enfants = list(noeud.enfants.values())
             for i, noeud_enfant in enumerate(liste_enfants):
                 est_dernier_enfant = (i == len(liste_enfants) - 1)
@@ -169,7 +174,7 @@ if __name__ == "__main__":
         FabriqueDeTermes.creer_fonc("g", 1, [FabriqueDeTermes.creer_var("X")])
     ])
 
-    # terme5 : f(X, Y) - très général
+    # terme5 : f(X, Y) - Très général
     term5 = FabriqueDeTermes.creer_fonc("f", 2, [
         FabriqueDeTermes.creer_var("X"),
         FabriqueDeTermes.creer_var("Y")
@@ -181,6 +186,12 @@ if __name__ == "__main__":
         FabriqueDeTermes.creer_var("X")
     ])
 
+    # terme7 : f(X, X) - Même variable deux fois
+    term7 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("X"),
+        FabriqueDeTermes.creer_var("X")
+    ])
+
     # Insertion des termes dans l'arbre
     dt.inserer(term1, "terme1 : f(X, g(Y))")
     dt.inserer(term2, "terme2 : f(Z, g(W))")
@@ -188,6 +199,7 @@ if __name__ == "__main__":
     dt.inserer(term4, "terme4 : f(a, g(X))")
     dt.inserer(term5, "terme5 : f(X, Y)")
     dt.inserer(term6, "terme6 : f(Y, X)")
+    dt.inserer(term7, "terme7 : f(X, X)")
 
     # Affichage
     dt.affichage_arbre()

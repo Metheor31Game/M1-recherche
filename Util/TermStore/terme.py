@@ -24,9 +24,9 @@ class NoeudTerme:
     Peut représenter une constante, une variable ou une fonction.
 
     Attributes:
-        nom (str): Le nom du terme (ex : "a", "X" ou "f").
-        etiquette (Union[str, int]): Etiquette pour identifier le type du terme, ou l'arité dans le cas d'une fonction ("cons", "var", ou 3 pour une fonction à 3 arguments).
-        enfants (Optional[List['NoeudTerme']]): Liste des NoeudTerme enfants pour les fonctions.
+        nom (str) : Le nom du terme (ex : "a", "X" ou "f").
+        etiquette (Union[str, int]) : Etiquette pour identifier le type du terme, ou l'arité dans le cas d'une fonction ("cons", "var", ou 3 pour une fonction à 3 arguments).
+        enfants (Optional[List['NoeudTerme']]) : Liste des NoeudTerme enfants pour les fonctions.
     """
     def __init__(self, nom: str, etiquette: Union[str, int], enfants: Optional[List['NoeudTerme']] = None):
         self.nom = nom # Nom du terme (du symbole)
@@ -65,8 +65,8 @@ class GenerateurDeTermesAleatoires:
     Classe générant des termes aléatoires.
 
     Attributes:
-        profondeur_max (int): Profondeur maximale du terme généré (par défaut 3).
-        arite_max (int): Arité maximale des fonctions générées (par défaut 3).
+        profondeur_max (int) : Profondeur maximale du terme généré (par défaut 3).
+        arite_max (int) : Arité maximale des fonctions générées (par défaut 3).
     """
     def __init__(self, profondeur_max: int = PROFONDEUR_MAX_PAR_DEFAUT, arite_max: int = ARITE_MAX_PAR_DEFAUT):
         self.profondeur_max = profondeur_max
@@ -80,10 +80,10 @@ class GenerateurDeTermesAleatoires:
         Génère un terme aléatoire selon la profondeur courante du terme en train d'être généré.
 
         Args:
-            profondeur_courante (int, optional): Profondeur courante du terme. 0 par défaut.
+            profondeur_courante (int, optional) : Profondeur courante du terme. 0 par défaut.
 
         Returns:
-            NoeudTerme: Le terme généré.
+            NoeudTerme : Le terme généré.
         """
         if profondeur_courante >= self.profondeur_max:
             # Si on est à la profondeur max, on ne peut générer qu'une constante ou une variable
@@ -121,10 +121,10 @@ class GenerateurDeTermesAleatoires:
         Génère 'n' termes de façon aléatoire et les renvoie dans une liste.
 
         Args:
-            n (int): Nombre de termes à générer.
+            n (int) : Nombre de termes à générer.
 
         Returns:
-            List[NoeudTerme]: Liste des termes générés.
+            List[NoeudTerme] : Liste des termes générés.
         """
         return [self.generer_terme_aleatoire() for _ in range(n)]
 
