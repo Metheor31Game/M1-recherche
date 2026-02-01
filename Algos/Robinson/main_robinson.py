@@ -17,27 +17,32 @@ def benchmark(n):
     print(f"Benchmark avec {n} termes")
     print(f"{'='*50}")
     
-    # Génération des termes
+    # Génération des termes dans une liste d'abord
     start_gen = time.time()
-    tn1 = SetStore()
-    tn2 = ListStore()
-    while len(tn1) < n + 1:
-        t = generateur.generer_terme_aleatoire()
-        tn1.push(t)
-        tn2.push(t)
+    termes_generes = []
+    while len(termes_generes) < n + 1:
+        termes_generes.append(generateur.generer_terme_aleatoire())
     end_gen = time.time()
     print(f"Temps de génération : {end_gen - start_gen:.4f}s")
+    
+    # Récupération de t1
+    t1 = termes_generes[0]
+    termes_a_unifier = termes_generes[1:]
 
-    for t in [tn1,tn2]:
-        t1 = t.pop()
+    # On doit refaire les store car sinon t1 serait différent
+    for StoreClass in [SetStore, ListStore]:
+        # Recréer le store avec les mêmes termes pour chaque test
+        store = StoreClass()
+        for t in termes_a_unifier:
+            store.push(t)
         
         # Unification
         start_unif = time.time()
-        afficherMax(t1, t, type(t)())
+        afficherMax(t1, store, StoreClass())
         end_unif = time.time()
-        print(f"Temps d'unification avec {type(t)()}: {end_unif - start_unif:.4f}s")
+        print(f"Temps d'unification avec {StoreClass.__name__}: {end_unif - start_unif:.4f}s")
         
-        print(f"Temps total avec {type(t)()}: {end_unif - start_gen:.4f}s")
+        print(f"Temps total avec {StoreClass.__name__}: {end_unif - start_gen:.4f}s\n")
 
 
 if __name__ == "__main__":
