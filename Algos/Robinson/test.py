@@ -5,23 +5,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 from Util.TermStore.terme import FabriqueDeTermes
 from Util.TermStore.ListStore import ListStore
 from Util.TermStore.SetStore import SetStore
-from robinson import unify
+from robinson import unify, afficher
 
-
-def afficher(t1, t2, store):
-    print(f"Terme 1 : {t1}")
-    print(f"Terme 2 : {t2}")
-    print()
-    result = unify(t1, t2, SetStore())
-    print(result)
-
-    if result is None:
-        print("Échec de l'unification")
-    else:
-        print("Unification réussie")
-        print("Substitution susbt :")
-        for var, terme in result.items():
-            print(f"  {var} -> {terme}")
 
 # Créer des termes simples
 # t1 = f(X, a)
@@ -87,3 +72,6 @@ t10 = FabriqueDeTermes.creer_fonc("f", 2, [Y, FabriqueDeTermes.creer_fonc("g", 1
 afficher(t5, t6, SetStore)
 #afficher(t7, t8, SetStore)
 # afficher(t9, t10, SetStore)
+
+
+
