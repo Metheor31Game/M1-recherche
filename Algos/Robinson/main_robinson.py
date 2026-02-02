@@ -11,7 +11,6 @@ from robinson import unify, afficher, afficherAll, afficherMax
 generateur: GenerateurDeTermesAleatoires = GenerateurDeTermesAleatoires(2,2)
 
 
-
 def benchmark(n):
     print(f"\n{'='*50}")
     print(f"Benchmark avec {n} termes")
@@ -21,19 +20,22 @@ def benchmark(n):
     start_gen = time.time()
     termes_generes = []
     while len(termes_generes) < n + 1:
-        termes_generes.append(generateur.generer_terme_aleatoire())
+        new_term = generateur.generer_terme_aleatoire()
+        if new_term not in termes_generes:
+            termes_generes.append(new_term)
     end_gen = time.time()
     print(f"Temps de génération : {end_gen - start_gen:.4f}s")
     
-    # Récupération de t1
-    t1 = termes_generes[0]
-    termes_a_unifier = termes_generes[1:]
+    # Récupération de t1 (j'aimerai que ce soit une fonction pour que l'unification soit plus interessante)
+    t1 = next((t for t in termes_generes if isinstance(t.etiquette, int)), None)
+    if t1:
+        termes_generes.remove(t1) 
 
     # On doit refaire les store car sinon t1 serait différent
     for StoreClass in [SetStore, ListStore]:
         # Recréer le store avec les mêmes termes pour chaque test
         store = StoreClass()
-        for t in termes_a_unifier:
+        for t in termes_generes:
             store.push(t)
         
         # Unification
@@ -41,11 +43,8 @@ def benchmark(n):
         afficherMax(t1, store, StoreClass())
         end_unif = time.time()
         print(f"Temps d'unification avec {StoreClass.__name__}: {end_unif - start_unif:.4f}s")
-        
-        print(f"Temps total avec {StoreClass.__name__}: {end_unif - start_gen:.4f}s\n")
-
 
 if __name__ == "__main__":
-    benchmark(1000000)
+    benchmark(10000)
     
 
