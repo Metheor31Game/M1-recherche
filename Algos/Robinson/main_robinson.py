@@ -8,7 +8,7 @@ from Util.TermStore.ListStore import ListStore
 from Util.TermStore.SetStore import SetStore
 from robinson import unify, afficher, afficherAll, afficherMax
 
-generateur: GenerateurDeTermesAleatoires = GenerateurDeTermesAleatoires(2,2)
+generateur: GenerateurDeTermesAleatoires = GenerateurDeTermesAleatoires(4,4)
 
 
 def benchmark(n):
@@ -16,13 +16,12 @@ def benchmark(n):
     print(f"Benchmark avec {n} termes")
     print(f"{'='*50}")
     
-    # Génération des termes dans une liste d'abord
+    # Génération des termes dans un set d'abord (pour absolument éviter les doublons)
     start_gen = time.time()
-    termes_generes = []
+    termes_generes = set()
     while len(termes_generes) < n + 1:
         new_term = generateur.generer_terme_aleatoire()
-        if new_term not in termes_generes:
-            termes_generes.append(new_term)
+        termes_generes.add(new_term)
     end_gen = time.time()
     print(f"Temps de génération : {end_gen - start_gen:.4f}s")
     
@@ -32,7 +31,11 @@ def benchmark(n):
         termes_generes.remove(t1) 
 
     # On doit refaire les store car sinon t1 serait différent
-    for StoreClass in [SetStore, ListStore]:
+    temps = []
+    stores = [ListStore, SetStore]
+    # stores = [SetStore, ListStore]
+    for StoreClass in stores:
+        print(f"\n{'='*50}")
         # Recréer le store avec les mêmes termes pour chaque test
         store = StoreClass()
         for t in termes_generes:
@@ -43,8 +46,16 @@ def benchmark(n):
         afficherMax(t1, store, StoreClass())
         end_unif = time.time()
         print(f"Temps d'unification avec {StoreClass.__name__}: {end_unif - start_unif:.4f}s")
+        temps.append(end_unif - start_unif)
+    
+    #Affichage de la différence : 
+    if temps[0] > temps[1]:
+        print(f"le store {stores[0].__name__} est plus lent que {stores[1].__name__} de {temps[0] - temps[1]:.4f}s")
+    else:
+        print(f"le store {stores[1].__name__} est plus lent que {stores[0].__name__} de {temps[1] - temps[0]:.4f}s")
+
 
 if __name__ == "__main__":
-    benchmark(10000)
+    benchmark(5000000)
     
 
