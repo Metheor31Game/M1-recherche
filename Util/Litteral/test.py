@@ -21,3 +21,18 @@ print()
 print("Représentation en arbre :")
 print(lit.afficher_arbre(indent= "│  "))
 
+
+f_X_f_X_a = FabriqueDeTermes.creer_fonc("f", 2, [X, f_X_a])
+
+print("")
+
+lit2 = Litteral("P", [f_X_f_X_a], False)
+
+print("")
+
+print(lit2.afficher_arbre())
+
+print("")
+
+print(lit2)
+
