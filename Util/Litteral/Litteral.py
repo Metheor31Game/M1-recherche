@@ -37,7 +37,7 @@ class Litteral:
         Représente un littéral sous la forme compacte : +P(t1, t2)
         """
         terms_str = ", ".join(repr(t) for t in self.enfants)
-        signe = "+" if self.sign else "-"
+        signe = "" if self.sign else "¬"
         return f"{signe}{self.predicat}({terms_str})"
     
     def afficher_arbre(self, indent: str = "", est_dernier: bool = True) -> str:
@@ -65,7 +65,7 @@ class Litteral:
             │   └── a (const)
             └── Y (var)
         """
-        signe = "+" if self.sign else "-"
+        signe = "+" if self.sign else "¬"
         lines = [f"{indent}{signe}{self.predicat} (arity = {self.arity})"]
         
         for i, enfant in enumerate(self.enfants):
