@@ -42,6 +42,7 @@ class Litteral:
     
     def afficher_arbre(self, indent: str = "", est_dernier: bool = True) -> str:
         """
+        (aidé par l'IA)
         Représente le littéral sous forme d'arbre avec ses termes comme enfants.
         Affiche récursivement la structure complète du littéral.
         
@@ -65,7 +66,7 @@ class Litteral:
             │   └── a (const)
             └── Y (var)
         """
-        signe = "+" if self.sign else "¬"
+        signe = " " if self.sign else "¬"
         lines = [f"{indent}{signe}{self.predicat} (arity = {self.arity})"]
         
         for i, enfant in enumerate(self.enfants):
