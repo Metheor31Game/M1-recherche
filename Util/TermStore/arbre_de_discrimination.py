@@ -1,6 +1,9 @@
 from typing import List, Dict, Any, Optional
-from terme import NoeudTerme, ETIQUETTE_CONS, ETIQUETTE_VAR
+from terme import NoeudTerme, ETIQUETTE_CONS, ETIQUETTE_VAR, DOMAINE_CONS
 
+
+# TODO voir pour modifier la structure afin de garder les arités dispo dans l'arbre
+# pour faciliter la gestion des calcules de profondeur etc.
 
 class NoeudArbreDeDiscrimination:
     """
@@ -88,6 +91,159 @@ class ArbreDeDiscrimination:
         
         return resultat
     
+    def rechercher_terme(self, terme: NoeudTerme) -> List[Any]:
+        """
+        Recherche les termes unifiables avec le terme donné dans l'arbre de discrimination.
+
+        Args:
+            terme (NoeudTerme) : Le terme à rechercher.
+        Returns:
+            List[Any] : Liste des pointeurs associés aux termes unifiables trouvés.
+        """
+        
+        terme_mise_a_plat = self._mise_a_plat(terme, {})
+        resultats = []
+
+        arites = self._extraire_arites(terme, {}) # Pour gérer la profondeur avec variables etc.
+
+        self._recherche_recursive(self.racine, terme_mise_a_plat, arites, 0, resultats)
+        return resultats
+    
+    def _extraire_arites(self, terme: NoeudTerme, var_map: Dict[str, str]) -> List[int]:
+        """
+        Extrait les arités de chaque symbole dans l'ordre préfixe.
+        Cela permet de savoir combien d'arguments à chaque fonction.
+
+        Args:
+            terme (NoeudTerme): Le terme dont on extrait les arités.
+            var_map (Dict[str, str]): Mapping de normalisation des variables.
+
+        Returns:
+            List[int]: Liste des arités pour chaque symbole.
+        """
+        resultats = [] # Initialisation de la liste 
+
+        # Arité du terme courant
+        # Cas 1 : variable, normalisation et arité 0
+        if terme.etiquette == ETIQUETTE_VAR:
+            if terme.nom not in var_map:
+                var_map[terme.nom] = f"*{len(var_map) + 1}"
+            resultats.append(0) 
+        # Cas 2 : constante, arité 0
+        elif terme.etiquette == ETIQUETTE_CONS:
+            resultats.append(0)
+        # Cas 3 : fonction, arité = etiquette (d'après notre classe) 
+        #         on ajoute aussi les arités des enfants
+        else:
+            resultats.append(terme.etiquette)
+
+            # Extraction des arités des enfants
+            for enfant in terme.enfants:
+                resultats.extend(self._extraire_arites(enfant, var_map))
+
+        return resultats
+    
+    def _recherche_recursive(self, noeud: NoeudArbreDeDiscrimination, sequence: List[str], arites: List[int], index: int,resultats: List[Any]) -> None:
+        """
+        Fonction récursive pour rechercher des termes unifiables dans l'arbre de discrimination.
+
+        Args:
+            noeud (NoeudArbreDeDiscrimination) : Noeud courant dans l'arbre.
+            sequence (List[str]) : Séquence aplatie du terme recherché.
+            arites (List[int]) : Liste des arités pour chaque symbole dans la séquence.
+            index (int) : Index actuel dans la séquence.
+            resultats (List[Any]) : Liste accumulant les pointeurs des termes unifiables trouvés.
+        """
+        # Cas de base : toute la séquence a été parcourue
+        if index >= len(sequence):
+            resultats.extend(noeud.pointeurs) # Ajouter les pointeurs du noeud courant
+            return
+            
+        symbole_courant = sequence[index]
+        arite_courante = arites[index]
+
+        # Recherche dans les enfants du noeud courant
+        for enfant in noeud.enfants.values():
+
+            # Cas 1 : le symbole courant est le même que celui du noeud enfant
+            if symbole_courant == enfant.symbole:
+                self._recherche_recursive(enfant, sequence, arites, index + 1, resultats) # On continue à chercher dans cet enfant
+            
+            # Cas 2 : le symbole de la recherche est une variable
+            #         on peut unifier avec n'importe quel sous-terme
+            elif symbole_courant.startswith("*"):
+                # On doit sauter tout le sous-terme indexé par cet enfant 
+                profondeur_enfant = self._calculer_profondeur_noeud(enfant)
+                nouvel_index = index + profondeur_enfant
+                if nouvel_index <= len(sequence):
+                    self._recherche_recursive(enfant, sequence, arites, nouvel_index, resultats)
+
+            # Cas 3 : le symbole de l'enfant est une variable
+            #         peut s'unifier avec le sous-terme courant de l'arbre
+            elif enfant.symbole.startswith("*"):
+                # On saute le sous-terme dans l'arbre
+                profondeur_sequence = self._calculer_profondeur_depuis_index(arites, index)
+                nouvel_index = index + profondeur_sequence
+                if nouvel_index <= len(sequence):
+                    self._recherche_recursive(enfant, sequence, arites, nouvel_index, resultats)
+
+            # TODO gérer la gestion de variables non unifiable à la fin de la recherche !!
+        
+    def _calculer_profondeur_noeud(self, noeud: NoeudArbreDeDiscrimination) -> int:
+        """
+        Calcule la profondeur (nombre de symboles) du sous-terme représenté par ce noeud.
+
+        Args:
+            noeud (NoeudArbreDeDiscrimination) : Le noeud dont on veut calculer la profondeur.
+        Returns:
+            int : La profondeur du sous-terme (nombre total de symboles).
+        """
+        if noeud.symbole is None:
+            return 0
+            
+        # Pour variables ou constante = 1
+        if noeud.symbole.startswith("*") or noeud.symbole in DOMAINE_CONS: # TODO tricherie ????
+            return 1
+            
+        # Pour fonction = 1 + profondeurs des args
+        profondeur = 1
+        for enfant in noeud.enfants.values():
+            profondeur += self._calculer_profondeur_noeud(enfant)
+            
+        return profondeur
+    
+    def _calculer_profondeur_depuis_index(self, arites: List[int], index: int) -> int:
+        """
+        Calcule la profondeur du sous-terme commençant à l'index donné.
+        
+        Args:
+            arites (List[int]) : Liste des arités pour chaque symbole.
+            index (int) : L'index de départ dans la séquence.
+        Returns:
+            int : Le nombre de symboles formant le sous-terme.
+        """
+        if index >= len(arites):
+            return 0
+        
+        arite = arites[index]
+        
+        # Si arité = 0 (variable ou constante), la profondeur est 1
+        if arite == 0:
+            return 1
+        
+        # Si arité > 0 (fonction), on compte 1 + profondeur de chaque argument
+        profondeur = 1
+        position_courante = index + 1
+        
+        for _ in range(arite):
+            profondeur_arg = self._calculer_profondeur_depuis_index(arites, position_courante)
+            profondeur += profondeur_arg
+            position_courante += profondeur_arg
+        
+        return profondeur
+        
+
+    
     def affichage_arbre(self, noeud: Optional[NoeudArbreDeDiscrimination] = None, niveau: int = 0, prefixe: str = "", est_dernier: bool = True, chemin: str = "") -> None:
         """
         ╔════════════════════════════════════════════════════════════════╗
@@ -150,57 +306,70 @@ if __name__ == "__main__":
 
     dt = ArbreDeDiscrimination()
 
-    # terme1 : f(X, g(Y))
-    term1 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_var("X"),
-        FabriqueDeTermes.creer_fonc("g", 1, [FabriqueDeTermes.creer_var("Y")])
-    ])
-    
-    # terme2 : f(Z, g(W)) - Identique à terme1 mais avec d'autres variables
-    term2 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_var("Z"),
-        FabriqueDeTermes.creer_fonc("g", 1, [FabriqueDeTermes.creer_var("W")])
+    # Exemple du papier "Term Indexing" :
+
+    # f(g(a, X), c)
+    terme1 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_cons("a"),
+            FabriqueDeTermes.creer_var("X")
+        ]),
+        FabriqueDeTermes.creer_cons("c")
     ])
 
-    # terme3 : f(a, g(b)) - Instance concrète
-    term3 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_cons("a"),
-        FabriqueDeTermes.creer_fonc("g", 1, [FabriqueDeTermes.creer_cons("b")])
+    # f(g(X, b), Y)
+    terme2 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_var("X"),
+            FabriqueDeTermes.creer_cons("b")
+        ]),
+        FabriqueDeTermes.creer_var("Y")
     ])
 
-    # terme4 : f(a, g(X)) - Partiellement concrète
-    term4 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_cons("a"),
-        FabriqueDeTermes.creer_fonc("g", 1, [FabriqueDeTermes.creer_var("X")])
+    # f(g(a, b), a)
+    terme3 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_cons("a"),
+            FabriqueDeTermes.creer_cons("b")
+        ]),
+        FabriqueDeTermes.creer_cons("a")
     ])
 
-    # terme5 : f(X, Y) - Très général
-    term5 = FabriqueDeTermes.creer_fonc("f", 2, [
+    # f(g(x, c), b)
+    terme4 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_var("X"),
+            FabriqueDeTermes.creer_cons("c")
+        ]),
+        FabriqueDeTermes.creer_cons("b")
+    ])
+
+    # f(X, Y)
+    terme5 = FabriqueDeTermes.creer_fonc("f", 2, [
         FabriqueDeTermes.creer_var("X"),
         FabriqueDeTermes.creer_var("Y")
     ])
 
-    # terme6 : f(Y, X) - Inverse des variables de terme5
-    term6 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_var("Y"),
-        FabriqueDeTermes.creer_var("X")
-    ])
-
-    # terme7 : f(X, X) - Même variable deux fois
-    term7 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_var("X"),
-        FabriqueDeTermes.creer_var("X")
-    ])
-
     # Insertion des termes dans l'arbre
-    dt.inserer(term1, "terme1 : f(X, g(Y))")
-    dt.inserer(term2, "terme2 : f(Z, g(W))")
-    dt.inserer(term3, "terme3 : f(a, g(b))")
-    dt.inserer(term4, "terme4 : f(a, g(X))")
-    dt.inserer(term5, "terme5 : f(X, Y)")
-    dt.inserer(term6, "terme6 : f(Y, X)")
-    dt.inserer(term7, "terme7 : f(X, X)")
+    dt.inserer(terme1, "terme1 : f(g(a, X), c)")
+    dt.inserer(terme2, "terme2 : f(g(X, b), Y)")
+    dt.inserer(terme3, "terme3 : f(g(a, b), a)")
+    dt.inserer(terme4, "terme4 : f(g(X, c), b)")
+    dt.inserer(terme5, "terme5 : f(X, Y)")
 
     # Affichage
     dt.affichage_arbre()
 
+    # Recherche des termes unifiable avec f(g(a, c), b)
+    terme_a_rechercher = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_cons("a"),
+            FabriqueDeTermes.creer_cons("c")
+        ]),
+        FabriqueDeTermes.creer_cons("b")
+    ])
+
+    print("\nRecherche de termes unifiables avec : f(g(a, c), b)")
+    resultats = dt.rechercher_terme(terme_a_rechercher)
+    for res in resultats:
+        print(f" - {res}")
