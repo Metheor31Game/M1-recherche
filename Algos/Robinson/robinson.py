@@ -185,20 +185,21 @@ def unify(t1: NoeudTerme, t2: NoeudTerme, store: TermStore, subst: Substitution)
     
     return subst
 
-def unifyAll(t1: NoeudTerme, tn: TermStore, store: TermStore) -> Optional[Substitution]:
+def unifyAll(t1: NoeudTerme, tn: TermStore, store: TermStore, subst_init: Substitution = None) -> Optional[Substitution]:
     """
     Essaie d'unifier un terme avec un ensemble d'autres termes.
     
-    Les substitutions sont accumulées
+    Les substitutions sont accumulées.
     Args:
         t1: Terme principal à unifier.
         tn: Groupe de termes qui doivent être unifiés avec t1.
         store: Structure de données à utiliser pour stocker les équations.
+        subst_init: Substitution initiale à partir de laquelle commencer (optionnel).
     
     Returns:
         Le MGU s'il existe, None sinon.
     """
-    subst_final: Substitution = {}
+    subst_final: Substitution = subst_init if subst_init is not None else {}
     
     while not tn.is_empty():
         t = tn.pop()
