@@ -8,6 +8,8 @@ from Util.TermStore.terme import NoeudTerme
 from Util.TermStore.terme import GenerateurDeTermesAleatoires
 
 """
+le code a entierement été fait par moi, l'IA a aidé pour les docstrings
+
 Proposition pour littéraux : 
 Predicat (nom)
 arité
