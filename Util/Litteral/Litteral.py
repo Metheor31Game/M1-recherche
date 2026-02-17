@@ -1,9 +1,11 @@
 from typing import Optional, List
 import sys
 import os
+import random
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 from Util.TermStore.terme import NoeudTerme
+from Util.TermStore.terme import GenerateurDeTermesAleatoires
 
 """
 Proposition pour littéraux : 
@@ -95,3 +97,98 @@ class Litteral:
                 lines.append(self._afficher_terme(enfant, indent + branche, indent + sous_indent))
             return "\n".join(lines)
         
+class GenerateurLitteralAleatoire:
+    """
+    Génère des littéraux aléatoires avec des arités cohérentes.
+    
+    IMPORTANT: Utiliser la même instance du générateur pour conserver les arités
+    des prédicats. Chaque instance génère ses propres arités aléatoires à
+    l'initialisation. Si vous créez plusieurs instances, les prédicats auront
+    des arités différentes entre les instances.
+    
+    Attributes:
+        nom_predicats (list[str]): Liste des noms de prédicats disponibles (ex: ['P', 'Q', 'R']).
+        ariteMax (int): Arité maximale autorisée pour les prédicats.
+        profondeurMax (int): Profondeur maximale des termes générés.
+        dict_arites (dict[str, int]): Dictionnaire associant chaque prédicat à son arité fixe.
+        generateur_termes (GenerateurDeTermesAleatoires): Générateur de termes aléatoires avec profondeur fixe.
+    """
+    
+    def __init__(self, nom_predicats: list[str], ariteMax: int, profondeurMax: int):
+        """
+        Initialise le générateur de littéraux avec des arités fixes pour chaque prédicat.
+        
+        Args:
+            nom_predicats (list[str]): Liste des noms de prédicats (ex: ['P', 'Q', 'R']).
+            ariteMax (int): Arité maximale pour les prédicats (arité choisie entre 1 et ariteMax).
+            profondeurMax (int): Profondeur maximale des termes dans les littéraux.
+        
+        Example:
+            >>> gen = GenerateurLitteral(['P', 'Q', 'R'], ariteMax=3, profondeurMax=2)
+            >>> # Tous les littéraux P générés par 'gen' auront la même arité
+        """
+        self.nom_predicats = nom_predicats
+        self.ariteMax = ariteMax
+        self.profondeurMax = profondeurMax
+        self.dict_arites = self._creer_dict_arites()
+        self.generateur_termes = GenerateurDeTermesAleatoires(profondeur_max=self.profondeurMax)
+        
+    def _creer_dict_arites(self) -> dict[str, int]:
+        """
+        Crée un dictionnaire associant chaque prédicat à une arité aléatoire.
+        L'arité est choisie aléatoirement entre 1 et ariteMax.
+        Cela garantit que chaque prédicat aura toujours la même arité.
+        
+        Returns:
+            dict[str, int]: Dictionnaire {nom_predicat: arite}
+        """
+        return {predicat: random.randint(1, self.ariteMax) for predicat in self.nom_predicats}
+
+    def _generer_litteral_aleatoire(self, predicat: str) -> Litteral:
+        """
+        Génère un littéral aléatoire pour un prédicat donné (fonction interne).
+        
+        L'arité du prédicat est déterminée par le dictionnaire d'arités.
+        Les termes sont générés aléatoirement avec la profondeur maximale spécifiée.
+        Le signe du littéral (positif/négatif) est choisi aléatoirement.
+        
+        Args:
+            predicat (str): Le nom du prédicat (doit être dans nom_predicats).
+        
+        Returns:
+            Litteral: Un littéral avec le prédicat, des termes aléatoires et un signe aléatoire.
+        """
+        termes = []
+        arite = self.dict_arites[predicat]
+        for i in range(arite):
+            termes.append(self.generateur_termes.generer_terme_aleatoire())
+        sign = random.choice([True, False])
+        return Litteral(predicat, termes, sign)
+    
+    def generer_litteraux(self, n: int) -> List[Litteral]:
+        """
+        Génère n littéraux aléatoires.
+        
+        Pour chaque littéral généré, un prédicat est choisi aléatoirement parmi
+        les prédicats disponibles, puis un littéral est créé avec des termes aléatoires
+        et un signe aléatoire.
+        
+        Args:
+            n (int): Nombre de littéraux à générer.
+        
+        Returns:
+            List[Litteral]: Liste de n littéraux générés aléatoirement.
+        
+        Example:
+            >>> gen = GenerateurLitteralAleatoire(['P', 'Q', 'R'], ariteMax=3, profondeurMax=2)
+            >>> litteraux = gen.generer_litteraux(5)
+            >>> for lit in litteraux:
+            ...     print(lit)
+            # Exemple: P(X, f(a)), ¬Q(b), R(Y, Z, a), ...
+        """
+        litteraux = []
+        for i in range(n):
+            predicat = random.choice(self.nom_predicats)
+            litteral = self._generer_litteral_aleatoire(predicat)
+            litteraux.append(litteral)
+        return litteraux

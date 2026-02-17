@@ -4,6 +4,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 from Util.TermStore.terme import FabriqueDeTermes
 from Util.Litteral.Litteral import Litteral
+from Util.Litteral.Litteral import GenerateurLitteralAleatoire
 from Algos.Predicat.unifPredicat import unifPredicat
 
 # Création des termes
@@ -70,4 +71,20 @@ if result3:
         print(f"  {var} -> {terme}")
 else:
     print("Échec de l'unification")
+
+
+############## Test generation aléatoire #######################
+
+generateur = GenerateurLitteralAleatoire(["P", "Q", "R", "estEnfant"], 2, 1)
+
+predicats = generateur.generer_litteraux(10)
+
+print("- - - - - - - - - - - - ")
+
+for p in predicats:
+   print(p)
+
+
+
+
 
