@@ -4,7 +4,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 from Util.Litteral.Litteral import Litteral
 from Algos.Robinson.robinson import unifyAll
+from Util.TermStore.TermStore import TermStore
 from Util.TermStore.SetStore import SetStore
+from Util.TermStore.ListStore import ListStore
 from Util.TermStore.terme import NoeudTerme
 
 from typing import Optional, Dict
@@ -53,4 +55,37 @@ def unifPredicat(p1: Litteral, p2: Litteral, algo):
         return subst
     
     return None
+
+def rechercherUnifiablesSimple(p1: Litteral, preds: TermStore[Litteral], algo: str = "Robinson") -> Dict[Litteral, Dict]:
+    """
+    Recherche "bêtement" tous les littéraux unifiables avec p1 dans un ensemble de littéraux.
+    
+    Parcourt tous les littéraux de l'ensemble et teste l'unification avec p1.
+    Chaque test d'unification est indépendant (substitution vide au départ).
+    
+    Args:
+        p1 (Litteral): Le littéral de référence à unifier.
+        preds (TermStore[Litteral]): Ensemble de littéraux candidats.
+        algo (str): Algorithme d'unification à utiliser (par défaut "Robinson").
+    
+    Returns:
+        Dict[Litteral, Dict]: Dictionnaire associant chaque littéral unifiable à sa substitution.
+                              Retourne {} si aucun littéral n'est unifiable.
+    
+    Example:
+        >>> p1 = Litteral("P", [X, Y], True)
+        >>> preds = SetStore()
+        >>> preds.push(Litteral("P", [a, b], False))
+        >>> result = rechercherUnifiablesSimple(p1, preds)
+        >>> # result = {¬P(a, b): {X/a, Y/b}}
+    """
+    result = {}
+    for p in preds:
+        subst = unifPredicat(p1, p, algo)
+        if subst is not None:
+            result[p] = subst
+    return result
+
+
+
     
