@@ -27,10 +27,28 @@ class ArbreDeDiscrimination:
     
     Attributes:
         racine ('NoeudArbreDeDiscrimination') : Noeud racine de l'arbre. 'None' par défaut
+        arites (Dict[str, int])               : Dictionnaire pour stocker l'arité de chaque symbole dans l'arbre
     """
     
     def __init__(self) -> None:
         self.racine = NoeudArbreDeDiscrimination()
+        self.arites = {}
+
+    def mapper_arite(self, terme: NoeudTerme):
+        """
+        Insère dans le dictionnaire l'arité de l'ensemble des symboles du terme 
+
+        Args:
+            terme (NoeudTerme): Le terme a traiter
+        """
+        if terme.etiquette == ETIQUETTE_CONS or terme.etiquette == ETIQUETTE_VAR:
+            if terme.nom not in self.arites.keys():
+                self.arites[terme.nom] = 0
+        else: # Fonction donc arité dans l'étiquette
+            if terme.nom not in self.arites.keys():
+                self.arites[terme.nom] = terme.etiquette
+            for sous_terme in terme.enfants:
+                self.mapper_arite(sous_terme)
 
     def inserer(self, terme: NoeudTerme, pointeur: Any) -> None:
         """
@@ -43,6 +61,8 @@ class ArbreDeDiscrimination:
             terme (NoeudTerme) : Le terme à insérer dans l'arbre.
             pointeur (Any): Un pointeur à associer avec ce terme.
         """
+        self.mapper_arite(terme)
+
         var_map = {}
         # Mise à plat du terme en une séquence de symboles issue d'un parcours préfixe
         # On normalise aussi les variables
