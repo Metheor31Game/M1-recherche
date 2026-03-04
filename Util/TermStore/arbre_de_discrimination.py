@@ -18,8 +18,7 @@ class NoeudArbreDeDiscrimination:
 
 class ArbreDeDiscrimination:
     """
-    Arbre de discrimination pour stocker des termes.
-    (Et par la suite chercher des termes unifiables.)
+    Arbre de discrimination pour stocker des termes. Et permettre la recherche de termes unifiables.
     
     Attributes:
         racine ('NoeudArbreDeDiscrimination')   : Noeud racine de l'arbre. 'None' par défaut
@@ -131,11 +130,11 @@ class ArbreDeDiscrimination:
         terme_mis_a_plat = self._mise_a_plat(terme, {})
 
         resultats = []
-        self._recherche_recursive(self.racine, terme_mis_a_plat, 0, resultats)
+        self._recherche_recursive(self.racine, terme_mis_a_plat, 0, [], resultats)
 
         return resultats
     
-    def _recherche_recursive(self, noeud: NoeudArbreDeDiscrimination, sequence: List[str], index: int, resultats: List[Any]) -> None:
+    def _recherche_recursive(self, noeud: NoeudArbreDeDiscrimination, sequence: List[str], index: int, substitutions: List[tuple], resultats: List[Any]) -> None:
         """
         Fonction récursive pour rechercher des termes unifiables dans l'arbre de discrimination.
 
@@ -147,18 +146,21 @@ class ArbreDeDiscrimination:
         """
         # Cas de base : toute la séquence a été parcourue
         if index >= len(sequence):
-            resultats.extend(noeud.pointeurs) # Ajouter les pointeurs du noeud courant
+            if self._substitution_valide(substitutions):
+                print(substitutions)
+                resultats.extend(noeud.pointeurs) # Ajouter les pointeurs du noeud courant
             return
             
         symbole_courant = sequence[index]
-        arite_courante = self.arites[symbole_courant]
 
         # Recherche dans les enfants du noeud courant
         for enfant in noeud.enfants.values():
 
+            nouvelle_substitution = substitutions.copy()
+
             # Cas 1 : le symbole courant est le même que celui du noeud enfant
             if symbole_courant == enfant.symbole:
-                self._recherche_recursive(enfant, sequence, index + 1, resultats) # On continue à chercher dans cet enfant
+                self._recherche_recursive(enfant, sequence, index + 1, nouvelle_substitution, resultats) # On continue à chercher dans cet enfant
             
             # Cas 2 : le symbole de la recherche est une variable
             #         on peut unifier avec n'importe quel sous-terme
@@ -166,8 +168,9 @@ class ArbreDeDiscrimination:
                 # On doit sauter tout le sous-terme indexé par cet enfant 
                 profondeur_enfant = self._calculer_profondeur_noeud(enfant)
                 nouvel_index = index + profondeur_enfant
+                nouvelle_substitution.append((symbole_courant, enfant.symbole))
                 if nouvel_index <= len(sequence):
-                    self._recherche_recursive(enfant, sequence, nouvel_index, resultats)
+                    self._recherche_recursive(enfant, sequence, nouvel_index, nouvelle_substitution, resultats)
 
             # Cas 3 : le symbole de l'enfant est une variable
             #         peut s'unifier avec le sous-terme courant de l'arbre
@@ -176,10 +179,26 @@ class ArbreDeDiscrimination:
                 profondeur_sequence = self._calculer_profondeur_depuis_index(index, sequence)
                 nouvel_index = index + profondeur_sequence
                 if nouvel_index <= len(sequence):
-                    self._recherche_recursive(enfant, sequence, nouvel_index, resultats)
+                    nouvelle_substitution.append((enfant.symbole, ''.join(sequence[index : nouvel_index])))
+                    self._recherche_recursive(enfant, sequence, nouvel_index, nouvelle_substitution, resultats)
 
-            # TODO gérer la gestion de variables non unifiable à la fin de la recherche !!
-        
+    def _substitution_valide(self, substitutions: List[tuple]) -> bool:
+        """
+        Vérifie que la liste des substitutions ne contient pas de conflits.
+
+        Args:
+            substitution (List[tuple]) : Liste des substitutions.
+        Returns:
+            bool : True si les substitutions sont valides, False sinon.
+        """
+        # Vérifier qu'il n'y a pas de substitution contradictoire (ex: X -> a et X -> b)
+        sub = {}
+        for couple in substitutions:
+            if couple[0] in sub and sub[couple[0]] != couple[1]:
+                return False
+            sub[couple[0]] = couple[1] 
+        return True
+
     def _calculer_profondeur_noeud(self, noeud: NoeudArbreDeDiscrimination) -> int:
         """
         Calcule la profondeur (nombre de symboles) du sous-terme représenté par ce noeud.
