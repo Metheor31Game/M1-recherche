@@ -125,6 +125,8 @@ print("  ARBRE CONSTRUIT (15 termes)")
 print(SEPARATEUR_EPAIS)
 dt.affichage_arbre()
 
+# Création de l'arbre : validée
+
 
 #==================================================================
 #
@@ -169,51 +171,77 @@ afficher_resultats("f(g(a, b), c)", dt.rechercher_terme(q3))
 
 # ── Requête 4 : variable en première position ─────────────────────────────────
 # f(X, c) : X peut matcher n'importe quel premier argument.
-# Résultats attendus :
+# Résultats attendus (validé) :
 #   terme3 f(g(a,b), c)     avec σ = {X → g a b}
+#   terme7 f(a, X)          avec σ = {X → a, *1 → c}
 #   terme8 f(g(X,b), c)     avec σ = {X → g *1 b}  
 #   terme9 f(g(a,X), c)     avec σ = {X → g a *1}
-#   terme11 f(g(X,Y), Z)    avec σ = {X → g *1 *2, Z → c}
-# A CORRIGER
+#   terme10 f(X, Y)         avec σ = {X → *1, *2 → c}
+#   terme11 f(g(X,Y), Z)    avec σ = {X → g *1 *2, *3 → c}
+#   terme13 f(X, X)         avec σ = {X → *1, *1 → c}
+#   terme14 f(g(X,a), X)    avec σ = {X → g *1 a, *1 → c}
 q4 = fonc("f", 2, [var("X"), cons("c")])
 afficher_resultats("f(X, c)", dt.rechercher_terme(q4))
 
 # ── Requête 5 : deux variables libres ─────────────────────────────────────────
 # f(X, Y) : s'unifie avec tout terme de tête f/2.
 # Résultats attendus : 
+#   terme1 f(a, b)          avec σ = {X → a, Y → b}
+#   terme2 f(a, a)          avec σ = {X → a, Y → a}
+#   terme3 f(g(a,b), c)     avec σ = {X → g a b, Y → c}
+#   terme4 f(g(a,b), a)     avec σ = {X → g a b, Y → a}
+#   terme6 f(X,b)           avec σ = {X → *1, Y → b}
+#   terme7 f(a,X)           avec σ = {X → a, Y → *1}
+#   terme8 f(g(X,b), c)     avec σ = {X → g *1 b, Y → c}  
+#   terme9 f(g(a,X), c)     avec σ = {X → g a *1, Y → c}
+#   terme10 f(X, Y)         avec σ = {X → *1, Y → *2}
+#   terme11 f(g(X,Y), Z)    avec σ = {X → g *1 *2, Y → *3}
+#   terme13 f(X,X)          avec σ = {X → *1, Y → X}
+#   terme14 f(g(X,a), X)    avec σ = {X → g *1 a, Y → X}
 q5 = fonc("f", 2, [var("X"), var("Y")])
 afficher_resultats("f(X, Y)", dt.rechercher_terme(q5))
 
 # ── Requête 6 : variable répétée dans la requête ──────────────────────────────
 # f(X, X) : les deux arguments doivent être liés au même terme.
-# Résultats attendus :
-
+# Résultats attendus (validé) :
+#   terme2 f(a, a)          avec σ = {X → a}
+#   terme13 f(X, X)         avec σ = {X → *1}
 q6 = fonc("f", 2, [var("X"), var("X")])
 afficher_resultats("f(X, X)", dt.rechercher_terme(q6))
 
 # ── Requête 7 : tête inconnue de l'arbre ──────────────────────────────────────
 # p(a, b)
-# Résultat attendu : aucun résultat.
+# Résultat attendu (validé) : aucun résultat.
 q7 = fonc("p", 2, [cons("a"), cons("b")])
 afficher_resultats("p(a, b)  [tête absente de l'arbre]", dt.rechercher_terme(q7))
 
 # ── Requête 8 : tête h, terme clos ────────────────────────────────────────────
 # h(a, g(b, c))
-# Résultats attendus :
-
+# Résultats attendus (validé) :
+#   terme5 h(a, g(b,c))     avec σ = ∅
+#   terme12 h(X, g(Y,Z))    avec σ = {*1 → a, *2 → b, *3 → c}
 q8 = fonc("h", 2, [cons("a"), fonc("g", 2, [cons("b"), cons("c")])])
 afficher_resultats("h(a, g(b, c))", dt.rechercher_terme(q8))
 
 # ── Requête 9 : terme imbriqué, contrainte de cohérence forte ─────────────────
 # f(g(a, a), a)
-# Résultats attendus :
-
+# Résultats attendus (validé) :
+#   terme10 f(X,Y)          avec σ = {*1 → g a a, *2 → a}
+#   terme11 f(g(X,Y), Z)    avec σ = {*1 → a, *2 → a, *3 → a}
+#   terme14 f(g(X,a), X)    avec σ = {*1 → a}
 q9 = fonc("f", 2, [fonc("g", 2, [cons("a"), cons("a")]), cons("a")])
 afficher_resultats("f(g(a, a), a)", dt.rechercher_terme(q9))
 
 # ── Requête 10 : imbrication profonde, variable libre ─────────────────────────
 # f(g(X, b), Y) : X libre sur le 1er arg de g, Y libre sur le 2e arg de f.
-# Résultats attendus :
-
+# Résultats attendus (validé) :
+#   terme3 f(g(a,b), c)     avec σ = {X → a, Y → c}
+#   terme4 f(g(a,b), a)     avec σ = {X → g a b, Y → a}
+#   terme6 f(X,b)           avec σ = {*1 → g X b, Y → b}
+#   terme8 f(g(X,b), c)     avec σ = {X → *1, Y → c}  
+#   terme9 f(g(a,X), c)     avec σ = {X → a, *1 → b, Y → c}
+#   terme10 f(X,Y)          avec σ = {*1 → g X b, Y → *2}
+#   terme11 f(g(X,Y), Z)    avec σ = {X → *1, *2 → b, Y → *3}
+#   terme13 f(X, X)         avec σ = {*1 → g X b, Y → *1}
 q10 = fonc("f", 2, [fonc("g", 2, [var("X"), cons("b")]), var("Y")])
 afficher_resultats("f(g(X, b), Y)", dt.rechercher_terme(q10))
