@@ -256,7 +256,7 @@ def testRechercherUnifiable():
 
 # testUnifPredicat()
 
-testRechercherUnifiable()
+# testRechercherUnifiable()
 
 
 ############## Test generation aléatoire #######################

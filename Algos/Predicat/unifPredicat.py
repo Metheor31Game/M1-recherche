@@ -9,7 +9,7 @@ from Util.TermStore.SetStore import SetStore
 from Util.TermStore.ListStore import ListStore
 from Util.TermStore.terme import NoeudTerme
 
-from typing import Optional, Dict
+from typing import Optional, Dict, Iterable
 
 
 def unifPredicat(p1: Litteral, p2: Litteral, algo):
@@ -85,6 +85,8 @@ def rechercherUnifiablesSimple(p1: Litteral, preds: TermStore[Litteral], algo: s
         if subst is not None:
             result[p] = subst
     return result
+
+
 
 
 
