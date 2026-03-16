@@ -14,7 +14,7 @@ from Util.TermStore.SetStore import SetStore
 def testUnifPredicat():
     """
     Teste la fonction unifPredicat avec des cas précis et intéressants.
-    Affichage créé par IA
+    Affichage créé par IA(les print etc), exemples et valeur des tests faits par moi
     """
     print("="*60)
     print("TESTS DE LA FONCTION unifPredicat")
