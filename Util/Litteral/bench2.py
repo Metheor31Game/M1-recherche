@@ -1,6 +1,9 @@
+import psutil
+import os
 import time
 from Util.Litteral.Litteral import GenerateurLitteralAleatoire
-from Util.Litteral.traiterLitteraux import traiter_litteraux
+from Util.Litteral.traiterLitterauxDict import traiter_litteraux_dict
+
 
 
 def bench_traitement():
@@ -12,23 +15,29 @@ def bench_traitement():
 
     gen = GenerateurLitteralAleatoire(predicats, ariteMax, profondeurMax)
 
-    tailles = [10000, 20000, 50000] 
+    tailles = [1000, 5000, 10000, 50000]  # différentes tailles de listes de littéraux à tester
 
-    print("====== BENCH UNIFICATION ======")
+    #print("====== BENCH UNIFICATION ======")
 
     for n in tailles:
 
         litteraux = gen.generer_litteraux(n)
 
         #print("\n--- Littéraux générés aléatoirement ---")
-       # for lit in litteraux:
-         #   print(lit)
+        #for lit in litteraux:
+         #  print(lit)
+        
+        process = psutil.Process(os.getpid())
+        ram_avant = process.memory_info().rss
 
         debut = time.perf_counter()
 
-        comparaisons, succes, echec = traiter_litteraux(litteraux)
+        comparaisons, succes, echec = traiter_litteraux_dict(litteraux)
 
         fin = time.perf_counter()
+
+        ram_apres = process.memory_info().rss
+        ram_utilisee = (ram_apres - ram_avant) / (1024*1024)
 
         temps = fin - debut
 
@@ -37,6 +46,7 @@ def bench_traitement():
         print(f"Unifications réussies : {succes}")
         print(f"Échecs : {echec}")
         print(f"Taille = {n} littéraux | Temps = {temps:.6f} sec")
+        print(f"RAM utilisée : {ram_utilisee:.2f} MB")
 
     print("====== FIN BENCH ======")
 

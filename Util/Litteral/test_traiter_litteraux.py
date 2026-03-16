@@ -1,7 +1,7 @@
 import time  
 from Util.TermStore.terme import FabriqueDeTermes
 from Util.Litteral.Litteral import Litteral
-from Util.Litteral.traiterLitteraux import traiter_litteraux
+from Util.Litteral.traiterLitterauxDict import traiter_litteraux_dict
 
 def var(name):
     return FabriqueDeTermes.creer_var(name)
@@ -18,7 +18,7 @@ def executer_test(nom, liste_litteraux):
     print("==============================")
     
     start_time = time.perf_counter() 
-    traiter_litteraux(liste_litteraux)
+    traiter_litteraux_dict(liste_litteraux)
     end_time = time.perf_counter()  
     
     duree = (end_time - start_time) * 1000
