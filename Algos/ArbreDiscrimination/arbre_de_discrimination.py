@@ -191,7 +191,7 @@ class ArbreDeDiscrimination:
         
 
     
-    def _recherche_recursive(self, noeud: NoeudArbreDeDiscrimination, sequence: List[str], index: int, substitution: Dict[str, List[str]], resultats: List[Tuple[Dict[str, List[str]], List[Any]]]) -> None:
+    def _recherche_recursive(self, noeud: NoeudArbreDeDiscrimination, sequence: List[str], index: int, substitution: Dict[str, str], resultats: List[Tuple[Dict[str, str], List[Any]]], debug: bool = False) -> None:
         """
         Fonction récursive pour rechercher des termes unifiables dans l'arbre de discrimination.
 
@@ -199,8 +199,9 @@ class ArbreDeDiscrimination:
             noeud           (NoeudArbreDeDiscrimination)                    : Noeud courant dans l'arbre.
             sequence        (List[str])                                     : Séquence aplatie du terme recherché.
             index           (int)                                           : Index actuel dans la séquence.
-            substitution    (Dict[str, List[str]])                          : Liste des substitutions
+            substitution    (Dict[str, str])                                : Dictionnaire des substitutions
             resultats       (List[Tuple[Dict[str, List[str]], List[Any]]])  : Liste accumulant les pointeurs des termes unifiables trouvés.
+            debug           (bool)                                          : Booléen pour gestion d'affichage de messages de debug
         """
         # Cas de base : toute la séquence a été parcourue
         if index >= len(sequence):
@@ -219,23 +220,76 @@ class ArbreDeDiscrimination:
                 self._recherche_recursive(enfant, sequence, index + 1, substitution, resultats) # On continue à chercher dans cet enfant
             
             # Cas 2 : le symbole de la recherche est une variable
-            #         on peut unifier avec n'importe quel sous-terme
             elif symbole_courant.startswith(NORM_VAR_REQUETE):
-                for sous_terme_seq, dernier_noeud in self._collecter_sous_termes(enfant, 1, []):
+                if debug:
+                    print(f"RECHERCHE POUR {symbole_courant} DANS {sequence}:")
 
-                    # Occur Check
+                # Récupère les sous-termes de l'arbre pour substitution :
+                for sous_terme_seq, dernier_noeud in self._collecter_sous_termes(enfant, 1, []):
+                    if debug:
+                        print(f"SOUS SEQUENCE : {sous_terme_seq}")
+
+                    # Vérification de l'occur check (symbole de la substitution présent dans sous-terme qu'on substitute) :
                     if symbole_courant in sous_terme_seq:
+                        if debug:
+                            print("OCCUR CHECK")
                         continue # Abandon de la branche
 
-                    # Si variable est déjà substituée
+                    # Si variable est déjà substituée :
                     if symbole_courant in substitution:
+                        if debug:
+                            print(f"TERME {symbole_courant} DEJA SUBSTITUE")
+                        
+                        # Si c'est la même substitution déjà enregistrée :
                         if substitution[symbole_courant] == sous_terme_seq:
-                            # On peut continuer si c'est la même substitutio que déjà enregistrée
+                            if debug:
+                                print(f"MEME SUBSTITUTION, ON CONTINU")
+
+                            # On peut continuer la recherche 
                             self._recherche_recursive(dernier_noeud, sequence, index + 1, substitution, resultats)
+                        
+                        # Sinon, il faut tester la compatibilité de la substitution :
+                        else:
+                            if debug:
+                                print(f"NOUVELLE SUBSTITUTION, ON CREE UNE TRANSITIVITE")
+                            
+                            # La variable de la recherche a été substituée à : une fonction, une constante ou une variable 
+
+                            sous_terme = " ".join(sous_terme_seq)
+
+                            # CAS 1 : Variables (commence par *)
+                            if substitution[symbole_courant].startswith(NORM_VAR_ARBRE):
+                                if debug:
+                                    print(f"TERME SUBSTITUE EST UNE VARIABLE, ON L'A SUBSTITUE A SON TOUR")
+
+                                nouvelle_substitution = {**substitution, substitution[symbole_courant]: sous_terme}
+                                self._recherche_recursive(dernier_noeud, sequence, index + 1, nouvelle_substitution, resultats)
+                            
+                            # CAS 2 et 3 : meme comportement puisqu'on ne peut substituer qu'une variable
+                            else:
+                                if debug:
+                                    print(f"TERME SUBSITUTE EST UNE CONSTANTE OU FONCTION")
+                                
+                                # Si le sous-terme est une variable :
+                                if sous_terme.startswith(NORM_VAR_ARBRE):
+                                    if debug:
+                                        print(f"LE SOUS-TERME EST UNE VARIABLE, ON LA SUBSTITUE AU TERME")
+
+                                    # TODO : vérifier occur check avec symbole de base !!!
+                                    
+                                    # Substitution valide
+                                    nouvelle_substitution = {**substitution, sous_terme: substitution[symbole_courant]}
+                                    self._recherche_recursive(dernier_noeud, sequence, index + 1, nouvelle_substitution, resultats)
+                                
+                                # Sinon non.
+
+                    # Nouvelle substitution :
                     else:
-                        # Nouvelle substitution dans une copie à laquelle on ajoute la nouvelle
-                        # On continue sur celle-ci
-                        nouvelle_substitution = {**substitution, symbole_courant: sous_terme_seq}
+                        if debug:
+                            print(f"NOUVELLE SUBSITUTION !")
+
+                        sous_terme = " ".join(sous_terme_seq)
+                        nouvelle_substitution = {**substitution, symbole_courant: sous_terme}
                         self._recherche_recursive(dernier_noeud, sequence, index + 1, nouvelle_substitution, resultats)
 
             # Cas 3 : le symbole de l'enfant est une variable
@@ -399,6 +453,62 @@ if __name__ == "__main__":
 
     dt = ArbreDeDiscrimination()
 
+    terme1 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("Y"),
+        FabriqueDeTermes.creer_var("Z")
+    ])
+
+    terme2 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("Y"),
+        FabriqueDeTermes.creer_cons("a")
+    ])
+
+    terme3 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_var("X"),
+            FabriqueDeTermes.creer_cons("a")
+        ]),
+        FabriqueDeTermes.creer_var("Y")
+    ])
+
+    terme4 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_var("Z"),
+            FabriqueDeTermes.creer_cons("a")
+        ]),
+        FabriqueDeTermes.creer_var("Y")
+    ])
+
+    dt.inserer(terme1, "terme1 : f(Y, Z)")
+    dt.inserer(terme2, "terme2 : f(Y, a)")
+    dt.inserer(terme3, "terme3 : f(g(X, a), Y)")
+    dt.inserer(terme4, "terme4 : f(g(Z, a), Y)")
+
+    terme_recherche = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("X"),
+        FabriqueDeTermes.creer_var("X")
+    ])
+
+    dt.affichage_arbre()
+
+    print("\nRecherche de termes unifiables avec : f(X, X)")
+    resultats = dt.rechercher_terme(terme_recherche)
+    if not resultats:
+        print("  Aucun terme unifiable trouvé.")
+    else:
+        for i, res in enumerate(resultats, 1):
+            print(f"\n  Résultat {i} :")
+            print(f"    Pointeurs    : {res.pointeurs}")
+            if res.substitution:
+                print(f"    Substitution :")
+                for var, seq in res.substitution.items():
+                    print(f"      {var}  →  {''.join(seq)}")
+            else:
+                print(f"    Substitution : ∅  (termes identiques)")
+
+
+    """
+
     # Exemple du papier "Term Indexing" + unification impossible avec f(X, X) :
 
     # f(g(a, X), c)
@@ -483,3 +593,4 @@ if __name__ == "__main__":
                     print(f"      {var}  →  {' '.join(seq)}")
             else:
                 print(f"    Substitution : ∅  (termes identiques)")
+    """
