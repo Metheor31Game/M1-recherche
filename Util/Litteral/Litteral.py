@@ -6,9 +6,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
 from Util.TermStore.terme import NoeudTerme
 from Util.TermStore.terme import GenerateurDeTermesAleatoires
+from Util.TermStore.terme import FabriqueDeTermes
 
 """
-le code a entierement été fait par moi, l'IA a aidé pour les docstrings
+le code a entierement été fait par moi, l'IA a aidé pour les docstrings, et comment parser
 
 Proposition pour littéraux : 
 Predicat (nom)
@@ -35,6 +36,105 @@ class Litteral:
         self.enfants = enfants  # les termes sont les enfants du nœud
         self.sign = sign
         self.arity = len(enfants)
+
+    @staticmethod
+    def _split_args(args_str: str) -> List[str]:
+        """Découpe les arguments d'un terme/littéral en tenant compte de l'imbrication."""
+        args = []
+        courant = []
+        profondeur = 0
+
+        for char in args_str:
+            if char == ',' and profondeur == 0:
+                arg = "".join(courant).strip()
+                if arg:
+                    args.append(arg)
+                courant = []
+                continue
+
+            if char == '(':
+                profondeur += 1
+            elif char == ')':
+                profondeur -= 1
+                if profondeur < 0:
+                    raise ValueError("Parentheses non equilibrees dans la chaine.")
+
+            courant.append(char)
+
+        if profondeur != 0:
+            raise ValueError("Parentheses non equilibrees dans la chaine.")
+
+        dernier = "".join(courant).strip()
+        if dernier:
+            args.append(dernier)
+
+        return args
+
+    @staticmethod
+    def _parse_terme(terme_str: str) -> NoeudTerme:
+        """Transforme une chaine en NoeudTerme (const, var ou fonction)."""
+        terme_str = terme_str.strip()
+        if not terme_str:
+            raise ValueError("Terme vide.")
+
+        if '(' not in terme_str:
+            if terme_str[0].isupper():
+                return FabriqueDeTermes.creer_var(terme_str)
+            return FabriqueDeTermes.creer_cons(terme_str)
+
+        if not terme_str.endswith(')'):
+            raise ValueError(f"Terme mal forme: {terme_str}")
+
+        idx = terme_str.find('(')
+        nom_fonc = terme_str[:idx].strip()
+        contenu = terme_str[idx + 1:-1].strip()
+        if not nom_fonc:
+            raise ValueError(f"Fonction sans nom: {terme_str}")
+
+        enfants = []
+        if contenu:
+            enfants = [Litteral._parse_terme(arg) for arg in Litteral._split_args(contenu)]
+
+        return FabriqueDeTermes.creer_fonc(nom_fonc, len(enfants), enfants)
+
+    @staticmethod
+    def from_string(litteral_str: str) -> 'Litteral':
+        """
+        Cree un objet Litteral a partir d'une chaine.
+
+        Exemples:
+            - P(f(x,y), g(a))
+            - ¬Q(X)
+            - R(a)
+        """
+        s = litteral_str.strip()
+        if not s:
+            raise ValueError("Litteral vide.")
+
+        sign = True
+        if s[0] == '¬':
+            sign = False
+            s = s[1:].strip()
+
+        if '(' not in s:
+            predicat = s
+            enfants = []
+            return Litteral(predicat, enfants, sign)
+
+        if not s.endswith(')'):
+            raise ValueError(f"Litteral mal forme: {litteral_str}")
+
+        idx = s.find('(')
+        predicat = s[:idx].strip()
+        if not predicat:
+            raise ValueError(f"Predicat invalide: {litteral_str}")
+
+        contenu = s[idx + 1:-1].strip()
+        enfants = []
+        if contenu:
+            enfants = [Litteral._parse_terme(arg) for arg in Litteral._split_args(contenu)]
+
+        return Litteral(predicat, enfants, sign)
 
     def __repr__(self):
         """
