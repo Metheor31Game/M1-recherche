@@ -1,4 +1,5 @@
 import os
+from Util.Litteral.Litteral import Litteral
 
 
 def serialiser(data, filename):
@@ -36,7 +37,7 @@ def deserialiser(filename):
         filename: Le nom du fichier dans Serialisation/Output/
 
     Returns:
-        list[str]: Liste de prédicats sous forme de chaînes.
+        list[Litteral]: Liste de prédicats sous forme d'objets Litteral.
     """
     outputDir = os.path.join(os.path.dirname(__file__), "Output")
     filePath = os.path.join(outputDir, filename)
@@ -50,5 +51,6 @@ def deserialiser(filename):
     if not contenu:
         return []
 
-    listPredicat = [pred.strip() for pred in contenu.split(".") if pred.strip()]
+    listPredicatStr = [pred.strip() for pred in contenu.split(".") if pred.strip()]
+    listPredicat = [Litteral.from_string(pred) for pred in listPredicatStr]
     return listPredicat

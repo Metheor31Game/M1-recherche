@@ -143,6 +143,18 @@ class Litteral:
         terms_str = ", ".join(repr(t) for t in self.enfants)
         signe = "" if self.sign else "¬"
         return f"{signe}{self.predicat}({terms_str})"
+
+    def __eq__(self, obj: object) -> bool:
+        if not isinstance(obj, Litteral):
+            return False
+        return (
+            self.predicat == obj.predicat
+            and self.sign == obj.sign
+            and self.enfants == obj.enfants
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.predicat, self.sign, tuple(self.enfants)))
     
     def afficher_arbre(self, indent: str = "", est_dernier: bool = True) -> str:
         """

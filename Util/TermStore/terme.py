@@ -42,6 +42,18 @@ class NoeudTerme:
             # pour recréer la représentation d'une fonction
             representation_enfants = ", ".join(repr(enfant) for enfant in self.enfants)
             return f"{self.nom}({representation_enfants})"
+
+    def __eq__(self, obj: object) -> bool:
+        if not isinstance(obj, NoeudTerme):
+            return False
+        return (
+            self.nom == obj.nom
+            and self.etiquette == obj.etiquette
+            and self.enfants == obj.enfants
+        )
+
+    def __hash__(self) -> int:
+        return hash((self.nom, self.etiquette, tuple(self.enfants)))
         
         
 class FabriqueDeTermes:
