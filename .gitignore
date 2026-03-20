@@ -1,3 +1,6 @@
+#serialisation
+Util/Serialisation/Output/
+
 # Python
 __pycache__/
 *.py[cod]

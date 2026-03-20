@@ -1,0 +1,4 @@
+
+def testSerialisation():
+    predList = []
+    return

@@ -9,6 +9,7 @@ from Util.TermStore.SetStore import SetStore
 from Algos.Predicat.unifPredicat import rechercherUnifiablesSimple
 from Util.Litteral.Litteral import Litteral
 from Util.Litteral.Litteral import GenerateurLitteralAleatoire
+from Util.Serialisation.serialisation import serialiser
 
 def benchmark(n, predList):
     #TODO : améliorer pour que je puisse directement commencer avec le store que je veux, pour optimiser
@@ -62,9 +63,23 @@ def benchmark(n, predList):
     print(f"Algo avec List exécuté {nb_repetitions}x, temps moyen : {temps_moyen}")
 
     return result
+
+def test_Serialise(n, predList):
+    t0gen = time.perf_counter()
+    generateur = GenerateurLitteralAleatoire(predList, 1, 1)
+    litteralList = generateur.generer_litteraux(n+1)
+    t1gen = time.perf_counter()
+    print("Temps de génération : ", t1gen - t0gen)
+
+    t0ser = time.perf_counter()
+    serialiser(litteralList, "test")
+    t1ser = time.perf_counter()
+    print("Temps de serialisation : ", t1ser - t0ser)
+
     
 
 
 if __name__ == "__main__":
     predList = ["P", "Q", "R"]
-    benchmark(1000000, predList)
+    #benchmark(1000000, predList)
+    test_Serialise(10000000, predList)
