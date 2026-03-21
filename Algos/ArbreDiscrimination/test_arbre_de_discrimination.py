@@ -22,17 +22,17 @@ def afficher_resultats(label: str, resultats) -> None:
     print(f"  Requête : {label}")
     print(SEPARATEUR)
     if not resultats:
-        print("  → Aucun terme unifiable trouvé.")
-        return
-    for i, res in enumerate(resultats, 1):
-        print(f"\n  Résultat {i} :")
-        print(f"    Termes  : {res.pointeurs}")
-        if res.substitution:
-            print(f"    σ :")
-            for var, seq in res.substitution.items():
-                print(f"      {var}  →  {' '.join(seq)}")
-        else:
-            print(f"    σ : ∅  (termes identiques ou variables libres uniquement)")
+        print("  Aucun terme unifiable trouvé.")
+    else:
+        for i, res in enumerate(resultats, 1):
+            print(f"\n  Résultat {i} :")
+            print(f"    Pointeurs    : {res.pointeurs}")
+            if res.substitution:
+                print(f"    Substitution :")
+                for var, terme_subst in res.substitution.items():
+                    print(f"      {var}  →  {terme_subst}")
+            else:
+                print(f"    Substitution : ∅  (termes identiques)")
 
 #==================================================================
 #
