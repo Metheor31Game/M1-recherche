@@ -5,12 +5,17 @@ racine_projet = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.append(os.path.abspath(racine_projet))
 
 from Util.TermStore.terme import NoeudTerme, ETIQUETTE_CONS, ETIQUETTE_VAR
+from Util.Litteral.Litteral import Litteral
 from typing import List, Dict, Any, Optional, Tuple, NamedTuple
 
 
 # Normalisation différente selon si var dans l'arbre ou dans le terme recherché 
 NORM_VAR_ARBRE = "*"    # Exemple :  f(X, Y) -> ['f', '*1', '*2']
 NORM_VAR_REQUETE = "?"  # Exemple :  f(X, Y) -> ['f', '?1', '?2']
+
+# Préfixe pour signe prédicat
+SYMBOLE_PREDICAT_POSITIF = "+"
+SYMBOLE_PREDICAT_NEGATIF = "¬"
 
 # Types ========================================================
 
@@ -24,9 +29,9 @@ class ResultatRecherche(NamedTuple):
     Résultat d'une recherche de termes unifiables dans l'arbre de discrimination.
 
     Attributes:
-        substitution    (Dict[str, NoeudTerme])  :   Substitution associant les noms des varibales originaux
-                                                    du terme de recherche à leur séquence de symboles en notation préfixe.
-        pointeurs       (List[Any])             :   Pointeurs associés au terme unifiable trouvé dans l'arbre    
+        substitution    (Dict[str, NoeudTerme])     :   Substitution associant les noms des varibales originaux
+                                                            du terme de recherche à leur séquence de symboles en notation préfixe.
+        pointeurs       (List[Any])                 :   Pointeurs associés au terme unifiable trouvé dans l'arbre    
 
     """
     substitution: Dict[str, NoeudTerme]
@@ -35,13 +40,13 @@ class ResultatRecherche(NamedTuple):
 class PointeurFeuille(NamedTuple):
     """
     Données stockées aux feuilles.
-    Utile pour valider une substitution candidates, on garde le terme stocké.
+    Utile pour valider une substitution candidates, on garde le prédicat stocké.
 
     Attributes:
-        terme       (NoeudTerme)    : Terme original inséré
-        pointeur    (Any)           : Pointeur associé à ce terme
+        predicat    (Litteral)      :   Prédicat original inséré
+        pointeur    (Any)           :   Pointeur associé à ce terme
     """
-    terme: NoeudTerme
+    predicat: Litteral
     pointeur: Any
 
 # Structure Arbre ========================================================
@@ -75,7 +80,6 @@ class ArbreDeDiscrimination:
     Attributes:
         racine ('NoeudArbreDeDiscrimination')   :   Noeud racine de l'arbre. 'None' par défaut
         arites (Dict[str, int])                 :   Dictionnaire pour stocker l'arité de chaque symbole dans l'arbre
-        taille (int)                            :   Taille de l'arbre  
     """
     
     def __init__(self) -> None:
@@ -84,68 +88,65 @@ class ArbreDeDiscrimination:
 
     # Insertion ----------------------------------------------------
 
-    def inserer(self, terme: NoeudTerme, pointeur: Any) -> None:
+    def inserer(self, predicat: Litteral, pointeur: Any) -> None:
         """
-        Insère un terme dans l'arbre de discrimination avec un pointeur associé.
+        Insère un prédicat dans l'arbre de discrimination avec un pointeur associé.
 
-        Le terme est parcouru en ordre préfixe pour créer un seul chemin dans l'arbre.
-        Par exemple, f(X, g(Y)) crée le chemin : f -> *1 -> g -> *2
+        Le prédicat est parcouru en ordre préfixe pour créer un seul chemin dans l'arbre.
+        Par exemple, P(f(X, g(Y)), X) crée le chemin : P -> f -> *1 -> g -> *2 -> *1
 
         Args:
-            terme       (NoeudTerme)    :   Le terme à insérer dans l'arbre.
-            pointeur    (Any)           :    Un pointeur à associer avec ce terme.
+            prédicat    (Litteral)      :   Le prédicat à insérer dans l'arbre
+            pointeur    (Any)           :   Un pointeur à associer avec ce prédicat.
         """
 
-        # On ajoute au dictionnaire des arités les arités des nouveaux symboles :
-        self._mapper_arite(terme)
-
         # Mise à plat du terme en une séquence de symboles issue d'un parcours préfixe
-        # On normalise aussi les variables :
+        # On normalise aussi les variables  :
         var_map: Dict[str, str] = {}
-        sequence = self._mise_a_plat(terme, var_map, NORM_VAR_ARBRE)
+        predicat_mis_a_plat = self._mise_a_plat_predicat(predicat, var_map, NORM_VAR_ARBRE)
         
         # Insertion dans l'arbre :
         noeud_courant = self.racine
-        for symbole in sequence:
+        for symbole in predicat_mis_a_plat:
             if symbole not in noeud_courant.enfants:
                 noeud_courant.enfants[symbole] = NoeudArbreDeDiscrimination(symbole)
             noeud_courant = noeud_courant.enfants[symbole]
         
         # Ajout du pointeur au noeud feuille :
         if not any(e.pointeur == pointeur for e in noeud_courant.pointeurs):
-            noeud_courant.pointeurs.append(PointeurFeuille(terme=terme, pointeur=pointeur))
+            noeud_courant.pointeurs.append(PointeurFeuille(predicat=predicat, pointeur=pointeur))
 
     # Recherche ----------------------------------------------------
 
-    def rechercher_terme(self, terme: NoeudTerme) -> List[ResultatRecherche]:
+    def rechercher(self, predicat: Litteral) -> List[ResultatRecherche]:
         """
-        Recherche les termes unifiables avec le terme donné dans l'arbre de discrimination.
+        Recherche les prédicats unifiables avec le prédicat donné dans l'arbre de discrimination.
         
-        Pour chaque terme unifiable, on retourne la substitution ainsi que le pointeur associé.
+        Pour chaque prédicat unifiable, on retourne la substitution ainsi que le pointeur associé.
         Ainsi on sait comment instancier les variables afin de réaliser l'unification.
 
         Args:
-            terme (NoeudTerme)      :   Le terme à rechercher.
+            predicat    (Litteral)  :   Le prédicat que l'on souhaite unifier à notre arbre.
         Returns:
             List[ResultatRecherche] :   Liste des résultats (comprenant donc pointeur et substitution)
         """
-        # On ajoute les symboles du terme recherché au dictionnaire :
-        self._mapper_arite(terme)
 
         # Mise à plat du terme recherché :
         var_map: Dict[str, str] = {}
-        terme_mis_a_plat = self._mise_a_plat(terme, var_map, NORM_VAR_REQUETE)
+        predicat_mis_a_plat = self._mise_a_plat_predicat(predicat, var_map, NORM_VAR_REQUETE)
         
         # Phase de filtrage :
         # On cherche juste les chemins valide par rapport au terme demandé
         candidats: List[PointeurFeuille] = []
-        self._collecter_candidats(self.racine, terme_mis_a_plat, 0, candidats)
+        self._collecter_candidats(self.racine, predicat_mis_a_plat, 0, candidats)
+
+        print(candidats)
 
         # Phase d'unification :
         # C'est ici qu'on valide les substitutions trouvées par la phase de filtrage
         resultats = []
         for pointeur in candidats:
-            substitution = self._unifier(terme, pointeur.terme)
+            substitution = self._unifier_predicats(predicat, pointeur.predicat)
             if substitution is not None:
                 resultats.append(ResultatRecherche(
                     substitution=substitution,
@@ -175,8 +176,21 @@ class ArbreDeDiscrimination:
         
         symbole_courant = sequence[index] # Récupération du symbole courant de la recherche
 
+        symbole_a_chercher = None
+        if symbole_courant == SYMBOLE_PREDICAT_NEGATIF:
+            symbole_a_chercher = SYMBOLE_PREDICAT_POSITIF
+        elif symbole_courant == SYMBOLE_PREDICAT_POSITIF:
+            symbole_a_chercher = SYMBOLE_PREDICAT_NEGATIF
+
         # Parcours des enfants :
         for enfant in noeud.enfants.values():
+
+            # Pour prédicat -> chercher signe opposé :
+            if symbole_a_chercher is not None:
+                if enfant.symbole == symbole_a_chercher:
+                    self._collecter_candidats(enfant, sequence, index + 1, candidats)
+                else:
+                    continue
 
             # Cas 1 : les symboles sont identiques
             if symbole_courant == enfant.symbole:
@@ -201,18 +215,37 @@ class ArbreDeDiscrimination:
 
     # Unification ----------------------------------------------------
 
-    def _unifier(self, terme1: NoeudTerme, terme2: NoeudTerme) -> Optional[Dict[str, NoeudTerme]]:
+    def _unifier_predicats(self, predicat_recherche: Litteral, predicat_candidat: Litteral) -> Optional[Dict[str, NoeudTerme]]:
+        """
+        Surcouche de la fonction _unifier_termes pour les prédicats.
+        On fait maintenant partager la substitution entre les termes du même prédicat.
+
+        Args:
+            predicat_recherche, predicat_candidat (Litteral)    :   Les prédicat à unifier.
+
+        Returns:
+            Optional[Dict[str, NoeudTerme]]                     :   La substitution si l'unification réussi, None sinon.
+        """
+        substitution: Dict[str, NoeudTerme] = {}
+        
+        for terme1, terme2 in zip(predicat_recherche.enfants, predicat_candidat.enfants):
+            if not self._unifier_termes(terme1, terme2, substitution):
+                return None
+            
+        return substitution
+        
+
+    def _unifier_termes(self, terme1: NoeudTerme, terme2: NoeudTerme, substitution: Dict[str, NoeudTerme]) -> bool:
         """
         Calcule le MGU de deux termes via Robinson (peut-etre qu'il faut directement utilisé l'algo de matheo, plus préférable ?)
 
         Args:
-            terme1, terme2 (NoeudTerme): Les termes à unifier.
+            terme1, terme2 (NoeudTerme)         :   Les termes à unifier.
 
         Returns:
-            Optional[Dict[str, NoeudTerme]]: La substitution si l'unification réussi, None sinon.
+            Optional[Dict[str, NoeudTerme]]     :   La substitution si l'unification réussi, None sinon.
         """
         pile: List[Tuple[NoeudTerme, NoeudTerme]] = [(terme1, terme2)]
-        substitution: Dict[str, NoeudTerme] = {}
 
         while pile:
             a, b = pile.pop()
@@ -228,14 +261,14 @@ class ArbreDeDiscrimination:
             if a.etiquette == ETIQUETTE_VAR:
                 if self._apparait_dans(a.nom, b, substitution):
                     # Occur check
-                    return None
+                    return False
                 substitution[a.nom] = b
 
             # Cas 3 : b est une variable
             elif b.etiquette == ETIQUETTE_VAR:
                 if self._apparait_dans(b.nom, a, substitution):
                     # Occur check
-                    return None
+                    return False
                 substitution[b.nom] = a
 
             # Cas 4 : même fonction ou constante et même arité
@@ -246,9 +279,9 @@ class ArbreDeDiscrimination:
 
             # Cas 5 : echec
             else:
-                return None
+                return False
             
-        return substitution
+        return True
     
     def _transitivite(self, terme: NoeudTerme, substitution: Dict[str, NoeudTerme]) -> NoeudTerme:
         """
@@ -303,29 +336,36 @@ class ArbreDeDiscrimination:
         return all(self._termes_egaux(enfant1, enfant2) for enfant1, enfant2 in zip(terme1.enfants, terme2.enfants))
 
     # Autres fonctions internes ----------------------------------------------------
-
-    def _mapper_arite(self, terme: NoeudTerme) -> None:
+    
+    def _mise_a_plat_predicat(self, predicat: Litteral, var_map: Dict[str, str], prefixe: str) -> List[str]:
         """
-        Récupère les arités de l'ensemble des symboles du terme donné
-        et les ajoutes au dictionnaire des arités de la structure.
+        Surcouche de la fonction _mise_a_plat_terme pour les prédicats.
 
         Args:
-            terme (NoeudTerme)  :   Le terme a traiter
+            predicat    (Litteral)      : Le prédicat à mettre à plat.
+            var_map     (Dict[str, str]): Mapping de normalisation des variables.
+            prefixe     (str)           : Préfixe pour les variables normalisées (* pour arbre, ? pour query).
+
+        Returns:
+            List[str]                   : La séquence correspondant au prédicat mis à plat.
         """
-        # Pour constante et variable :
-        if terme.etiquette in (ETIQUETTE_CONS, ETIQUETTE_VAR):
-            if terme.nom not in self.arites:
-                self.arites[terme.nom] = 0 # On met à 0
-        # Pour fonction :
-        else: 
-            if terme.nom not in self.arites:
-                self.arites[terme.nom] = int(terme.etiquette) # L'arité est stockée dans l'étiquette
-            # Recherche dans les arguments de la fonction :
-            for sous_terme in terme.enfants:
-                self._mapper_arite(sous_terme)
+        
+        # Initialisation de la séquence vide :
+        resultat = []
 
+        # Ajout du signe et du symbole du prédicat à la séquence :
+        resultat.extend([SYMBOLE_PREDICAT_POSITIF if predicat.sign else SYMBOLE_PREDICAT_NEGATIF, predicat.predicat])
 
-    def _mise_a_plat(self, terme: NoeudTerme, var_map: Dict[str, str], prefixe: str) -> List[str]:
+        self.arites[predicat.predicat] = predicat.arity
+
+        # Mise à plat des termes du prédicat et ajout à la séquence :
+        for terme in predicat.enfants:
+            print(resultat)
+            resultat.extend(self._mise_a_plat_terme(terme, var_map, prefixe))
+
+        return resultat
+
+    def _mise_a_plat_terme(self, terme: NoeudTerme, var_map: Dict[str, str], prefixe: str) -> List[str]:
         """
         Mise à plat d'un terme en une séquence de symboles en ordre préfixe.
         Les variables sont normalisées en *1, *2, etc.
@@ -344,18 +384,28 @@ class ArbreDeDiscrimination:
         
         # Ajout du symbole du terme courant :
         if terme.etiquette == ETIQUETTE_VAR:
-            # Si c'est une variable, on la normalise :
+            # On map l'arité de la variable :
+            if terme.nom not in self.arites:
+                self.arites[terme.nom] = 0 # On met à 0
+            # On normalise :
             if terme.nom not in var_map: # Nouvelle variable rencontrée
                 var_map[terme.nom] = f"{prefixe}{len(var_map) + 1}"
             resultat.append(var_map[terme.nom])
-        else:
-            # Constante ou fonction, on ajoute le nom tel quel :
+        elif terme.etiquette == ETIQUETTE_CONS:
+            # On map l'arité de la variable :
+            if terme.nom not in self.arites:
+                self.arites[terme.nom] = 0 # On met à 0
+            # Constante, on ajoute le nom tel quel
             resultat.append(terme.nom)
-        
+        else:        
+            # On map l'arité de la fonction
+            if terme.nom not in self.arites:
+                self.arites[terme.nom] = int(terme.etiquette) # L'arité est stockée dans l'étiquette
+            # Fonction, on ajoute le nom tel quel :
+            resultat.append(terme.nom)
             # Ajout des enfants :
-            if terme.etiquette not in (ETIQUETTE_CONS, ETIQUETTE_VAR):
-                for enfant in terme.enfants:
-                    resultat.extend(self._mise_a_plat(enfant, var_map, prefixe))
+            for enfant in terme.enfants:
+                resultat.extend(self._mise_a_plat_terme(enfant, var_map, prefixe))
         
         return resultat
     
@@ -495,6 +545,7 @@ class ArbreDeDiscrimination:
 # Exemple d'utilisation
 if __name__ == "__main__":
     from Util.TermStore.terme import FabriqueDeTermes
+    from Util.Litteral.Litteral import Litteral
  
     dt = ArbreDeDiscrimination()
  
@@ -520,24 +571,38 @@ if __name__ == "__main__":
         ]),
         FabriqueDeTermes.creer_var("Y")
     ])
+
+    predicat1 = Litteral(predicat="P", enfants=[terme1, terme3], sign = True)
+    predicat2 = Litteral(predicat="P", enfants=[terme2, terme4], sign = False)
+    predicat3 = Litteral(predicat="P", enfants=[terme1, terme4], sign = True)
  
-    dt.inserer(terme1, "terme1 : f(Y, Z)")
-    dt.inserer(terme2, "terme2 : f(Y, a)")
-    dt.inserer(terme3, "terme3 : f(g(X, a), Y)")
-    dt.inserer(terme4, "terme4 : f(g(Z, a), Y)")
- 
-    terme_recherche = FabriqueDeTermes.creer_fonc("f", 2, [
+    dt.inserer(predicat1, f"predicat1 : {SYMBOLE_PREDICAT_POSITIF}P(f(Y, Z), f(g(X, a), Y))")
+    dt.inserer(predicat2, f"predicat2 : {SYMBOLE_PREDICAT_NEGATIF}P(f(Y, a), f(g(Z, a), Y))")
+    dt.inserer(predicat3, f"predicat3 : {SYMBOLE_PREDICAT_POSITIF}P(f(Y, Z), f(g(Z, a), Y))")
+   
+    
+    dt.affichage_arbre()
+
+    terme5 = FabriqueDeTermes.creer_fonc("f", 2, [
         FabriqueDeTermes.creer_var("X"),
         FabriqueDeTermes.creer_var("X")
     ])
+    
+    terme6 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_cons("a"),
+            FabriqueDeTermes.creer_var("X")
+        ]),
+        FabriqueDeTermes.creer_var("Y")
+    ])
+
+    predicat_recherche = Litteral(predicat="P", enfants=[terme5, terme6], sign = False)
  
-    dt.affichage_arbre()
- 
-    print("\nRecherche de termes unifiables avec : f(X, X)")
-    resultats = dt.rechercher_terme(terme_recherche)
+    print(f"\nRecherche de termes unifiables avec : {SYMBOLE_PREDICAT_NEGATIF}P(f(X, X), f(g(a, X), Y))")
+    resultats = dt.rechercher(predicat_recherche)
  
     if not resultats:
-        print("  Aucun terme unifiable trouvé.")
+        print("  Aucun prédicat unifiable trouvé.")
     else:
         for i, res in enumerate(resultats, 1):
             print(f"\n  Résultat {i} :")
@@ -548,4 +613,3 @@ if __name__ == "__main__":
                     print(f"      {var}  →  {terme_subst}")
             else:
                 print(f"    Substitution : ∅  (termes identiques)")
- 
