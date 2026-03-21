@@ -81,7 +81,6 @@ class ArbreDeDiscrimination:
     def __init__(self) -> None:
         self.racine = NoeudArbreDeDiscrimination()
         self.arites: Dict[str, int] = {} # Stocker les arités de tous les symboles
-        self.taille = 0 # Stock la taille
 
     # Insertion ----------------------------------------------------
 
@@ -115,7 +114,6 @@ class ArbreDeDiscrimination:
         # Ajout du pointeur au noeud feuille :
         if not any(e.pointeur == pointeur for e in noeud_courant.pointeurs):
             noeud_courant.pointeurs.append(PointeurFeuille(terme=terme, pointeur=pointeur))
-            self.taille +=1
 
     # Recherche ----------------------------------------------------
 
