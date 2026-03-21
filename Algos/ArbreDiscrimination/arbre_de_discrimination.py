@@ -1,0 +1,553 @@
+import sys
+import os
+
+racine_projet = os.path.join(os.path.dirname(__file__), "..", "..")
+sys.path.append(os.path.abspath(racine_projet))
+
+from Util.TermStore.terme import NoeudTerme, ETIQUETTE_CONS, ETIQUETTE_VAR
+from typing import List, Dict, Any, Optional, Tuple, NamedTuple
+
+
+# Normalisation différente selon si var dans l'arbre ou dans le terme recherché 
+NORM_VAR_ARBRE = "*"    # Exemple :  f(X, Y) -> ['f', '*1', '*2']
+NORM_VAR_REQUETE = "?"  # Exemple :  f(X, Y) -> ['f', '?1', '?2']
+
+# Types ========================================================
+
+class ResultatRecherche(NamedTuple):
+    """
+    ╔════════════════════════════════════════════════════════════════╗
+    ║                                                                ║
+    ║       Format de résultat proposé par IA (ClaudeCode).          ║
+    ║                                                                ║
+    ╚════════════════════════════════════════════════════════════════╝
+    Résultat d'une recherche de termes unifiables dans l'arbre de discrimination.
+
+    Attributes:
+        substitution    (Dict[str, NoeudTerme])  :   Substitution associant les noms des varibales originaux
+                                                    du terme de recherche à leur séquence de symboles en notation préfixe.
+        pointeurs       (List[Any])             :   Pointeurs associés au terme unifiable trouvé dans l'arbre    
+
+    """
+    substitution: Dict[str, NoeudTerme]
+    pointeurs: List[Any]
+
+class PointeurFeuille(NamedTuple):
+    """
+    Données stockées aux feuilles.
+    Utile pour valider une substitution candidates, on garde le terme stocké.
+
+    Attributes:
+        terme       (NoeudTerme)    : Terme original inséré
+        pointeur    (Any)           : Pointeur associé à ce terme
+    """
+    terme: NoeudTerme
+    pointeur: Any
+
+# Structure Arbre ========================================================
+
+class NoeudArbreDeDiscrimination:
+    """
+    Classe d'un noeud dans l'arbre de discrimination.
+
+    Attributes:
+        symbole     (Optional[str])                             :   Symbole représentant le noeud (ex : X, f, a, etc.). 
+                                                                    'None' pour le noeud racine.
+        enfants     (Dict[str, 'NoeudArbreDeDiscrimination'])   :   Noeuds enfants, indexés par leur symbole.
+        pointeurs   (List[PointeurFeuille])                     :   Pointeurs vers les termes associés à ce noeud.
+    """
+    def __init__(self, symbole: Optional[str] = None) -> None:
+        self.symbole = symbole # Symbole du noeud (None pour la racine)
+        self.enfants: Dict[str, NoeudArbreDeDiscrimination] = {}
+        self.pointeurs: List[PointeurFeuille] = []
+
+# Arbre de Discrimination ========================================================
+
+class ArbreDeDiscrimination:
+    """
+    Arbre de discrimination pour stocker des termes. 
+    Permet la recherche de termes unifiables.
+
+    Les termes sont représentés en notation préfixe aplatie.
+    
+    Chaque chemin racine -> feuille encore un terme.
+    
+    Attributes:
+        racine ('NoeudArbreDeDiscrimination')   :   Noeud racine de l'arbre. 'None' par défaut
+        arites (Dict[str, int])                 :   Dictionnaire pour stocker l'arité de chaque symbole dans l'arbre
+        taille (int)                            :   Taille de l'arbre  
+    """
+    
+    def __init__(self) -> None:
+        self.racine = NoeudArbreDeDiscrimination()
+        self.arites: Dict[str, int] = {} # Stocker les arités de tous les symboles
+        self.taille = 0 # Stock la taille
+
+    # Insertion ----------------------------------------------------
+
+    def inserer(self, terme: NoeudTerme, pointeur: Any) -> None:
+        """
+        Insère un terme dans l'arbre de discrimination avec un pointeur associé.
+
+        Le terme est parcouru en ordre préfixe pour créer un seul chemin dans l'arbre.
+        Par exemple, f(X, g(Y)) crée le chemin : f -> *1 -> g -> *2
+
+        Args:
+            terme       (NoeudTerme)    :   Le terme à insérer dans l'arbre.
+            pointeur    (Any)           :    Un pointeur à associer avec ce terme.
+        """
+
+        # On ajoute au dictionnaire des arités les arités des nouveaux symboles :
+        self._mapper_arite(terme)
+
+        # Mise à plat du terme en une séquence de symboles issue d'un parcours préfixe
+        # On normalise aussi les variables :
+        var_map: Dict[str, str] = {}
+        sequence = self._mise_a_plat(terme, var_map, NORM_VAR_ARBRE)
+        
+        # Insertion dans l'arbre :
+        noeud_courant = self.racine
+        for symbole in sequence:
+            if symbole not in noeud_courant.enfants:
+                noeud_courant.enfants[symbole] = NoeudArbreDeDiscrimination(symbole)
+            noeud_courant = noeud_courant.enfants[symbole]
+        
+        # Ajout du pointeur au noeud feuille :
+        if not any(e.pointeur == pointeur for e in noeud_courant.pointeurs):
+            noeud_courant.pointeurs.append(PointeurFeuille(terme=terme, pointeur=pointeur))
+            self.taille +=1
+
+    # Recherche ----------------------------------------------------
+
+    def rechercher_terme(self, terme: NoeudTerme) -> List[ResultatRecherche]:
+        """
+        Recherche les termes unifiables avec le terme donné dans l'arbre de discrimination.
+        
+        Pour chaque terme unifiable, on retourne la substitution ainsi que le pointeur associé.
+        Ainsi on sait comment instancier les variables afin de réaliser l'unification.
+
+        Args:
+            terme (NoeudTerme)      :   Le terme à rechercher.
+        Returns:
+            List[ResultatRecherche] :   Liste des résultats (comprenant donc pointeur et substitution)
+        """
+        # On ajoute les symboles du terme recherché au dictionnaire :
+        self._mapper_arite(terme)
+
+        # Mise à plat du terme recherché :
+        var_map: Dict[str, str] = {}
+        terme_mis_a_plat = self._mise_a_plat(terme, var_map, NORM_VAR_REQUETE)
+        
+        # Phase de filtrage :
+        # On cherche juste les chemins valide par rapport au terme demandé
+        candidats: List[PointeurFeuille] = []
+        self._collecter_candidats(self.racine, terme_mis_a_plat, 0, candidats)
+
+        # Phase d'unification :
+        # C'est ici qu'on valide les substitutions trouvées par la phase de filtrage
+        resultats = []
+        for pointeur in candidats:
+            substitution = self._unifier(terme, pointeur.terme)
+            if substitution is not None:
+                resultats.append(ResultatRecherche(
+                    substitution=substitution,
+                    pointeurs=[pointeur.pointeur]
+                ))
+        
+        return resultats
+    
+    # Filtrage ----------------------------------------------------
+    
+    def _collecter_candidats(self, noeud: NoeudArbreDeDiscrimination, sequence: List[str], index: int, candidats: List[PointeurFeuille]) -> None:
+        """
+        Parcours de l'arbre pour collecter les candidats potentiellement unifiable.
+        Filtre grossier en ignorant les contraintes d'unification qui seront vérifiées en phase d'unification.
+
+        Args:
+            noeud       (NoeudArbreDeDiscrimination): Noeud courant
+            sequence    (List[str])                 : Séquence du terme mis à plat
+            index       (int)                       : Index du parcours
+            candidats   (List[PointeurFeuille])     : Listes des feuilles candidates à l'unification
+        """
+        # Si le parcours est fini :
+        if index >= len(sequence):
+            # On ajoute les feuilles aux candidats
+            candidats.extend(noeud.pointeurs)
+            return
+        
+        symbole_courant = sequence[index] # Récupération du symbole courant de la recherche
+
+        # Parcours des enfants :
+        for enfant in noeud.enfants.values():
+
+            # Cas 1 : les symboles sont identiques
+            if symbole_courant == enfant.symbole:
+                # On continue la recherche :
+                self._collecter_candidats(enfant, sequence, index + 1, candidats)
+
+            # Cas 2 : le symbole courant de la recherche est une variable
+            elif symbole_courant.startswith(NORM_VAR_REQUETE):
+                # On récupère les sous-terme :
+                for _, dernier_noeud in self._collecter_sous_termes(enfant, 1, []):
+                    # La variable peut s'unifier avec les sous-termes :
+                    self._collecter_candidats(dernier_noeud, sequence, index + 1, candidats)
+
+            # Cas 3 : le symbole courant de l'arbre est une variable
+            elif enfant.symbole is not None and enfant.symbole.startswith(NORM_VAR_ARBRE):
+                profondeur = self._calculer_profondeur_depuis_index(index, sequence)
+                nouvel_index = index + profondeur
+                if nouvel_index <= len(sequence):
+                    self._collecter_candidats(enfant, sequence, nouvel_index, candidats)
+
+            # Autres cas : pas de compatibilité donc branche abandonnée
+
+    # Unification ----------------------------------------------------
+
+    def _unifier(self, terme1: NoeudTerme, terme2: NoeudTerme) -> Optional[Dict[str, NoeudTerme]]:
+        """
+        Calcule le MGU de deux termes via Robinson (peut-etre qu'il faut directement utilisé l'algo de matheo, plus préférable ?)
+
+        Args:
+            terme1, terme2 (NoeudTerme): Les termes à unifier.
+
+        Returns:
+            Optional[Dict[str, NoeudTerme]]: La substitution si l'unification réussi, None sinon.
+        """
+        pile: List[Tuple[NoeudTerme, NoeudTerme]] = [(terme1, terme2)]
+        substitution: Dict[str, NoeudTerme] = {}
+
+        while pile:
+            a, b = pile.pop()
+
+            a = self._transitivite(a, substitution)
+            b = self._transitivite(b, substitution)
+
+            # Cas 1 : termes égaux 
+            if self._termes_egaux(a, b):
+                continue
+
+            # Cas 2 : a est une variable
+            if a.etiquette == ETIQUETTE_VAR:
+                if self._apparait_dans(a.nom, b, substitution):
+                    # Occur check
+                    return None
+                substitution[a.nom] = b
+
+            # Cas 3 : b est une variable
+            elif b.etiquette == ETIQUETTE_VAR:
+                if self._apparait_dans(b.nom, a, substitution):
+                    # Occur check
+                    return None
+                substitution[b.nom] = a
+
+            # Cas 4 : même fonction ou constante et même arité
+            elif a.nom == b.nom and len(a.enfants) == len(b.enfants):
+                # On vérifie l'unification des arguments
+                for ca, cb in zip(a.enfants, b.enfants):
+                    pile.append((ca, cb))
+
+            # Cas 5 : echec
+            else:
+                return None
+            
+        return substitution
+    
+    def _transitivite(self, terme: NoeudTerme, substitution: Dict[str, NoeudTerme]) -> NoeudTerme:
+        """
+        Récupère le dernier terme substitué d'une chaine de transitivité
+
+        Args:
+            terme           (NoeudTerme)            : Le premier terme de la chaine
+            substitution    (Dict[str, NoeudTerme]) : La substitution parcourue
+
+        Returns:
+            NoeudTerme: Le dernier terme substitué de la chaine
+        """
+        while terme.etiquette == ETIQUETTE_VAR and terme.nom in substitution:
+            terme = substitution[terme.nom]
+        return terme
+    
+    def _apparait_dans(self, nom_var: str, terme: NoeudTerme, substitution: Dict[str, NoeudTerme]) -> bool:
+        """
+        Occur check : vérifié si la variable 'nom_var' apparait dans 'terme'.
+
+        Args:
+            nom_var         (str)                   : La variable dont on vérifie la présence.
+            terme           (NoeudTerme)            : Le terme pouvant contenir la variable.
+            substitution    (Dict[str, NoeudTerme]) : La substitution.
+
+        Returns:
+            bool: True si occur check, False sinon.
+        """
+        terme = self._transitivite(terme, substitution)
+        # Si variable :
+        if terme.etiquette == ETIQUETTE_VAR: 
+            # On vérifie le nom
+            return terme.nom == nom_var
+        
+        # On regarde pour les enfants
+        return any(self._apparait_dans(nom_var, enfant, substitution) for enfant in terme.enfants)
+    
+    def _termes_egaux(self, terme1: NoeudTerme, terme2: NoeudTerme) -> bool:
+        """
+        Vérifie l'égalité structurelle de deux termes
+
+        Args:
+            terme1, terme2 (NoeudTerme): Les termes à vérifier
+
+        Returns:
+            bool: True si égaux, False sinon.
+        """
+        # Si pas le meme nom ou meme type :
+        if terme1.etiquette != terme2.etiquette or terme1.nom != terme2.nom:
+            return False
+        # Vérification dans les enfants :
+        return all(self._termes_egaux(enfant1, enfant2) for enfant1, enfant2 in zip(terme1.enfants, terme2.enfants))
+
+    # Autres fonctions internes ----------------------------------------------------
+
+    def _mapper_arite(self, terme: NoeudTerme) -> None:
+        """
+        Récupère les arités de l'ensemble des symboles du terme donné
+        et les ajoutes au dictionnaire des arités de la structure.
+
+        Args:
+            terme (NoeudTerme)  :   Le terme a traiter
+        """
+        # Pour constante et variable :
+        if terme.etiquette in (ETIQUETTE_CONS, ETIQUETTE_VAR):
+            if terme.nom not in self.arites:
+                self.arites[terme.nom] = 0 # On met à 0
+        # Pour fonction :
+        else: 
+            if terme.nom not in self.arites:
+                self.arites[terme.nom] = int(terme.etiquette) # L'arité est stockée dans l'étiquette
+            # Recherche dans les arguments de la fonction :
+            for sous_terme in terme.enfants:
+                self._mapper_arite(sous_terme)
+
+
+    def _mise_a_plat(self, terme: NoeudTerme, var_map: Dict[str, str], prefixe: str) -> List[str]:
+        """
+        Mise à plat d'un terme en une séquence de symboles en ordre préfixe.
+        Les variables sont normalisées en *1, *2, etc.
+        
+        Pour f(X, g(Y)), retourne : ['f', '*1', 'g', '*2']
+        
+        Args:
+            terme   (NoeudTerme)        :   Le terme à aplatir.
+            var_map (Dict[str, str])    :   Mapping de normalisation des variables.
+            prefixe (str)               :   Préfixe pour les variables normalisées.
+        Returns:
+            List[str]                   :   Séquence aplatie de symboles.
+        """
+        # Initialisation de la séquence résultat vide :
+        resultat = []
+        
+        # Ajout du symbole du terme courant :
+        if terme.etiquette == ETIQUETTE_VAR:
+            # Si c'est une variable, on la normalise :
+            if terme.nom not in var_map: # Nouvelle variable rencontrée
+                var_map[terme.nom] = f"{prefixe}{len(var_map) + 1}"
+            resultat.append(var_map[terme.nom])
+        else:
+            # Constante ou fonction, on ajoute le nom tel quel :
+            resultat.append(terme.nom)
+        
+            # Ajout des enfants :
+            if terme.etiquette not in (ETIQUETTE_CONS, ETIQUETTE_VAR):
+                for enfant in terme.enfants:
+                    resultat.extend(self._mise_a_plat(enfant, var_map, prefixe))
+        
+        return resultat
+    
+    
+    def _collecter_sous_termes(self, noeud: NoeudArbreDeDiscrimination, obligations: int, chemin: List[str]) -> List[Tuple[List[str], NoeudArbreDeDiscrimination]]:
+        """
+        Collecte les paires (séquence_sous_terme, noeud_de_continuation)
+        correspondant aux sous-termes complets dont la racine est `noeud``
+
+        Args:
+            noeud       (NoeudArbreDeDiscrimination)            :   Noeud courant à explorer.
+            obligations (int)                                   :   Sous-termes restants.
+            chemin      (List[str])                             :   Séquence de symboles accumulée.
+
+        Returns:
+            List[Tuple[List[str], NoeudArbreDeDiscrimination]]  :   Paire
+        """
+        # Ajout du symbole courant au chemin parcouru :
+        chemin = chemin + [noeud.symbole or ""] # Pour éviter erreur de typing
+        
+        # Mise à jour du compteur :
+        if noeud.symbole is not None:
+            if noeud.symbole.startswith(NORM_VAR_ARBRE) or noeud.symbole.startswith(NORM_VAR_REQUETE):
+                arite = 0
+            else:
+                arite = self.arites.get(noeud.symbole)
+            
+            if arite is not None:
+                obligations = obligations - 1 + arite
+
+        # Le sous-terme est complet :
+        if obligations == 0:
+            return [(chemin, noeud)]
+        
+        # Pas complet, on ajoute les enfants
+        resultats = []
+        for enfant in noeud.enfants.values():
+            resultats.extend(self._collecter_sous_termes(enfant, obligations, chemin))
+        
+        return resultats
+        
+    
+    def _calculer_profondeur_depuis_index(self, index: int, sequence: List[str]) -> int:
+        """
+        Calcule la profondeur du sous-terme commençant à l'index donné.
+        
+        Args:
+            index       (int)       : L'index de départ dans la séquence.
+            sequence    (List[str]) : La séquence
+        Returns:
+            int : Le nombre de symboles formant le sous-terme.
+        """
+        if index >= len(sequence):
+            return 0
+
+        symbole = sequence[index]
+
+        if symbole.startswith(NORM_VAR_ARBRE) or symbole.startswith(NORM_VAR_REQUETE):
+            return 1
+        
+        arite = self.arites.get(symbole, 0)
+        # Si arité = 0 (variable ou constante), la profondeur est 1
+        if arite == 0:
+            return 1
+        
+        # Si arité > 0 (fonction), on compte 1 + profondeur de chaque argument
+        profondeur = 1
+        position_courante = index + 1
+        
+        for _ in range(arite):
+            profondeur_arg = self._calculer_profondeur_depuis_index(position_courante, sequence)
+            profondeur += profondeur_arg
+            position_courante += profondeur_arg
+        
+        return profondeur
+        
+
+    
+    def affichage_arbre(self, noeud: Optional[NoeudArbreDeDiscrimination] = None, niveau: int = 0, prefixe: str = "", est_dernier: bool = True, chemin: str = "") -> None:
+        """
+        ╔════════════════════════════════════════════════════════════════╗
+        ║                                                                ║
+        ║      Structure de la fonction générée par IA (ClaudeCode).     ║
+        ║                                                                ║
+        ╚════════════════════════════════════════════════════════════════╝
+
+        Affiche l'arbre de discrimination de manière lisible dans la console.
+        
+        Args:
+            noeud (Optional['NoeudArbreDeDiscrimination']) : Le noeud courant à afficher. 'None' pour commencer à la racine.
+            niveau (int) : Niveau actuel dans l'arbre, utilisé pour l'indentation.
+            prefixe (str) : Chaîne de préfixe pour formater la structure de l'arbre.
+            est_dernier (bool) : Indique si le noeud courant est le dernier enfant de son parent.
+            chemin (str) : Le chemin vers le noeud courant.
+        """
+        if noeud is None:
+            # Commencer à la racine
+            noeud = self.racine
+            print("╔" + "═" * 61 + "╗")
+            print("║" + " " * 19 + "ARBRE DE DISCRIMINATION" + " " * 19 + "║")
+            print("╚" + "═" * 61 + "╝")
+            print("\nRACINE")
+            liste_enfants = list(noeud.enfants.values())
+            for i, noeud_enfant in enumerate(liste_enfants):
+                est_dernier_enfant = (i == len(liste_enfants) - 1)
+                if noeud_enfant.symbole is not None:
+                    self.affichage_arbre(noeud_enfant, niveau + 1, "", est_dernier_enfant, noeud_enfant.symbole)
+            return
+        
+        # Déterminer les connecteurs pour l'affichage
+        connecteur = "└── " if est_dernier else "├── "
+        extension = "    " if est_dernier else "│   "
+
+        # Afficher le noeud courant
+        symbole_affiche = noeud.symbole
+        
+        if noeud.pointeurs:
+            # Feuille avec pointeurs
+            print(f"{prefixe}{connecteur}[{symbole_affiche}]")
+            for i, pointeur in enumerate(noeud.pointeurs):
+                est_dernier_pointeur = (i == len(noeud.pointeurs) - 1)
+                connecteur_pointeur = "    └─→ " if est_dernier_pointeur else "    ├─→ "
+                prefixe_pointeur = prefixe + extension if not est_dernier else prefixe + "    "
+                print(f"{prefixe_pointeur}{connecteur_pointeur}{pointeur.pointeur}")
+        else:
+            # Noeud interne
+            print(f"{prefixe}{connecteur}{symbole_affiche}")
+        
+        # Afficher les enfants
+        liste_enfants = list(noeud.enfants.values())
+        for i, noeud_enfant in enumerate(liste_enfants):
+            est_dernier_enfant = (i == len(liste_enfants) - 1)
+            chemin_enfant = f"{chemin}/{noeud_enfant.symbole}"
+            self.affichage_arbre(noeud_enfant, niveau + 1, prefixe + extension, est_dernier_enfant, chemin_enfant)
+ 
+
+# Exemple d'utilisation
+if __name__ == "__main__":
+    from Util.TermStore.terme import FabriqueDeTermes
+ 
+    dt = ArbreDeDiscrimination()
+ 
+    terme1 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("Y"),
+        FabriqueDeTermes.creer_var("Z")
+    ])
+    terme2 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("Y"),
+        FabriqueDeTermes.creer_cons("a")
+    ])
+    terme3 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_var("X"),
+            FabriqueDeTermes.creer_cons("a")
+        ]),
+        FabriqueDeTermes.creer_var("Y")
+    ])
+    terme4 = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_fonc("g", 2, [
+            FabriqueDeTermes.creer_var("Z"),
+            FabriqueDeTermes.creer_cons("a")
+        ]),
+        FabriqueDeTermes.creer_var("Y")
+    ])
+ 
+    dt.inserer(terme1, "terme1 : f(Y, Z)")
+    dt.inserer(terme2, "terme2 : f(Y, a)")
+    dt.inserer(terme3, "terme3 : f(g(X, a), Y)")
+    dt.inserer(terme4, "terme4 : f(g(Z, a), Y)")
+ 
+    terme_recherche = FabriqueDeTermes.creer_fonc("f", 2, [
+        FabriqueDeTermes.creer_var("X"),
+        FabriqueDeTermes.creer_var("X")
+    ])
+ 
+    dt.affichage_arbre()
+ 
+    print("\nRecherche de termes unifiables avec : f(X, X)")
+    resultats = dt.rechercher_terme(terme_recherche)
+ 
+    if not resultats:
+        print("  Aucun terme unifiable trouvé.")
+    else:
+        for i, res in enumerate(resultats, 1):
+            print(f"\n  Résultat {i} :")
+            print(f"    Pointeurs    : {res.pointeurs}")
+            if res.substitution:
+                print(f"    Substitution :")
+                for var, terme_subst in res.substitution.items():
+                    print(f"      {var}  →  {terme_subst}")
+            else:
+                print(f"    Substitution : ∅  (termes identiques)")
+ 
