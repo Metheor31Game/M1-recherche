@@ -140,8 +140,6 @@ class ArbreDeDiscrimination:
         candidats: List[PointeurFeuille] = []
         self._collecter_candidats(self.racine, predicat_mis_a_plat, 0, candidats)
 
-        print(candidats)
-
         # Phase d'unification :
         # C'est ici qu'on valide les substitutions trouvées par la phase de filtrage
         resultats = []
@@ -360,7 +358,6 @@ class ArbreDeDiscrimination:
 
         # Mise à plat des termes du prédicat et ajout à la séquence :
         for terme in predicat.enfants:
-            print(resultat)
             resultat.extend(self._mise_a_plat_terme(terme, var_map, prefixe))
 
         return resultat
