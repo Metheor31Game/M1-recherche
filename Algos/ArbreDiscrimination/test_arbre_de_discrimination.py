@@ -46,16 +46,18 @@ def afficher_resultats(label: str, resultats) -> None:
 dt = ArbreDeDiscrimination()
 
 generateur = GenerateurLitteralAleatoire(['P', 'Q', 'R'], 3, 3)
-N = 100000
+N = 1000000
 print(f"Génération de {N} prédicats . . .")
 predicats = generateur.generer_litteraux(N)
 print(f"Génération terminée.")
 
 print(f"Insertion des prédicats dans l'arbre . . .")
+debut_creation = time.time()
 for predicat in predicats:
     dt.inserer(predicat, str(predicat))
+fin_creation = time.time()
 
-print(f"Création de l'arbre terminée.")
+print(f"Création de l'arbre des {N} prédicats terminée en {(fin_creation - debut_creation):3f} secondes.")
 
 
 #==================================================================
