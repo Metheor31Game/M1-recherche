@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 racine_projet = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.append(os.path.abspath(racine_projet))
@@ -45,12 +46,17 @@ def afficher_resultats(label: str, resultats) -> None:
 dt = ArbreDeDiscrimination()
 
 generateur = GenerateurLitteralAleatoire(['P', 'Q', 'R'], 3, 3)
-predicats = generateur.generer_litteraux(1000)
+N = 100000
+print(f"Génération de {N} prédicats . . .")
+predicats = generateur.generer_litteraux(N)
+print(f"Génération terminée.")
 
+print(f"Insertion des prédicats dans l'arbre . . .")
 for predicat in predicats:
     dt.inserer(predicat, str(predicat))
 
-dt.affichage_arbre()
+print(f"Création de l'arbre terminée.")
+
 
 #==================================================================
 #
@@ -58,8 +64,22 @@ dt.affichage_arbre()
 #
 #==================================================================
 
-predicats_recherche = generateur.generer_litteraux(5)
+n = 5
+print(f"Génération des {n} prédicats à unifier . . .")
+predicats_recherche = generateur.generer_litteraux(n)
+print(f"Génération terminée.")
+
+debut_total = time.time()
+cpt = 0
 
 for predicat in predicats_recherche:
+    cpt += 1
+    debut_pred = time.time()
     resultats = dt.rechercher(predicat)
-    afficher_resultats(str(predicat), resultats)
+    fin_pred = time.time()
+    print(f"Unification de {predicat} :")
+    print(f"\t* {len(resultats)} unifications trouvées en {(fin_pred - debut_pred):3f} secondes")
+    print(f"\t* {(len(resultats) /  (fin_pred - debut_pred)):3f} unifications par seconde")
+
+fin_total = time.time()
+print(f"Résultats des {n} unifications trouvés en {(fin_total - debut_total):3f} secondes")

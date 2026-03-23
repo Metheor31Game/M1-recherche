@@ -65,6 +65,7 @@ class NoeudArbreDeDiscrimination:
         self.symbole = symbole # Symbole du noeud (None pour la racine)
         self.enfants: Dict[str, NoeudArbreDeDiscrimination] = {}
         self.pointeurs: List[PointeurFeuille] = []
+        self._pointeurs_ids: set = set()
 
 # Arbre de Discrimination ========================================================
 
@@ -113,7 +114,9 @@ class ArbreDeDiscrimination:
             noeud_courant = noeud_courant.enfants[symbole]
         
         # Ajout du pointeur au noeud feuille :
-        if not any(e.pointeur == pointeur for e in noeud_courant.pointeurs):
+        pointeur_id = id(pointeur) if not isinstance(pointeur, str) else pointeur
+        if pointeur_id not in noeud_courant._pointeurs_ids:
+            noeud_courant._pointeurs_ids.add(pointeur_id)
             noeud_courant.pointeurs.append(PointeurFeuille(predicat=predicat, pointeur=pointeur))
 
     # Recherche ----------------------------------------------------
@@ -135,10 +138,19 @@ class ArbreDeDiscrimination:
         var_map: Dict[str, str] = {}
         predicat_mis_a_plat = self._mise_a_plat_predicat(predicat, var_map, NORM_VAR_REQUETE)
         
+        # Cache local
+        cache_profondeur: Dict[int, int] = {}
+        def profondeur_cached(index: int) -> int:
+            if index not in cache_profondeur:
+                cache_profondeur[index] = self._calculer_profondeur_depuis_index(
+                    index, predicat_mis_a_plat, profondeur_cached
+                )
+            return cache_profondeur[index]
+
         # Phase de filtrage :
         # On cherche juste les chemins valide par rapport au terme demandé
         candidats: List[PointeurFeuille] = []
-        self._collecter_candidats(self.racine, predicat_mis_a_plat, 0, candidats)
+        self._collecter_candidats(self.racine, predicat_mis_a_plat, 0, candidats, profondeur_cached)
 
         # Phase d'unification :
         # C'est ici qu'on valide les substitutions trouvées par la phase de filtrage
@@ -155,7 +167,7 @@ class ArbreDeDiscrimination:
     
     # Filtrage ----------------------------------------------------
     
-    def _collecter_candidats(self, noeud: NoeudArbreDeDiscrimination, sequence: List[str], index: int, candidats: List[PointeurFeuille]) -> None:
+    def _collecter_candidats(self, noeud: NoeudArbreDeDiscrimination, sequence: List[str], index: int, candidats: List[PointeurFeuille], fn_profondeur) -> None:
         """
         Parcours de l'arbre pour collecter les candidats potentiellement unifiable.
         Filtre grossier en ignorant les contraintes d'unification qui seront vérifiées en phase d'unification.
@@ -174,42 +186,32 @@ class ArbreDeDiscrimination:
         
         symbole_courant = sequence[index] # Récupération du symbole courant de la recherche
 
-        symbole_a_chercher = None
-        if symbole_courant == SYMBOLE_PREDICAT_NEGATIF:
-            symbole_a_chercher = SYMBOLE_PREDICAT_POSITIF
-        elif symbole_courant == SYMBOLE_PREDICAT_POSITIF:
-            symbole_a_chercher = SYMBOLE_PREDICAT_NEGATIF
+        # Cas prédicat : on cherche signe opposé au signe courant
+        if symbole_courant in (SYMBOLE_PREDICAT_NEGATIF, SYMBOLE_PREDICAT_POSITIF):
+            oppose = SYMBOLE_PREDICAT_NEGATIF if symbole_courant == SYMBOLE_PREDICAT_POSITIF else SYMBOLE_PREDICAT_POSITIF
+            if oppose in noeud.enfants:
+                self._collecter_candidats(noeud.enfants[oppose], sequence, index + 1, candidats, fn_profondeur)
+            return
+        
+        # Cas 1 : les symboles sont identiques
+        if symbole_courant in noeud.enfants and not symbole_courant.startswith(NORM_VAR_REQUETE):
+            self._collecter_candidats(noeud.enfants[symbole_courant], sequence, index + 1, candidats, fn_profondeur)
 
-        # Parcours des enfants :
-        for enfant in noeud.enfants.values():
-
-            # Pour prédicat -> chercher signe opposé :
-            if symbole_a_chercher is not None:
-                if enfant.symbole == symbole_a_chercher:
-                    self._collecter_candidats(enfant, sequence, index + 1, candidats)
-                else:
-                    continue
-
-            # Cas 1 : les symboles sont identiques
-            if symbole_courant == enfant.symbole:
-                # On continue la recherche :
-                self._collecter_candidats(enfant, sequence, index + 1, candidats)
-
-            # Cas 2 : le symbole courant de la recherche est une variable
-            elif symbole_courant.startswith(NORM_VAR_REQUETE):
+        # Cas 2 : variable dans la requête
+        if symbole_courant.startswith(NORM_VAR_REQUETE):
+            for enfant in noeud.enfants.values():
                 # On récupère les sous-terme :
-                for _, dernier_noeud in self._collecter_sous_termes(enfant, 1, []):
+                for dernier_noeud in self._collecter_sous_termes(enfant, 1):
                     # La variable peut s'unifier avec les sous-termes :
-                    self._collecter_candidats(dernier_noeud, sequence, index + 1, candidats)
-
-            # Cas 3 : le symbole courant de l'arbre est une variable
-            elif enfant.symbole is not None and enfant.symbole.startswith(NORM_VAR_ARBRE):
-                profondeur = self._calculer_profondeur_depuis_index(index, sequence)
-                nouvel_index = index + profondeur
-                if nouvel_index <= len(sequence):
-                    self._collecter_candidats(enfant, sequence, nouvel_index, candidats)
-
-            # Autres cas : pas de compatibilité donc branche abandonnée
+                    self._collecter_candidats(dernier_noeud, sequence, index + 1, candidats, fn_profondeur)
+            return
+        
+        # Cas 3 : variable dans l'arbre
+        profondeur = fn_profondeur(index)
+        nouvel_index = index + profondeur
+        for symbole, enfant in noeud.enfants.items():
+            if symbole.startswith(NORM_VAR_ARBRE) and nouvel_index <= len(sequence):
+                self._collecter_candidats(enfant, sequence, nouvel_index, candidats, fn_profondeur)
 
     # Unification ----------------------------------------------------
 
@@ -292,8 +294,12 @@ class ArbreDeDiscrimination:
         Returns:
             NoeudTerme: Le dernier terme substitué de la chaine
         """
+        chemin = []
         while terme.etiquette == ETIQUETTE_VAR and terme.nom in substitution:
+            chemin.append(terme.nom)
             terme = substitution[terme.nom]
+        for nom in chemin:
+            substitution[nom] = terme
         return terme
     
     def _apparait_dans(self, nom_var: str, terme: NoeudTerme, substitution: Dict[str, NoeudTerme]) -> bool:
@@ -407,51 +413,49 @@ class ArbreDeDiscrimination:
         return resultat
     
     
-    def _collecter_sous_termes(self, noeud: NoeudArbreDeDiscrimination, obligations: int, chemin: List[str]) -> List[Tuple[List[str], NoeudArbreDeDiscrimination]]:
+    def _collecter_sous_termes(self, noeud: NoeudArbreDeDiscrimination, obligations: int) -> List[NoeudArbreDeDiscrimination]:
         """
         Collecte les paires (séquence_sous_terme, noeud_de_continuation)
-        correspondant aux sous-termes complets dont la racine est `noeud``
+        correspondant aux sous-termes complets dont la racine est `noeud`
 
         Args:
             noeud       (NoeudArbreDeDiscrimination)            :   Noeud courant à explorer.
             obligations (int)                                   :   Sous-termes restants.
-            chemin      (List[str])                             :   Séquence de symboles accumulée.
-
+            
         Returns:
-            List[Tuple[List[str], NoeudArbreDeDiscrimination]]  :   Paire
+            List[NoeudArbreDeDiscrimination]                    :   Paire
         """
-        # Ajout du symbole courant au chemin parcouru :
-        chemin = chemin + [noeud.symbole or ""] # Pour éviter erreur de typing
+        arite = 0
         
         # Mise à jour du compteur :
         if noeud.symbole is not None:
             if noeud.symbole.startswith(NORM_VAR_ARBRE) or noeud.symbole.startswith(NORM_VAR_REQUETE):
                 arite = 0
             else:
-                arite = self.arites.get(noeud.symbole)
-            
-            if arite is not None:
-                obligations = obligations - 1 + arite
+                arite = self.arites.get(noeud.symbole, 0)
+
+            obligations = obligations - 1 + arite
 
         # Le sous-terme est complet :
         if obligations == 0:
-            return [(chemin, noeud)]
+            return [noeud]
         
         # Pas complet, on ajoute les enfants
-        resultats = []
-        for enfant in noeud.enfants.values():
-            resultats.extend(self._collecter_sous_termes(enfant, obligations, chemin))
-        
-        return resultats
+        return [
+            n 
+            for enfant in noeud.enfants.values()
+            for n in self._collecter_sous_termes(enfant, obligations)
+        ]
         
     
-    def _calculer_profondeur_depuis_index(self, index: int, sequence: List[str]) -> int:
+    def _calculer_profondeur_depuis_index(self, index: int, sequence: List[str], fonction_profondeur=None) -> int:
         """
         Calcule la profondeur du sous-terme commençant à l'index donné.
         
         Args:
             index       (int)       : L'index de départ dans la séquence.
             sequence    (List[str]) : La séquence
+
         Returns:
             int : Le nombre de symboles formant le sous-terme.
         """
@@ -468,12 +472,15 @@ class ArbreDeDiscrimination:
         if arite == 0:
             return 1
         
+        fn = fonction_profondeur if fonction_profondeur is not None else \
+            lambda i: self._calculer_profondeur_depuis_index(i, sequence)
+        
         # Si arité > 0 (fonction), on compte 1 + profondeur de chaque argument
         profondeur = 1
         position_courante = index + 1
         
         for _ in range(arite):
-            profondeur_arg = self._calculer_profondeur_depuis_index(position_courante, sequence)
+            profondeur_arg = fn(position_courante)
             profondeur += profondeur_arg
             position_courante += profondeur_arg
         
