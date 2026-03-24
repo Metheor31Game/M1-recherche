@@ -81,9 +81,11 @@ def benchmark(n, predList):
     print("Temps de génération : ", t1gen - t0gen)
 
     # Créer un TermStore
-    store = SetStore()
+    store = ListStore()
     for lit in litteralList:
         store.push(lit)
+
+    print(f"store utilisé : {store}")
 
     # Répéter l'opération pour prendre la moyenne
 
@@ -124,13 +126,13 @@ def benchmark(n, predList):
 
 def test_Serialise(n, predList):
     t0gen = time.perf_counter()
-    generateur = GenerateurLitteralAleatoire(predList, 1, 1)
+    generateur = GenerateurLitteralAleatoire(predList, 3, 3)
     litteralList = generateur.generer_litteraux(n+1)
     t1gen = time.perf_counter()
     print("Temps de génération : ", t1gen - t0gen)
 
     t0ser = time.perf_counter()
-    serialiser(litteralList, "output1")
+    serialiser(litteralList, "output2")
     t1ser = time.perf_counter()
     print("Temps de serialisation : ", t1ser - t0ser)
 
@@ -139,7 +141,7 @@ def test_Serialise(n, predList):
 
 if __name__ == "__main__":
     predList = ["P", "Q", "R"]
-    #test_Serialise(100000, predList)
+    test_Serialise(10000000, predList)
     # Puis lancer le benchmark_with_output1
-    moyenne = benchmark_with_output()
-    print(f"\n==> Temps moyen final: {moyenne:.6f}s")
+    # moyenne = benchmark_with_output()
+    # print(f"\n==> Temps moyen final: {moyenne:.6f}s")
