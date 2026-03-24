@@ -1,0 +1,376 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{mdframed}
+
+\titleformat{name=\subsection,numberless}[block]
+    {\normalfont\large\bfseries}
+    {\hspace{1.5em}}
+    {0em}
+    {}
+
+\newenvironment{remarque}{%
+    \begin{mdframed}[
+        linecolor=sectioncolor!40,
+        linewidth=0.8pt,
+        backgroundcolor=sectioncolor!5,
+        innerleftmargin=10pt,
+        innerrightmargin=10pt,
+        innertopmargin=6pt,
+        innerbottommargin=6pt,
+        skipabove=8pt,
+        skipbelow=8pt
+    ]
+    \noindent\textbf{\small\color{sectioncolor}Remarque.}\enspace\small\itshape
+}{%
+    \end{mdframed}
+}
+
+\newenvironment{avantpropos}{%
+    \begin{mdframed}[
+        linecolor=sectioncolor!40,
+        linewidth=0.8pt,
+        backgroundcolor=sectioncolor!5,
+        innerleftmargin=10pt,
+        innerrightmargin=10pt,
+        innertopmargin=6pt,
+        innerbottommargin=6pt,
+        skipabove=8pt,
+        skipbelow=8pt
+    ]
+    \noindent\textbf{\small\color{sectioncolor}}\enspace\small\itshape
+}{%
+    \end{mdframed}
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!60!black,
+}
+
+% Couleurs personnalisées
+\definecolor{sectioncolor}{RGB}{50, 70, 120}
+\definecolor{subsectioncolor}{RGB}{80, 80, 80}
+
+\begin{document}
+\pagenumbering{gobble}
+% Couverture :
+
+    \begin{titlepage}
+        \begin{center}
+        \begin{minipage}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=0.30\linewidth]{logo_LORIA.png}
+        \end{minipage}
+        \rule{1pt}{2.2cm}
+        \begin{minipage}[c]{0.45\textwidth}
+            \centering
+            \includegraphics[width=0.6\linewidth]{logo_UL.png}
+        \end{minipage}
+        \end{center}
+
+
+
+
+
+    \vspace{1cm} % Espace vertical après les logos
+    \vspace*{\fill}
+
+    \begin{center}
+        \textbf{\Huge Structures de données pour l’unification en logique du premier ordre} \\
+        \vspace{0.5cm}
+        \Large Rapport en vue de la validation de l’UE Initiation à la recherche \\
+        \vspace{0.5cm}
+        Année universitaire 2025-2026
+    \end{center}
+
+    \vspace*{\fill}
+
+    \begin{minipage}[t]{0.45\textwidth}
+        \begin{flushleft}
+            \small Etudiants : \\
+            \hspace*{1.5em} Ayath ABOGOURIN \\
+            \hspace*{1.5em} Guillaume POTEL \\
+            \hspace*{1.5em} Matheo VIGNERES
+        \end{flushleft}
+    \end{minipage}%
+    \begin{minipage}[t]{0.1\textwidth}
+        \vspace*{0.5em} % Ajustement vertical pour aligner la barre
+        \centering
+        \rule{1pt}{\dimexpr 3\baselineskip + 0.5em} % Ajustement précis de la hauteur
+    \end{minipage}%
+    \begin{minipage}[t]{0.45\textwidth}
+        \begin{flushright}
+            \small Encadrants : \\
+            \hspace*{0pt}\llap{\hspace*{1.5em}} Julie CAILLER \\
+            \hspace*{0pt}\llap{\hspace*{1.5em}} Marie DUFLOT-KREMER \\
+            \hspace*{0pt}\llap{\hspace*{1.5em}} Engel LEFAUCHEUX
+        \end{flushright}
+    \end{minipage}
+
+\end{titlepage}
+
+
+% Page blanche après couverture :
+\newpage % Saut de page
+\null % Vide
+
+% Décharge de responsibilité :
+\newpage
+\section*{DÉCHARGE DE RESPONSABILITÉS}
+\vspace*{\fill}
+\textit{« L’Université de Lorraine n’entend donner ni approbation ni improbation aux opinions émises dans ce
+rapport, ces opinions devant être considérées comme propres à leur auteur. »}
+\vspace*{\fill}
+
+% Remerciements :
+\newpage
+\section*{REMERCIEMENTS}
+A FAIRE
+\vspace*{\fill}
+
+% Sommaire :
+\newpage % Saut de page
+\pagenumbering{arabic}
+\begin{titlepage}
+    \vspace*{\fill} % Espace vertical pour centrer
+
+    \begin{center}
+        {\Large\bfseries\color{sectioncolor} Sommaire} \\
+        \vspace{0.8cm}
+
+        \begin{minipage}{0.8\textwidth}
+            \noindent{Introduction} \dotfill \pageref{introduction} \\ 
+            \vspace{0.5cm}
+
+            \noindent{\bfseries\color{sectioncolor} I. Généralités} \dotfill \pageref{generalites} \\[1em]
+            \hspace*{2.8em}1. Logique des propositions \dotfill \pageref{lp} \\[0.5em]
+            \hspace*{2.8em}2. Logique du premier ordre \dotfill \pageref{lpo} \\[0.5em]
+            \hspace*{2.8em}3. L'unification \dotfill \pageref{unification}
+
+            \vspace{0.3cm}
+            \noindent{\bfseries\color{sectioncolor} II. Structures de données et algorithmes} \dotfill \pageref{structures}
+            \begin{quote}
+                \begin{enumerate}[label=\arabic*., leftmargin=1.5em, itemsep=0.1em]
+                    \item Structures de données représentant un terme
+                    \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
+                        \item Arbre avec étiquettes
+                        \item AST (\textit{Abstract Syntax Tree})
+                    \end{enumerate}
+                    \item Structures de données représentant un ensemble de termes
+                    \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
+                        \item Liste
+                        \item Ensemble
+                        \item Dictionnaire
+                    \end{enumerate}
+                    \item Algorithmes d'unification classiques
+                    \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
+                        \item Martelli-Montanari
+                        \item Robinson
+                    \end{enumerate}
+                    \item Le Discrimination Tree
+                \end{enumerate}
+            \end{quote}
+
+            \vspace{0.3cm}
+            \noindent{\bfseries\color{sectioncolor} III. Résultats} \dotfill \pageref{algorithmes}
+            \begin{quote}
+                \begin{enumerate}[label=\arabic*., leftmargin=1.5em, itemsep=0.1em]
+                    
+                    \item Protocole de benchmarks
+                    \item Résultats
+                    \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
+                        \item Martelli-Montanari
+                        \item Robinson
+                        \item Discrimination Tree
+                    \end{enumerate}
+                \end{enumerate}
+            \end{quote}
+
+            \vspace{0.5cm}
+            \noindent{Conclusion} \dotfill \pageref{conclusion}
+        \end{minipage}
+    \end{center}
+
+    \vspace*{\fill} % Espace vertical pour centrer
+\end{titlepage}
+
+% Intro :
+\newpage
+\section*{Introduction}
+\addcontentsline{toc}{section}{Introduction}
+\label{introduction}
+
+% Paragraphe 1 : Mise en abime du sujet / actualité ou autre
+En informatique, la représentation de l'information est un point clé dans la réalisation de divers projets. Ainsi le choix des \textbf{structures de données} représente une étape cruciale pour le bon déroulement de tout projet. 
+
+En logique du premier ordre, ce sont les \textbf{termes} qui servent de base afin de représenter des expressions symboliques construites à partir de symboles de fonction, de constantes et de variables. Représenter ces termes via la meilleure structure de donnée, la plus adéquate, représente donc un point majeur dans tout travaux portés à ce domaine.
+
+L’\textbf{unification} est une opération essentielle dans ce cadre. Elle intervient notamment dans les moteurs d’inférence, les systèmes de réécriture de termes, et les prouveurs logiques. Les différents algorithmes connus d'unification sont parfois adaptés à certaines structures de données précises, il est donc important de comparer ces algorithmes et de diversifier ses choix pour parvenir aux résultats les plus efficaces.
+
+\vspace{0.5cm}
+
+% Paragraphe 2 : Définitions des notions clés
+Une structure de données est une représentation permettant d'organiser, traiter et stocker des données de manière efficace dans la mémoire d'un ordinateur. Elle permet un meilleur accès et une manipulation plus efficace des données afin de résoudre un problème spécifique. 
+
+Un terme est une expression qui consiste à nommer ou construire un objet en logique. Cela peut être une variable, une constante ou une fonction. Il est en quelque sorte le plus petit composant d'une formule logique.
+
+L'unification consiste à déterminer s’il existe
+une substitution des variables (c’est-à-dire, une affectations des variables (X, Y , ...) vers des termes
+(a, b, f(a), ...)) permettant de rendre identiques deux termes.
+
+
+
+\vspace{0.5cm}
+
+% Paragraphe 3 : Présentation de la problématique
+Ainsi, dans le cadre de ce travail de recherche, nous nous demanderons quelles sont les structures de données les plus adaptées pour l'unification dans la logique du premier ordre. Le choix d'une structure impactant l'efficacité d'un algorithme, nous réfléchirons donc aussi aux meilleurs algorithmes d'unification à utiliser en fonction de la structure de donnée choisie.
+
+\vspace{0.5cm}
+
+% Paragraphe 4 : Annonce du plan
+Nous commencerons par un rappel sur les différentes notions abordées dans notre sujet. Ensuite nous présenterons plus en détails les différentes structures de données que nous avons utilisées, et nous finirons par la présentation des algorithmes d'unification connus sur lesquels nous avons travaillé.
+
+% Généralités :
+\newpage
+\section*{I. Généralités}
+\phantomsection
+\addcontentsline{toc}{section}{Generalites}
+\label{generalites}
+
+\begin{avantpropos}
+    D'après nos connaissances, le cours de L3 intitulé \emph{Logique des propositions - Logique du premier ordre}, de Jean Lieber et le cours de M1 intitulé \emph{Logiques et Modèles de Calcul}, de Didier Galmiche.
+\end{avantpropos}
+
+\subsection*{1. Logique des propositions}
+\phantomsection
+\label{lp}
+
+\subsection*{2. Logique du premier ordre}
+\phantomsection
+\label{lpo}
+\vspace{0.4cm}
+Pour représenter des formules dans la \textit{logique du premier ordre}, on se donne un
+\textit{alphabet} qui servira à les décrire. Cet alphabet est composé des éléments suivants :
+\begin{itemize}
+    \item Ensemble de \textit{variables} : $x, y, z, \ldots$
+\end{itemize}
+On définit également ce que l'on appelle une \textit{signature}, qui rend notre représentation
+unique, composée de deux ensembles :
+\begin{itemize}
+    \item Ensemble de symboles de \textit{fonctions} : $f, g, h, \ldots$
+    \item Ensemble de symboles de \textit{prédicats} : $P, Q, R, \ldots$
+\end{itemize}
+On associe à ces fonctions et prédicats une \textit{arité} (c.-à-d. le nombre d'arguments
+qu'ils prennent). Parmi les symboles de fonctions, ceux d'arité $0$ sont appelés
+\textit{constantes} :
+\begin{itemize}
+    \item Ensemble de symboles de constantes : $a, b, c, \ldots$
+\end{itemize}
+\begin{remarque}
+    Le choix de ces différents symboles est purement arbitraire~: on pourrait nommer les
+    variables $a$, $b$ ou $c$. Dans un souci d'harmonisation et de standardisation, on
+    utilisera néanmoins les symboles les plus courants dans la littérature.
+\end{remarque}
+
+\vspace{0.4cm}
+\noindent\textbf{Exemple complet.} 
+
+\vspace{0.2cm}
+Considérons la signature suivante :
+\begin{itemize}
+    \item Constantes : $a, b$
+    \item Symbole de fonction : $f$ d'arité $1$, $g$ d'arité $2$
+    \item Symboles de prédicats : $P$ d'arité $1$, $Q$ d'arité $2$
+\end{itemize}
+On peut alors construire la formule suivante :
+$$
+    \forall x\; \bigl(P(x) \rightarrow \exists y\; Q\!\left(g(x,\, y),\, f(a)\right)\bigr)
+$$
+
+\begin{remarque}
+    Cette formule se lit : \textit{« Pour tout $x$, si $P(x)$ est vrai, alors il existe un $y$
+tel que $Q$ est satisfait par le couple $\bigl(g(x, y),\, f(a)\bigr)$ »}.
+\end{remarque}
+
+\noindent On peut en détailler la structure :
+\begin{itemize}
+    \item $x$ et $y$ sont des \textit{variables} ;
+    \item $a$ est une \textit{constante} (symbole de fonction d'arité $0$) ;
+    \item $f(a)$ est un \textit{terme} obtenu en appliquant la fonction $f$ à la constante $a$ ;
+    \item $g(x, y)$ est un \textit{terme} obtenu en appliquant la fonction $g$ aux variables $x$ et $y$ ;
+    \item $P(x)$ et $Q\!\left(g(x,y),\, f(a)\right)$ sont des \textit{formules atomiques} (ou atomes),
+          formées en appliquant un symbole de prédicat à des termes ;
+    \item $\forall x$ et $\exists y$ sont des \textit{quantificateurs} liant respectivement $x$ et $y$ ;
+    \item $\rightarrow$ est un \textit{connecteur logique} (implication).
+\end{itemize}
+
+
+
+
+\subsection*{3. L'unification}
+\phantomsection
+\label{unification}
+
+\noindent\textbf{Unification de termes.}
+
+\vspace{0.2cm}
+On appelle \textit{unification} le processus visant à répondre à la question « Peut-on \textit{substituer} au terme $t$ la variable $x$ ? ».
+\vspace{0.4cm}
+
+La \textit{substitution} est l'application qui, à une formule donnée, associe cette même formule avec toutes les occurrences d'un certain terme remplacé, \textit{substitué}, par une variable.
+\vspace{0.4cm}
+
+Par exemple, les deux termes $t_1$ et $t_2$ suivants :
+$$t_1 = f(X,\, g(a)) \qquad \text{et} \qquad t_2 = f(b,\, g(Y))$$
+peuvent être unifiés par la substitution $\sigma = \{X \mapsto b,\ Y \mapsto a\}$.
+\vspace{0.4cm}
+
+En effet, $\sigma(t_1) = \sigma(t_2) = f(b,\, g(a))$.
+\vspace{0.4cm}
+
+\begin{remarque}
+ L'unification intervient notamment dans les
+moteurs d'inférence, les systèmes de réécriture de termes, et les prouveurs logiques.   
+\end{remarque}
+
+\vspace{0.4cm}
+\noindent\textbf{Unification de prédicats.}
+
+\vspace{0.2cm}
+L'unification s'étend naturellement aux \textit{atomes}, c'est-à-dire aux formules
+atomiques de la forme $P(t_1, \ldots, t_n)$. Deux atomes $P(s_1, \ldots, s_n)$ et
+$P(t_1, \ldots, t_n)$ sont unifiables si et seulement s'ils partagent le même symbole
+de prédicat $P$ et si leurs arguments respectifs sont unifiables deux à deux.
+
+\vspace{0.4cm}
+Ce mécanisme est au cœur de la \textit{règle de résolution} : pour démontrer une
+formule par réfutation, on cherche à unifier un atome $P(t_1, \ldots, t_n)$ avec
+sa \textit{négation} $\neg P(s_1, \ldots, s_n)$. Si une substitution $\sigma$ unifie
+leurs arguments :
+$$\sigma\bigl(P(t_1, \ldots, t_n)\bigr) = \sigma\bigl(P(s_1, \ldots, s_n)\bigr)$$
+alors la résolution produit une \textit{clause vide}, notée $\square$, témoin d'une
+contradiction — et donc d'une preuve par l'absurde.
+
+\vspace{0.2cm}
+\noindent\textbf{Exemple.}
+
+\vspace{0.2cm}
+\begin{exemple}
+    Soient les deux clauses $P(X, a)$ et $\neg P(b, Y)$. La substitution
+    $\sigma = \{X \mapsto b,\ Y \mapsto a\}$ unifie leurs atomes :
+    $$\sigma\bigl(P(X, a)\bigr) = P(b, a) = \sigma\bigl(P(b, Y)\bigr)$$
+    La résolution de ces deux clauses produit la clause vide $\square$, concluant
+    à une contradiction.
+\end{exemple}
+
+\end{document}
