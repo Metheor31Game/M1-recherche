@@ -23,3 +23,6 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# Local scripts
+clean_pycache.sh
+

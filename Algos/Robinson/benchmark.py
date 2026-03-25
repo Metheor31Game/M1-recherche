@@ -11,7 +11,7 @@ from Util.Litteral.Litteral import Litteral
 from Util.Litteral.Litteral import GenerateurLitteralAleatoire
 from Util.Serialisation.serialisation import serialiser, deserialiser
 
-def benchmark_with_output():
+def benchmark_with_output(fileName):
     """
     Charge output1, place les prédicats dans un Store.
     Unifie le premier prédicat avec tous les autres 10 fois.
@@ -20,7 +20,7 @@ def benchmark_with_output():
     """
     try:
         # Charger output1 depuis la sérialisation
-        litteralList = deserialiser("output1")
+        litteralList = deserialiser(fileName)
         print(f"Chargé {len(litteralList)} littéraux depuis output1")
     except FileNotFoundError:
         print("Fichier output1 introuvable. Il faut générer output1 avec test_Serialise.")
@@ -69,70 +69,15 @@ def benchmark_with_output():
     
     return temps_moyen
 
-def benchmark(n, predList):
-    #TODO : améliorer pour que je puisse directement commencer avec le store que je veux, pour optimiser
-
-    # on veut essayer d'unifier un prédicat aléatoire avec n candidats
+def test_Serialise(n, predList, fileName):
     t0gen = time.perf_counter()
-    generateur = GenerateurLitteralAleatoire(predList, 1, 1)
-    litteralList = generateur.generer_litteraux(n+1)
-    litteral1 = litteralList.pop()
-    t1gen = time.perf_counter()
-    print("Temps de génération : ", t1gen - t0gen)
-
-    # Créer un TermStore
-    store = ListStore()
-    for lit in litteralList:
-        store.push(lit)
-
-    print(f"store utilisé : {store}")
-
-    # Répéter l'opération pour prendre la moyenne
-
-    nb_repetitions = 100
-    temps_exec = []
-    result = None
-
-    for _ in range(nb_repetitions):
-        t0exec = time.perf_counter()
-        result = rechercherUnifiablesSimple(litteral1, store, "Robinson")
-        t1exec = time.perf_counter()
-        temps_exec.append(t1exec - t0exec)
-
-    temps_moyen = sum(temps_exec) / nb_repetitions
-    print(f"Algo avec Set exécuté {nb_repetitions}x, temps moyen : {temps_moyen}")
-
-    # Créer un ListStore
-    store = ListStore()
-    for lit in litteralList:
-        store.push(lit)
-
-    # Répéter l'opération pour prendre la moyenne
-
-    nb_repetitions = 100
-    temps_exec = []
-    result = None
-
-    for _ in range(nb_repetitions):
-        t0exec = time.perf_counter()
-        result = rechercherUnifiablesSimple(litteral1, store, "Robinson")
-        t1exec = time.perf_counter()
-        temps_exec.append(t1exec - t0exec)
-
-    temps_moyen = sum(temps_exec) / nb_repetitions
-    print(f"Algo avec List exécuté {nb_repetitions}x, temps moyen : {temps_moyen}")
-
-    return result
-
-def test_Serialise(n, predList):
-    t0gen = time.perf_counter()
-    generateur = GenerateurLitteralAleatoire(predList, 3, 3)
+    generateur = GenerateurLitteralAleatoire(predList, 8, 8)
     litteralList = generateur.generer_litteraux(n+1)
     t1gen = time.perf_counter()
     print("Temps de génération : ", t1gen - t0gen)
 
     t0ser = time.perf_counter()
-    serialiser(litteralList, "output2")
+    serialiser(litteralList, fileName)
     t1ser = time.perf_counter()
     print("Temps de serialisation : ", t1ser - t0ser)
 
@@ -141,7 +86,6 @@ def test_Serialise(n, predList):
 
 if __name__ == "__main__":
     predList = ["P", "Q", "R"]
-    test_Serialise(10000000, predList)
-    # Puis lancer le benchmark_with_output1
-    # moyenne = benchmark_with_output()
+    #test_Serialise(5000000, predList, "output4")
+    moyenne = benchmark_with_output("output4")
     # print(f"\n==> Temps moyen final: {moyenne:.6f}s")
