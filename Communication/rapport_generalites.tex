@@ -248,18 +248,151 @@ Nous commencerons par un rappel sur les différentes notions abordées dans notr
 \label{generalites}
 
 \begin{avantpropos}
-    D'après nos connaissances, le cours de L3 intitulé \emph{Logique des propositions - Logique du premier ordre}, de Jean Lieber et le cours de M1 intitulé \emph{Logiques et Modèles de Calcul}, de Didier Galmiche.
+    D'après nos connaissances, l'UE de L3 intitulée \emph{Logique des propositions - Logique du premier ordre}, de Jean Lieber et l'UE de M1 intitulée \emph{Logiques et Modèles de Calcul}, de Didier Galmiche.
 \end{avantpropos}
+
 
 \subsection*{1. Logique des propositions}
 \phantomsection
 \label{lp}
 
+\vspace{0.4cm}
+\noindent\textbf{Logique formelle.}
+
+\vspace{0.4cm}
+La \textit{logique des propositions} (ou logique propositionnelle) constitue la brique fondamentale de la \textit{logique formelle}.
+
+\vspace{0.2cm}
+
+Pour définir une logique formelle, on se donne un couple ($\mathcal{L}, \models$) où
+
+\begin{itemize}
+    \item $\mathcal{L}$ est un langage défini par une syntaxe. Une \textit{formule} est un élément de $\mathcal{L}$. On appellera aussi \textit{base de connaissances} un ensemble fini de formules.
+    \item $\models$ est une \textit{relation d'inférences} faisant le lien entre bases de connaissances et formules.
+\end{itemize}
+
+\begin{remarque}
+    Si $B$ est une base de connaissances et $\varphi$ est une formule, l'expression $B \models \varphi$ se lit « $B$ entraîne $\varphi$ » et signifie que « Si l'on suppose que toutes les formules de $B$ sont vraies, alors on peut en conclure que $\varphi$ est vraie. ».
+    
+    \vspace{0.2cm}
+    \noindent \emph{Une introduction à la logique à destination d'étudiants de licence informatique} - Jean Lieber, p.4
+\end{remarque}
+
+
+La logique des propositions permet donc de manipuler des formules construites à partir de \textit{variables
+propositionnelles} et de \textit{connecteurs logiques}, construits sur les bases de l'algèbre de Boole, et de leur attribuer une valeur de
+vérité. Pour décrire la logique propositionnelle, on peut utiliser la notation d'une logique formelle : ($\mathcal{L}\mathcal{P}, \models$).
+
+\vspace{0.4cm}
+\noindent\textbf{Syntaxe de ($\mathcal{L}\mathcal{P}, \models$).}
+
+\vspace{0.2cm}
+Une \textit{formule propositionnelle} est une expression syntaxique construite selon la
+grammaire suivante :
+
+\[
+\langle\text{formule}\rangle ::= \langle\text{variable propositionnelle}\rangle \mid
+\neg(\langle\text{formule}\rangle) \mid
+(\langle\text{formule}\rangle\;\langle\text{connecteur binaire}\rangle\;\langle\text{formule}\rangle)
+\]
+\[
+\langle\text{connecteur binaire}\rangle ::= \wedge \mid \vee \mid \rightarrow \mid \leftrightarrow
+\]
+
+\begin{remarque}
+Les connecteurs ont les lectures suivantes :
+\begin{center}
+\begin{tabular}{ccccc}
+    $\neg$ & $\wedge$ & $\vee$ & $\rightarrow$ & $\leftrightarrow$ \\
+    « non » & « et » & « ou » & « implique » & « équivaut à »
+\end{tabular}
+\end{center}
+\end{remarque}
+
+\vspace{0.4cm}
+
+L'ensemble des variables se note $\mathcal{V}$. Il est généralement défini implicitement via les variables utilisées dans les formules.
+\newpage
+Exemple :
+\vspace{0.4cm}
+
+\begin{exemple}
+\noindent Considérons les variables propositionnelles suivantes :
+\begin{center}
+\begin{tabular}{cl}
+    $p$ & « Socrate est un homme » \\
+    $q$ & « Tout homme est mortel » \\
+    $r$ & « Socrate est mortel »
+\end{tabular}
+\end{center}
+On peut alors former la formule :
+\[
+    (p \wedge q) \rightarrow r
+\]
+qui se lit : « \textit{Si} Socrate est un homme \textit{et} tout homme est mortel, \textit{alors} Socrate est mortel. »\\
+Ici, $\mathcal{V} = \{p, q, r\}$.
+\end{exemple}
+
+\vspace{0.4cm}
+\noindent\textbf{Sémantique de ($\mathcal{L}\mathcal{P}, \models$).}
+
+\vspace{0.2cm}
+Une \textit{interprétation} $\mathcal{I}$ est une fonction qui associe à chaque variable
+propositionnelle une valeur de vérité dans $\mathbb{B} = \{\texttt{V}, \texttt{F}\}$. On
+étend naturellement $\mathcal{I}$ à toutes les formules en évaluant les connecteurs selon les règles
+booléennes usuelles. On dit que $\mathcal{I}$ est un \textit{modèle} de $\varphi$ (noté $\mathcal{I} \models
+\varphi$, se lit « $\mathcal{I}$ \textit{satisfait} $\varphi$ ») si la valeur de $\varphi$ sous $\mathcal{I}$ est \texttt{V}.
+
+On peut étendre cette notion aux bases de connaissances  : $\mathcal{I}$ satisfait $B$ (noté $\mathcal{I} \models B$) si $\mathcal{I} \models \varphi$ pour tout $\varphi \in B$. Dans ce cas $\mathcal{I}$ est un modèle de $B$. On a aussi $B$ entraîne $\varphi$ (noté $B \models \varphi$) si tout modèle de $B$ est un modèle de $\varphi$.
+
+D'après la construction sémantique ci-dessus, on a :
+\begin{enumerate}
+    \item $\varphi_1 \models \varphi_2$ si {$\{\varphi_1\} \models \varphi_2$.
+    \item $\varphi_1 \equiv \varphi_2$ si $\varphi_1 \models \varphi_2$ et x$\varphi_2 \models \varphi_1$.\newline
+    $\varphi_1 \equiv \varphi_2$ signifie donc que $I$ est un modèle de $\varphi_1$ ssi $I$ est un modèle de $\varphi_2$.
+    \item $\varphi$ est une \textit{tautologie} (noté $\models \varphi$) si toute interprétation est un modèle de $\varphi$.\newline
+    On notera que $\models \varphi$ ssi $\varnothing \models \varphi$.
+    \item $\varphi \models_B \psi$ si $B \cup \{\varphi\} \models \psi$.
+\end{enumerate}
+
+\vspace{0.2cm}
+
+\begin{remarque}
+    Une formule est dite \emph{satisfiable} (cohérente, non contradictoire ou consistente) s'il existe au moins un modèle. On a le lien suivant :
+    $\varphi$ est une tautologie si et seulement si $\neg\varphi$ est \emph{insatisfiable} (incohérente, contradictoire ou inconsistente).
+    \vspace{0.2cm}
+    
+    \noindent \emph{Une introduction à la logique à destination d’étudiants de licence informatique} - Jean Lieber, p.7
+\end{remarque}
+
+\vspace{0.4cm}
+\noindent\textbf{Limites de ($\mathcal{L}\mathcal{P}, \models$).}
+
+\vspace{0.2cm}
+La logique propositionnelle ne traite que d'un individu à la fois : elle est insuffisante
+pour exprimer des propriétés générales portant sur des ensembles d'objets ou des relations
+entre eux. Par exemple, la phrase « Les amis de mes amis sont mes amis » ne peut pas être
+formalisée directement en logique propositionnelle. C'est précisément ce que permet la
+logique du premier ordre, présentée dans la section suivante.
+
+\newpage
+
 \subsection*{2. Logique du premier ordre}
 \phantomsection
 \label{lpo}
 \vspace{0.4cm}
-Pour représenter des formules dans la \textit{logique du premier ordre}, on se donne un
+
+Pour pouvoir étendre le champs de couverture de la logique propositionnelle, on a défini la \textit{logique du premier ordre} ou logique des prédicats (noté ($\mathcal{L}1\mathcal{O}, \models$)).
+
+Cette logique permet la représentation de propriétés portant sur des ensembles d'objets ou des relations.
+
+
+
+\vspace{0.4cm}
+\noindent\textbf{Syntaxe de ($\mathcal{L}1\mathcal{O}, \models$).}
+\vspace{0.2cm}
+
+Pour représenter des formules dans ($\mathcal{L}1\mathcal{O}, \models$), on se donne un
 \textit{alphabet} qui servira à les décrire. Cet alphabet est composé des éléments suivants :
 \begin{itemize}
     \item Ensemble de \textit{variables} : $x, y, z, \ldots$
@@ -280,6 +413,97 @@ qu'ils prennent). Parmi les symboles de fonctions, ceux d'arité $0$ sont appel�
     Le choix de ces différents symboles est purement arbitraire~: on pourrait nommer les
     variables $a$, $b$ ou $c$. Dans un souci d'harmonisation et de standardisation, on
     utilisera néanmoins les symboles les plus courants dans la littérature.
+\end{remarque}
+\vspace{0.2cm}
+
+Pour définir la structure d'une formule de ($\mathcal{L}1\mathcal{O}, \models$), il nous faut définir la notion d'\textit{atome} qui s'appuie elle même sur la notion de \textit{terme}.
+
+Un terme est une expression syntaxique définie par la grammaire suivante :
+
+\vspace{0.2cm}
+\[
+\langle\text{terme}\rangle ::= \langle\text{variable}\rangle \mid
+\langle\text{constante}\rangle \mid
+\langle\text{symbole de fonction}\rangle(\underbrace{\langle\text{terme}\rangle, \ldots,
+\langle\text{terme}\rangle}_{n \text{ termes}})
+\]
+
+\noindent où $n$ correspond à l'arité du symbole de fonction.
+
+\begin{remarque}
+    Un terme \emph{n'est pas} une formule.
+\end{remarque}
+
+Soit $a$ et $b$ des constantes, $x$ et $y$ des variables, $f$ un symbole de fonction unaire (d'arité 1) et g un symbole de fonction binaire (d'arité 2). Ces expressions sont donc des exemples de termes :
+
+$$
+a \qquad x \qquad f(x) \qquad g(a, x) \qquad g(f(x), g(f(a), b))
+$$
+
+Un atome est un expression syntaxique définie par la grammaire suivante :
+
+\vspace{0.2cm}
+\[
+\langle\text{atome}\rangle ::= \langle\text{prédicat}\rangle
+(\underbrace{\langle\text{terme}\rangle, \ldots,
+\langle\text{terme}\rangle}_{n \text{ termes}})
+\]
+
+\noindent où $n$ correspond à l'arité du prédicat.
+\newpage
+
+Soit $P$ un prédicat unaire, $Q$ un prédicat binaires et $a$, $b$, $x$, $y$, $f$ et $g$ analogiquement introduits à ci-dessus. Ces expressions sont donc des exemples d'atomes :
+
+$$
+P(a) \qquad Q(x, b) \qquad P(f(x)) \qquad Q(g(a, x), f(b)) \qquad P(g(f(x), g(f(a), b)))
+$$
+
+Une formule de la logique du premier ordre est une expression syntaxique de la forme :
+
+\vspace{0.2cm}
+\[
+\begin{align*}
+\langle\text{formule}\rangle ::= \; 
+&\langle\text{connecteur d'arité 0}\rangle \mid
+\langle\text{atome}\rangle \mid
+\neg(\langle\text{formule}\rangle) \mid \\
+&(\langle\text{formule}\rangle\;\langle\text{connecteur binaire}\rangle\;\langle\text{formule}\rangle) \mid
+\langle\text{quantificateur}\rangle\;\langle\text{variable}\rangle\;(\langle\text{formule}\rangle)
+\end{align*}
+\]
+
+Les connecteurs sont les mêmes qu'en logique propositionnelle et les  deux \textit{quantificateurs} sont :
+
+\begin{itemize}
+    \item Le \textit{quantificateur universel} $\forall$ (« pour tout ») : la formule
+    $\forall x\, \varphi$ signifie que $\varphi$ est vraie quelle que soit la valeur
+    attribuée à $x$.
+    \item Le \textit{quantificateur existentiel} $\exists$ (« il existe ») : la formule
+    $\exists x\, \varphi$ signifie qu'il existe au moins une valeur de $x$ pour laquelle
+    $\varphi$ est vraie.
+\end{itemize}
+
+\vspace{0.4cm}
+\noindent\textbf{Variables libres et variables liées.}
+
+\vspace{0.2cm}
+Dans une formule $\forall x\, \varphi$ ou $\exists x\, \varphi$, on dit que $\varphi$ est
+la \textit{portée} du quantificateur. Une variable est dite \textit{liée} si elle
+apparaît dans la portée d'un quantificateur qui la gouverne ; sinon, elle est dite
+\textit{libre}. Une formule ne contenant aucune variable libre est appelée
+\textit{formule close}.
+
+\vspace{0.2cm}
+Par exemple, dans la formule $\forall x\; P(x) \rightarrow Q(x, y)$, la variable $x$
+est liée (par le quantificateur $\forall$) tandis que $y$ est libre. Cette distinction
+est importante : la vérité d'une formule close est indépendante de tout contexte, alors
+que celle d'une formule ouverte dépend des valeurs attribuées à ses variables libres.
+
+\begin{remarque}
+    Les quantificateurs $\forall$ et $\exists$ ne sont pas indépendants : on a
+    $\neg \forall x\; \varphi \equiv \exists x\; \neg\varphi$ et
+    $\neg \exists x\; \varphi \equiv \forall x\; \neg\varphi$. Il suffit donc
+    théoriquement d'un seul des deux.
 \end{remarque}
 
 \vspace{0.4cm}
@@ -347,8 +571,7 @@ moteurs d'inférence, les systèmes de réécriture de termes, et les prouveurs 
 \noindent\textbf{Unification de prédicats.}
 
 \vspace{0.2cm}
-L'unification s'étend naturellement aux \textit{atomes}, c'est-à-dire aux formules
-atomiques de la forme $P(t_1, \ldots, t_n)$. Deux atomes $P(s_1, \ldots, s_n)$ et
+L'unification s'étend naturellement aux atomes. Deux atomes $P(s_1, \ldots, s_n)$ et
 $P(t_1, \ldots, t_n)$ sont unifiables si et seulement s'ils partagent le même symbole
 de prédicat $P$ et si leurs arguments respectifs sont unifiables deux à deux.
 
