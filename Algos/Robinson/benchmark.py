@@ -86,6 +86,6 @@ def test_Serialise(n, predList, fileName):
 
 if __name__ == "__main__":
     predList = ["P", "Q", "R"]
-    test_Serialise(5000000, predList, "output4")
+    #test_Serialise(5000000, predList, "output4")
     moyenne = benchmark_with_output("output4")
     # print(f"\n==> Temps moyen final: {moyenne:.6f}s")

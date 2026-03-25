@@ -46,3 +46,21 @@ class TermStore(ABC, Generic[T]):
     def __iter__(self) -> Iterator[T]:
         """Permet l'itération"""
         ...
+
+    @abstractmethod
+    def pretraitement(self, pred: 'Litteral') -> 'TermStore[T]':
+        """
+        Filtre le store pour ne retenir que les littéraux compatibles avec pred.
+        
+        On garde les littéraux qui ont :
+        - Le même prédicat que pred
+        - Le même arité que pred
+        - Le signe opposé de pred
+        
+        Args:
+            pred (Litteral): Le littéral de référence pour le filtrage.
+        
+        Returns:
+            TermStore[T]: Un nouveau store contenant uniquement les littéraux compatibles.
+        """
+        ...
