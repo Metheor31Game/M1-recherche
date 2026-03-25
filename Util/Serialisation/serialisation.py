@@ -1,10 +1,11 @@
 import os
+import gzip
 from Util.Litteral.Litteral import Litteral
 
 
 def serialiser(data, filename):
     """
-    Serialise les prédicats dans un fichier texte.
+    Serialise les prédicats dans un fichier texte compressé (gzip).
     Version brute sans prétraitement
     
     Args:
@@ -13,7 +14,7 @@ def serialiser(data, filename):
     
     Example:
         >>> litteraux = [Litteral("P", [X, Y]), Litteral("Q", [a])]
-        >>> serialiser(litteraux, "predicats.txt")
+        >>> serialiser(litteraux, "predicats.txt.gz")
         # Écrit: +P(X, Y).+Q(a).
     """
     outputDir = os.path.join(os.path.dirname(__file__), "Output")
@@ -23,12 +24,11 @@ def serialiser(data, filename):
     # Convertir chaque prédicat en string, la séparation se fait avec des points
     predicats_str = ".".join(str(pred) for pred in data) + "."
     
-    with open(filepath, 'w') as f:
-        f.write(predicats_str)
+    compresser(predicats_str, filepath)
 
 def deserialiser(filename):
     """
-    Désérialise les prédicats depuis un fichier texte brut.
+    Désérialise les prédicats depuis un fichier texte compressé (gzip).
 
     Le format attendu est une suite de prédicats séparés par des points,
     par exemple: P(f(X,Y),a).Q(a).¬R(X).
@@ -45,8 +45,7 @@ def deserialiser(filename):
     if not os.path.exists(filePath):
         raise FileNotFoundError(f"Fichier introuvable: {filePath}")
 
-    with open(filePath, 'r') as f:
-        contenu = f.read().strip()
+    contenu = decompresser(filePath).strip()
 
     if not contenu:
         return []
@@ -54,3 +53,11 @@ def deserialiser(filename):
     listPredicatStr = [pred.strip() for pred in contenu.split(".") if pred.strip()]
     listPredicat = [Litteral.from_string(pred) for pred in listPredicatStr]
     return listPredicat
+
+def compresser(data_str, path):
+    with gzip.open(path, "wt", encoding="utf-8") as f:
+        f.write(data_str)
+
+def decompresser(path: str) -> str:
+    with gzip.open(path, "rt", encoding="utf-8") as f:
+        return f.read()
