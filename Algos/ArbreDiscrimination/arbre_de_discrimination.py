@@ -548,61 +548,34 @@ class ArbreDeDiscrimination:
 
 # Exemple d'utilisation
 if __name__ == "__main__":
-    from Util.TermStore.terme import FabriqueDeTermes
     from Util.Litteral.Litteral import Litteral
  
     dt = ArbreDeDiscrimination()
  
-    terme1 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_var("Y"),
-        FabriqueDeTermes.creer_var("Z")
-    ])
-    terme2 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_var("Y"),
-        FabriqueDeTermes.creer_cons("a")
-    ])
-    terme3 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_fonc("g", 2, [
-            FabriqueDeTermes.creer_var("X"),
-            FabriqueDeTermes.creer_cons("a")
-        ]),
-        FabriqueDeTermes.creer_var("Y")
-    ])
-    terme4 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_fonc("g", 2, [
-            FabriqueDeTermes.creer_var("Z"),
-            FabriqueDeTermes.creer_cons("a")
-        ]),
-        FabriqueDeTermes.creer_var("Y")
-    ])
-
-    predicat1 = Litteral(predicat="P", enfants=[terme1, terme3], sign = True)
-    predicat2 = Litteral(predicat="P", enfants=[terme2, terme4], sign = False)
-    predicat3 = Litteral(predicat="P", enfants=[terme1, terme4], sign = True)
+    predicat1 = Litteral.from_string("P(X,X)")
+    predicat2 = Litteral.from_string("P(X,Y)")
+    predicat3 = Litteral.from_string("P(g(a,X),Y)")
+    predicat4 = Litteral.from_string("P(g(X,b),X)")
+    predicat5 = Litteral.from_string("P(f(a),Z)")
+    predicat6 = Litteral.from_string("P(a,b)")
+    predicat7 = Litteral.from_string("P(b,b)")
+    predicat8 = Litteral.from_string("P(X,f(b))")
+    predicat9 = Litteral.from_string("P(Y,b)")
  
-    dt.inserer(predicat1, f"predicat1 : {SYMBOLE_PREDICAT_POSITIF}P(f(Y, Z), f(g(X, a), Y))")
-    dt.inserer(predicat2, f"predicat2 : {SYMBOLE_PREDICAT_NEGATIF}P(f(Y, a), f(g(Z, a), Y))")
-    dt.inserer(predicat3, f"predicat3 : {SYMBOLE_PREDICAT_POSITIF}P(f(Y, Z), f(g(Z, a), Y))")
-   
-    
-    dt.affichage_arbre()
+    dt.inserer(predicat1, f"predicat1 : {SYMBOLE_PREDICAT_POSITIF}P(X, X)")
+    dt.inserer(predicat2, f"predicat2 : {SYMBOLE_PREDICAT_POSITIF}P(X, Y)")
+    dt.inserer(predicat3, f"predicat3 : {SYMBOLE_PREDICAT_POSITIF}P(g(a, X), Y)")
+    dt.inserer(predicat4, f"predicat4 : {SYMBOLE_PREDICAT_POSITIF}P(g(X, b), X)")
+    dt.inserer(predicat5, f"predicat5 : {SYMBOLE_PREDICAT_POSITIF}P(f(a), Z)")
+    dt.inserer(predicat6, f"predicat6 : {SYMBOLE_PREDICAT_POSITIF}P(a, b)")
+    dt.inserer(predicat7, f"predicat7 : {SYMBOLE_PREDICAT_POSITIF}P(b, b)")
+    dt.inserer(predicat8, f"predicat8 : {SYMBOLE_PREDICAT_POSITIF}P(X, f(b))")
+    dt.inserer(predicat9, f"predicat9 : {SYMBOLE_PREDICAT_POSITIF}P(Y, b)")
 
-    terme5 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_var("X"),
-        FabriqueDeTermes.creer_var("X")
-    ])
-    
-    terme6 = FabriqueDeTermes.creer_fonc("f", 2, [
-        FabriqueDeTermes.creer_fonc("g", 2, [
-            FabriqueDeTermes.creer_cons("a"),
-            FabriqueDeTermes.creer_var("X")
-        ]),
-        FabriqueDeTermes.creer_var("Y")
-    ])
 
-    predicat_recherche = Litteral(predicat="P", enfants=[terme5, terme6], sign = False)
+    predicat_recherche = Litteral.from_string(f"{SYMBOLE_PREDICAT_NEGATIF}P(f(Y),Z)")
  
-    print(f"\nRecherche de termes unifiables avec : {SYMBOLE_PREDICAT_NEGATIF}P(f(X, X), f(g(a, X), Y))")
+    print(f"\nRecherche de termes unifiables avec : {SYMBOLE_PREDICAT_NEGATIF}P(f(Y), Z)")
     resultats = dt.rechercher(predicat_recherche)
  
     if not resultats:

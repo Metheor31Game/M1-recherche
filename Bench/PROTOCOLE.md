@@ -77,4 +77,6 @@
 - Doit être le même pour chaque test (comparaison plus rapide) ;
    * donc suivre le même format.
 
-- 
+- Fichier de sortie (dictionnaire par exemple) ;
+   * Clé : littéral unifiable ;
+   * Valeur : substitution.
