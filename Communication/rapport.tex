@@ -98,7 +98,7 @@
     \begin{minipage}[t]{0.45\textwidth}
         \begin{flushleft}
             \small Etudiants : \\
-            \hspace*{1.5em} Ayath ABOGOURIN \\
+            \hspace*{1.5em} Ayath ABOGOUNRIN \\
             \hspace*{1.5em} Guillaume POTEL \\
             \hspace*{1.5em} Matheo VIGNERES
         \end{flushleft}
@@ -155,34 +155,27 @@ A FAIRE
             \noindent{\bfseries\color{sectioncolor} I. Généralités} \dotfill \pageref{generalites} \\[1em]
             \hspace*{2.8em}1. Logique des propositions \dotfill \pageref{lp} \\[0.5em]
             \hspace*{2.8em}2. Logique du premier ordre \dotfill \pageref{lpo} \\[0.5em]
-            \hspace*{2.8em}3. L'unification \dotfill \pageref{unification}
+            \hspace*{2.8em}3. L'unification \dotfill \pageref{unification}\\[1em]
+
+            \noindent{\bfseries\color{sectioncolor} II. Structures de données et algorithmes} \dotfill \pageref{structures} \\[1em]
+            \hspace*{2.8em}1. Structures de données représentant un terme \dotfill \pageref{repr_terme} \\[0.5em]
+            \hspace*{4.5em}a. AST (\textit{Abstract Syntax Tree}) \dotfill \pageref{ast} \\[0.3em]
+            \hspace*{4.5em}b. Arbre avec étiquettes \dotfill \pageref{arbre_etiquettes} \\[0.5em]
+            
+            \hspace*{2.8em}2. Structures de données représentant un ensemble de termes \dotfill \pageref{ensemble_termes} \\[0.5em]
+            \hspace*{4.5em}a. Liste \dotfill \pageref{liste} \\[0.3em]
+            \hspace*{4.5em}b. Ensemble \dotfill \pageref{ensemble} \\[0.3em]
+            \hspace*{4.5em}c. Dictionnaire \dotfill \pageref{dictionnaire} \\[0.5em]
+            
+            \hspace*{2.8em}3. Algorithmes d'unification classiques \dotfill \pageref{algo_unif} \\[0.5em]
+            \hspace*{4.5em}a. Martelli-Montanari \dotfill \pageref{martelli_montanari} \\[0.3em]
+            \hspace*{4.5em}b. Robinson \dotfill \pageref{robinson} \\[0.5em]
+            
+            \hspace*{2.8em}4. Discrimination Tree \dotfill \pageref{discrimination_tree}
+                        
 
             \vspace{0.3cm}
-            \noindent{\bfseries\color{sectioncolor} II. Structures de données et algorithmes} \dotfill \pageref{structures}
-            \begin{quote}
-                \begin{enumerate}[label=\arabic*., leftmargin=1.5em, itemsep=0.1em]
-                    \item Structures de données représentant un terme
-                    \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
-                        \item Arbre avec étiquettes
-                        \item AST (\textit{Abstract Syntax Tree})
-                    \end{enumerate}
-                    \item Structures de données représentant un ensemble de termes
-                    \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
-                        \item Liste
-                        \item Ensemble
-                        \item Dictionnaire
-                    \end{enumerate}
-                    \item Algorithmes d'unification classiques
-                    \begin{enumerate}[label=\alph*., leftmargin=1.5em, itemsep=0em]
-                        \item Martelli-Montanari
-                        \item Robinson
-                    \end{enumerate}
-                    \item Le Discrimination Tree
-                \end{enumerate}
-            \end{quote}
-
-            \vspace{0.3cm}
-            \noindent{\bfseries\color{sectioncolor} III. Résultats} \dotfill \pageref{algorithmes}
+            \noindent{\bfseries\color{sectioncolor} III. Résultats} \dotfill \pageref{resultats}
             \begin{quote}
                 \begin{enumerate}[label=\arabic*., leftmargin=1.5em, itemsep=0.1em]
                     
@@ -596,4 +589,18 @@ contradiction — et donc d'une preuve par l'absurde.
     à une contradiction.
 \end{exemple}
 
+
+% Structures de données et algorithmes:
+\newpage
+\section*{II. Structures de données et algorithmes}
+\addcontentsline{toc}{section}{II. Structures de données et algorithmes}
+\label{structures}
+
+\subsection*{1. Structures de données représentant un ensemble de termes}
+\phantomsection
+\label{repr_terme}
+
+\subsubsection*{\hspace{4em}a. AST (\textit{Abstract Syntax Tree})}
+\phantomsection
+\label{ast}
 \end{document}
