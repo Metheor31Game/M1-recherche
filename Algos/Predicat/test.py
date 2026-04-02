@@ -129,6 +129,7 @@ def testRechercherUnifiable():
 
     """
     Teste la fonction rechercherUnifiablesSimple.
+    L'ia a fait l'affichage, les données sont les miennes
     """
     print("\n\n" + "="*60)
     print("TESTS DE LA FONCTION rechercherUnifiablesSimple")
@@ -247,7 +248,7 @@ def testRechercherUnifiable():
     result = rechercherUnifiablesSimple(p1, preds)
     print(f"  Référence : {p1}")
     print(f"  Candidats : ¬P(a), ¬P(b), ¬P(c)")
-    print(f"  → Résultat : {len(result)} unification(s)")
+    print(f"  → Résultat : ", result)
     print(f"  ✓ Attendu : 3 unifications (tous les candidats)")
     
     print("\n" + "="*60)
@@ -256,7 +257,7 @@ def testRechercherUnifiable():
 
 # testUnifPredicat()
 
-# testRechercherUnifiable()
+testRechercherUnifiable()
 
 
 ############## Test generation aléatoire #######################
