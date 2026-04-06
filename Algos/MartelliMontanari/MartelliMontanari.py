@@ -47,28 +47,7 @@ class MartelliMontanari:
                     self.equations.pop(i)
                     changed = True
                     break
-
-                # Règle 2 : DECOMPOSITION (f(s1..sn) = f(t1..tn))
-                elif isinstance(left.etiquette, int) and isinstance(right.etiquette, int):
-                    if left.nom == right.nom and left.etiquette == right.etiquette:
-                        #print(f"[DECOMPOSITION] {eq}")
-                        self.equations.pop(i)
-                        for s, t in zip(left.enfants, right.enfants):
-                            self.system.add(s, t)
-                        changed = True
-                        break
-                    else:
-                        raise UnificationError(f"CLASH : Fonctions différentes '{left.nom}' et '{right.nom}'")
-
-                # Règle 3 : CLASH (Types incompatibles)
-                elif left.etiquette == ETIQUETTE_CONS and right.etiquette == ETIQUETTE_CONS:
-                    if left.nom != right.nom:
-                     raise UnificationError(f"CLASH : Constantes différentes '{left.nom}' et '{right.nom}'")
-                elif (left.etiquette == ETIQUETTE_CONS and right.etiquette != ETIQUETTE_CONS and right.etiquette != ETIQUETTE_VAR) or \
-                     (isinstance(left.etiquette, int) and right.etiquette == ETIQUETTE_CONS):
-                    raise UnificationError(f"CLASH : Impossible d'unifier {left} (type {left.etiquette}) et {right} (type {right.etiquette})")
-
-                # Règle 4 : ORIENT (t = x devient x = t)
+                # Règle 2 : ORIENT (t = x devient x = t)
                 elif left.etiquette != ETIQUETTE_VAR and right.etiquette == ETIQUETTE_VAR:
                     #print(f"[ORIENT] Inversion de {eq}")
                     self.equations[i].left, self.equations[i].right = right, left
@@ -99,5 +78,26 @@ class MartelliMontanari:
                         changed = True
                         break
 
+                # Règle 3 : DECOMPOSITION (f(s1..sn) = f(t1..tn))
+                elif isinstance(left.etiquette, int) and isinstance(right.etiquette, int):
+                    if left.nom == right.nom and left.etiquette == right.etiquette:
+                        #print(f"[DECOMPOSITION] {eq}")
+                        self.equations.pop(i)
+                        for s, t in zip(left.enfants, right.enfants):
+                            self.system.add(s, t)
+                        changed = True
+                        break
+                    else:
+                        raise UnificationError(f"CLASH : Fonctions différentes '{left.nom}' et '{right.nom}'")
+
+                # Règle 4 : CLASH (Types incompatibles)
+                elif left.etiquette == ETIQUETTE_CONS and right.etiquette == ETIQUETTE_CONS:
+                    if left.nom != right.nom:
+                     raise UnificationError(f"CLASH : Constantes différentes '{left.nom}' et '{right.nom}'")
+                elif (left.etiquette == ETIQUETTE_CONS and right.etiquette != ETIQUETTE_CONS and right.etiquette != ETIQUETTE_VAR) or \
+                     (isinstance(left.etiquette, int) and right.etiquette == ETIQUETTE_CONS):
+                    raise UnificationError(f"CLASH : Impossible d'unifier {left} et {right} (types incompatibles)")
+
+                
         #print("\n--- Unification réussie ---")
         return self.system
