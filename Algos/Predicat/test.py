@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 from Util.TermStore.terme import FabriqueDeTermes
 from Util.Litteral.Litteral import Litteral
 from Util.Litteral.Litteral import GenerateurLitteralAleatoire
-from Algos.Predicat.unifPredicat import unifPredicat, rechercherUnifiablesSimple
+from Algos.Predicat.unifPredicat import unifPredicat, rechercherUnifiablesSimple, afficherResultat
 from Util.TermStore.SetStore import SetStore
 
 
@@ -257,7 +257,7 @@ def testRechercherUnifiable():
 
 # testUnifPredicat()
 
-testRechercherUnifiable()
+#testRechercherUnifiable()
 
 
 ############## Test generation aléatoire #######################
@@ -270,4 +270,25 @@ testRechercherUnifiable()
 
 # for p in predicats:
 #    print(p)
+
+
+
+################ Test pour vérifier que tout les algos ont les mêmes résultats ############
+
+l1 = Litteral.from_string("¬P(f(Y), g(Z), X)")
+
+set = SetStore()
+set.push(Litteral.from_string("P(Y, g(X), X)"))
+set.push(Litteral.from_string("P(X, a, Z)"))
+set.push(Litteral.from_string("P(f(a), X, X)"))
+set.push(Litteral.from_string("P(X, g(a), X)"))
+set.push(Litteral.from_string("P(X, g(f(Y), X), X)"))
+set.push(Litteral.from_string("P(f(Y), g(a), X)"))
+set.push(Litteral.from_string("P(f(Z), g(Z), Z)"))
+set.push(Litteral.from_string("P(f(a), g(Z), a)"))
+set.push(Litteral.from_string("P(f(g(a)), g(Z), X)"))
+
+res = rechercherUnifiablesSimple(l1, set, "Robinson")
+
+afficherResultat(l1, res)
 

@@ -86,7 +86,27 @@ def rechercherUnifiablesSimple(p1: Litteral, preds: TermStore[Litteral], algo: s
             result[p] = subst
     return result
 
+def afficherResultat(p1: Litteral, resultat: dict):
+    """
+    Affiche le résultat correctement pour que ce soit plus lisible
+    """
+    print("\n=== Resultats de la recherche d'unification ===")
+    print(f"Litteral de reference : {p1}")
 
+    if not resultat:
+        print("Aucun litteral unifiable trouve.")
+        return
+
+    for i, (litteral, substitution) in enumerate(resultat.items(), start=1):
+        print(f"\n{i}. Litteral unifiable : {litteral}")
+
+        if not substitution:
+            print("   Substitution : vide")
+            continue
+
+        print("   Substitution :")
+        for var, terme_subst in substitution.items():
+            print(f"     {var} -> {terme_subst}")
 
 
 
