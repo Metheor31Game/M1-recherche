@@ -13,21 +13,21 @@ from Util.Serialisation.serialisation import serialiser, deserialiser
 
 def benchmark_with_output(fileName):
     """
-    Charge output1, place les prédicats dans un Store.
+    Charge output, place les prédicats dans un Store.
     Unifie le premier prédicat avec tous les autres 10 fois.
     Calcule le temps pour chaque unification.
     Renvoie la moyenne des 8 temps restants (après avoir retiré le premier et le dernier).
     """
     try:
         # Charger output1 depuis la sérialisation
-        litteralList = deserialiser(fileName)
+        litteralList = deserialiser(fileName, False)
         print(f"Chargé {len(litteralList)} littéraux depuis output1")
     except FileNotFoundError:
-        print("Fichier output1 introuvable. Il faut générer output1 avec test_Serialise.")
+        print("Fichier output introuvable. Il faut générer output1 avec test_Serialise.")
         return None
     
     if len(litteralList) < 2:
-        print("output1 contient trop peu de littéraux.")
+        print("output contient trop peu de littéraux.")
         return None
     
     # Séparer le premier littéral des autres
@@ -85,7 +85,4 @@ def test_Serialise(n, predList, fileName):
 
 
 if __name__ == "__main__":
-    predList = ["P", "Q", "R"]
-    #test_Serialise(5000000, predList, "output4")
-    moyenne = benchmark_with_output("output4")
-    # print(f"\n==> Temps moyen final: {moyenne:.6f}s")
+    moyenne = benchmark_with_output("BD12")

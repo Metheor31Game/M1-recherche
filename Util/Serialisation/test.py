@@ -46,14 +46,43 @@ def testSerialisationAleatoire():
     return
 
 
-def serialisation(predList, arite, profondeur, n):
+def serialisation(predList, arite, profondeur, n, filename):
     """
     Génère un fichier de donnée aléatoire avec un certaine quantité et signature
     """
+    generateur = GenerateurLitteralAleatoire(predList, arite, profondeur)
+    preds = generateur.generer_litteraux(n)
+    serialiser(preds, filename, False)
 
 
 
 
 if __name__ == "__main__":
-    testSerialisation()
-    testSerialisationAleatoire()
+    # testSerialisation()
+    # testSerialisationAleatoire()
+
+    # Génération bd1
+    # serialisation(["P", "Q", "R"], 3, 3, 10000, "BD1")
+    # Génération bd2
+    # serialisation(["P", "Q", "R"], 3, 3, 100000, "BD2")
+    # Génération bd3
+    # serialisation(["P", "Q", "R"], 3, 3, 1000000, "BD3")
+    # Génération bd4
+    # serialisation(["P", "Q", "R"], 6, 6, 10000, "BD4")
+    # Génération bd5
+    # serialisation(["P", "Q", "R"], 6, 6, 100000, "BD5")
+    # Génération bd6
+    # serialisation(["P", "Q", "R"], 6, 6, 1000000, "BD6")
+    # Génération bd7
+    # serialisation(["P", "Q", "R", "S", "T", "U"], 3, 3, 10000, "BD7")
+    # Génération bd8
+    # serialisation(["P", "Q", "R", "S", "T", "U"], 3, 3, 100000, "BD8")
+    # Génération bd9
+    # serialisation(["P", "Q", "R", "S", "T", "U"], 3, 3, 1000000, "BD9")
+    # Génération bd10
+    # serialisation(["P", "Q", "R", "S", "T", "U"], 6, 6, 10000, "BD10")
+    # Génération bd11
+    # serialisation(["P", "Q", "R", "S", "T", "U"], 6, 6, 100000, "BD11")
+    # Génération bd12
+    # serialisation(["P", "Q", "R", "S", "T", "U"], 6, 6, 1000000, "BD12zip")
+    pass
