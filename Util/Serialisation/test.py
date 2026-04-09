@@ -46,6 +46,12 @@ def testSerialisationAleatoire():
     return
 
 
+def serialisation(predList, arite, profondeur, n):
+    """
+    Génère un fichier de donnée aléatoire avec un certaine quantité et signature
+    """
+
+
 
 
 if __name__ == "__main__":
