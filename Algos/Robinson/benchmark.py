@@ -41,6 +41,7 @@ def benchRobinson(candidat: Litteral, predList: list, structure: str, pretraitem
     # Remplir le store avec la predList
     # Remarque : on ne mesure pas ce temps car ce n'est pas du prétraitement
     # au sens algorithmique (c'est juste du remplissage initial de la structure).
+    print("Creation de la structure")
     for e in predList:
         store.push(e)
 
@@ -48,6 +49,7 @@ def benchRobinson(candidat: Litteral, predList: list, structure: str, pretraitem
     # 0 par défaut si on ne prétraite pas
     tps_pretraitement = 0.0
     if pretraitement:
+        print("debut pretraitement")
         # On mémorise l'instant avant le prétraitement
         debut_pretraitement = time.perf_counter()
         store.pretraitement(candidat)
@@ -58,6 +60,7 @@ def benchRobinson(candidat: Litteral, predList: list, structure: str, pretraitem
     # On mémorise l'instant avant de lancer la recherche d'unifications
     debut_unif = time.perf_counter()
     if touteUnif:
+        print("Debut unification")
         # Cas où on cherche toutes les unifications possibles
         result = rechercherUnifiablesSimple(candidat, store)
     else:
@@ -67,7 +70,7 @@ def benchRobinson(candidat: Litteral, predList: list, structure: str, pretraitem
     tps_unif = time.perf_counter() - debut_unif
 
     # Affichage pour debug (attention : ça peut fausser le temps du bench
-    afficherResultat(candidat, result)
+    #afficherResultat(candidat, result)
 
     return (tps_pretraitement, tps_unif)
 

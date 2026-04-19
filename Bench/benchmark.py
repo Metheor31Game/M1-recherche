@@ -13,13 +13,17 @@ def benchmark(candidat: str, filename: str, algo: str, structure: str):
     touteUnif = True
     pretraitement = True
     if algo == "arbre":
+        print("Début déserialisation")
         predList = deserialiser(os.path.basename(filename), False)
         realCandidat = Litteral.from_string(candidat)
+        print("Debut algo")
         tps_pretraitement, tps_unif = benchmark_arbre_discrimination(predList, realCandidat, touteUnif)
         print(tps_pretraitement, tps_unif)
     if algo == "robinson":
+        print("Début déserialisation")
         predList = deserialiser(os.path.basename(filename), False)
         realCandidat = Litteral.from_string(candidat)
+        print("Debut algo")
         tps_pretraitement, tps_unif = benchRobinson(realCandidat, predList, structure, pretraitement, touteUnif)
         print(tps_pretraitement, tps_unif)
 
@@ -34,4 +38,4 @@ if __name__ == "__main__":
         "Output",
         filename,
     )
-    benchmark("Q(X, f(Y), Z, g(X))", file, "robinson", "liste")
+    benchmark("Q(X, f(Y), Z, g(X))", file, "robinson", "ensemble")
