@@ -1,5 +1,7 @@
 import sys
 import os
+import time
+import gc
 
 racine_projet = os.path.join(os.path.dirname(__file__), "..", "..")
 sys.path.append(os.path.abspath(racine_projet))
@@ -164,6 +166,50 @@ class ArbreDeDiscrimination:
                 ))
         
         return resultats
+    
+    def rechercher_une(self, predicat: Litteral) -> Optional[ResultatRecherche]:
+        """
+        Recherche le premier prédicat unifiable trouvé avec le prédicat donné dans l'arbre de discrimination.
+        
+        On retourne la substitution ainsi que le pointeur associé.
+        Ainsi on sait comment instancier les variables afin de réaliser l'unification.
+
+        TODO peut-etre modifier parce que filtre tous les candidats quand meme
+        idée : alterner pour cette fonction filtre et unif pour chaque candidat ?
+
+        Args:
+            predicat    (Litteral)  :   Le prédicat que l'on souhaite unifier à notre arbre.
+        Returns:
+            ResultatRecherche :  Résultat (comprenant donc pointeur et substitution)
+        """
+
+        # Mise à plat du terme recherché :
+        var_map: Dict[str, str] = {}
+        predicat_mis_a_plat = self._mise_a_plat_predicat(predicat, var_map, NORM_VAR_REQUETE)
+        
+        # Cache local
+        cache_profondeur: Dict[int, int] = {}
+        def profondeur_cached(index: int) -> int:
+            if index not in cache_profondeur:
+                cache_profondeur[index] = self._calculer_profondeur_depuis_index(
+                    index, predicat_mis_a_plat, profondeur_cached
+                )
+            return cache_profondeur[index]
+
+        # Phase de filtrage :
+        # On cherche juste les chemins valide par rapport au terme demandé
+        candidats: List[PointeurFeuille] = []
+        self._collecter_candidats(self.racine, predicat_mis_a_plat, 0, candidats, profondeur_cached)
+
+        # Phase d'unification :
+        # C'est ici qu'on valide les substitutions trouvées par la phase de filtrage
+        for pointeur in candidats:
+            substitution = self._unifier_predicats(predicat, pointeur.predicat)
+            if substitution is not None:
+                return ResultatRecherche(
+                    substitution=substitution,
+                    pointeurs=[pointeur.pointeur]
+                )
     
     # Filtrage ----------------------------------------------------
     
@@ -545,6 +591,47 @@ class ArbreDeDiscrimination:
             chemin_enfant = f"{chemin}/{noeud_enfant.symbole}"
             self.affichage_arbre(noeud_enfant, niveau + 1, prefixe + extension, est_dernier_enfant, chemin_enfant)
  
+def benchmark_arbre_discrimination(litteraux: List[Litteral], query_litteral: Litteral, toutes_unifs: bool=True) -> Tuple[float, float]:
+    """
+    Fonction utilitaire pour bench des algos.
+    Calcul le temps de pré-traitement (i.e l'ajout des littéraux dans l'arbre) et le temps d'unification.
+    L'unification est paramétrée par `toutes_unifs`qui recherche soit la première unification trouvée, soit toutes.
+
+    Args:
+        litteraux (List[Litteral]): Les littéraux à ajouter dans l'arbre.
+        query_litteral (Litteral): Le littéral que l'on cherche à unifier.
+        toutes_unifs (bool, optional): Choix de trouver toutes les unifications ou seulement la première. Defaults to True.
+
+    Returns:
+        Tuple[float, float]: _description_
+    """
+
+    pointeurs = [str(litteral) for litteral in litteraux] # On convertit les pointeurs avant car pas important pour bench
+    gc.disable()
+
+
+    # Mesure du temps de pré-traitement (ici insertion dans arbre) :
+    debut_pre_traitement = time.perf_counter() 
+    arbre = ArbreDeDiscrimination() 
+    for litteral, pointeur in zip(litteraux, pointeurs):
+        arbre.inserer(litteral, pointeur)
+    fin_pre_traitement = time.perf_counter()
+    temps_pre_traitement = (fin_pre_traitement - debut_pre_traitement)
+
+    # Mesure du temps d'unification :
+    if toutes_unifs:
+        debut_unif = time.time()
+        resultats_recherche = arbre.rechercher(query_litteral)
+        fin_unif = time.time()
+    else:
+        debut_unif = time.time()
+        resultat_recherche = arbre.rechercher_une(query_litteral)
+        fin_unif = time.time()
+    temps_unif = (fin_unif - debut_unif)
+
+    gc.enable()
+
+    return (temps_pre_traitement, temps_unif)
 
 # Exemple d'utilisation
 if __name__ == "__main__":
