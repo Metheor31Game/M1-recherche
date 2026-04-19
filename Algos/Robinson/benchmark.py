@@ -3,13 +3,75 @@ import os
 import time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
+from Util.TermStore.TermStore import TermStore
 from Util.TermStore.terme import FabriqueDeTermes, GenerateurDeTermesAleatoires
 from Util.TermStore.ListStore import ListStore
 from Util.TermStore.SetStore import SetStore
 from Algos.Predicat.unifPredicat import rechercherUnifiablesSimple
+from Algos.Predicat.unifPredicat import afficherResultat
 from Util.Litteral.Litteral import Litteral
 from Util.Litteral.Litteral import GenerateurLitteralAleatoire
 from Util.Serialisation.serialisation import serialiser, deserialiser
+
+def benchRobinson(candidat: Litteral, predList: list, structure: str, pretraitement: bool, touteUnif = True):
+    """
+    Fonction utilitaire pour bench des algos.
+    Calcul le temps de pré-traitement et le temps d'unification.
+    L'unification est paramétrée par `toutes_unifs` qui recherche soit la première unification trouvée, soit toutes.
+
+    Args:
+        litteraux (List[Litteral]): Les littéraux.
+        query_litteral (Litteral): Le littéral que l'on cherche à unifier.
+        structure (str): Permet de dire quelle structure on veut bench. (liste, ensemble, dictionnaire)
+        pretraitement (bool): dit si oui ou non on veut prétraiter.
+        toutes_unifs (bool, optional): Choix de trouver toutes les unifications ou seulement la première. Defaults to True.
+    Returns:
+        Tuple[float, float]: (temps_pretraitement, temps_unification) en secondes.
+    """
+    # Choix de la structure de données utilisée pour stocker les littéraux
+    store = TermStore
+    if structure == "liste":
+        store = ListStore()
+    elif structure == "ensemble":
+        store = SetStore()
+    elif structure == "dictionnaire":
+        # a faire plus tard
+        pass
+
+    # Remplir le store avec la predList
+    # Remarque : on ne mesure pas ce temps car ce n'est pas du prétraitement
+    # au sens algorithmique (c'est juste du remplissage initial de la structure).
+    for e in predList:
+        store.push(e)
+
+    # --- Calcul du temps de prétraitement ---
+    # 0 par défaut si on ne prétraite pas
+    tps_pretraitement = 0.0
+    if pretraitement:
+        # On mémorise l'instant avant le prétraitement
+        debut_pretraitement = time.perf_counter()
+        store.pretraitement(candidat)
+        # Différence entre maintenant et le début = durée du prétraitement
+        tps_pretraitement = time.perf_counter() - debut_pretraitement
+
+    # --- Calcul du temps d'unification ---
+    # On mémorise l'instant avant de lancer la recherche d'unifications
+    debut_unif = time.perf_counter()
+    if touteUnif:
+        # Cas où on cherche toutes les unifications possibles
+        result = rechercherUnifiablesSimple(candidat, store)
+    else:
+        # A faire plus tard : recherche de la première unification seulement
+        result = None
+    # Différence = durée réelle de l'unification
+    tps_unif = time.perf_counter() - debut_unif
+
+    # Affichage pour debug (attention : ça peut fausser le temps du bench
+    afficherResultat(candidat, result)
+
+    return (tps_pretraitement, tps_unif)
+
+    
 
 def benchmark_with_output(fileName):
     """
@@ -80,7 +142,6 @@ def test_Serialise(n, predList, fileName):
     serialiser(litteralList, fileName)
     t1ser = time.perf_counter()
     print("Temps de serialisation : ", t1ser - t0ser)
-
     
 
 

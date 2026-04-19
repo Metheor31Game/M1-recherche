@@ -43,9 +43,30 @@ def test2():
     print("Unification avec", pred1)
     print(rechercherUnifiablesSimple(pred1, store, "Robinson"))
     
+def test3():
+    # teste le prétraitement de robinson
+    gen = GenerateurLitteralAleatoire(["P", "Q", "R"], 2, 2)
+    listPred = gen.generer_litteraux(30)
+
+    store = ListStore()
+    for e in listPred:
+        store.push(e)
+
+    candidat = store.pop()
+
+    print("Candidat : \n")
+    print(candidat)
+
+    print("\nAvant prétraitement : \n")
+    print(store)
+
+    #prétraitement
+    store.pretraitement(candidat)
+    print("\nAprès prétraitement : \n")
+    print(store)
 
 #test1()
-test2()
-
+#test2()
+test3()
 
 

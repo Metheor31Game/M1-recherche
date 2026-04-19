@@ -45,13 +45,11 @@ class ListStore(TermStore[T]):
         Returns:
             ListStore[T]: Un nouveau store contenant uniquement les littéraux compatibles.
         """
-        nouveau_store = ListStore()
-        for litteral in self._data:
-            # Vérifier compatibilité : même prédicat, même arité, signe opposé
-            if (litteral.predicat == pred.predicat and 
-                litteral.arity == pred.arity and 
-                litteral.sign != pred.sign):
-                nouveau_store.push(litteral)
-        return nouveau_store
+        self._data = [
+        litteral for litteral in self._data
+        if (litteral.predicat == pred.predicat
+            and litteral.arity == pred.arity
+            and litteral.sign != pred.sign)
+        ]
     
     
