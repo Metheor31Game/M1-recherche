@@ -45,3 +45,23 @@ def traiter_litteraux(liste_litteraux):
                     echec += 1
     print("Fin du traitement.")
     return comparaisons, succes, echec
+
+
+def lit_liste(l1,list_litteraux, touteUnif=True):
+    resultat = {}
+    for l2 in list_litteraux:
+        if l1.predicat == l2.predicat and l1.sign != l2.sign and l1.arity == l2.arity:
+            system = TermSystem()
+
+            for t1, t2 in zip(l1.enfants, l2.enfants):
+                system.add(t1, t2)
+
+            mm = MartelliMontanari(system)
+            try:
+                unificateur=mm.solve()                  
+                resultat[l2] = unificateur
+                if not touteUnif:
+                    return resultat # Ici on retourne dès la première unification réussie
+            except UnificationError:
+                pass
+    return resultat

@@ -55,3 +55,35 @@ def traiter_litteraux_dict(liste_litteraux):
 
     print("Fin du traitement.")
     return comparaisons, succes, echec
+
+
+def lit_dict(l1, index: dict, touteUnif: bool = True):
+
+    resultat = {}
+ 
+    if l1.predicat not in index:
+        return resultat # Ici on retourne un ensmble vide
+ 
+   
+    if l1.sign:
+        candidats = index[l1.predicat]["negatifs"]
+    else:
+        candidats = index[l1.predicat]["positifs"]
+ 
+    for l2 in candidats:
+        if l1.arity == l2.arity:
+ 
+            system = TermSystem()
+            for t1, t2 in zip(l1.enfants, l2.enfants):
+                system.add(t1, t2)
+    
+            mm = MartelliMontanari(system)
+            try:
+                unificateur = mm.solve()
+                resultat[l2] = unificateur
+                if not touteUnif:
+                    return resultat  # Ici on retourne dès la première unification réussie
+            except UnificationError:
+                pass
+ 
+    return resultat
