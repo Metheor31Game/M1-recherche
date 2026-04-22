@@ -8,7 +8,7 @@ from Util.TermStore.TermList import TermSystem
 
 def bench(candidat: Litteral, predList: list, structure: str, pretraitement: bool, touteUnif=True):
     
-    tps_pretraitement = None
+    tps_pretraitement = 0.0
     collection = predList  
 
     if pretraitement:
