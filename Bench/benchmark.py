@@ -88,7 +88,7 @@ def benchmark(candidat: str, filename: str, algo: str, structure: str):
     Mesure temps, RAM et CPU de manière uniforme pour permettre la comparaison.
     """
     touteUnif = True
-    pretraitement = True
+    pretraitement = False
 
     # --- chargement des données ---
     print("Début déserialisation")
@@ -122,7 +122,7 @@ def benchmark(candidat: str, filename: str, algo: str, structure: str):
 
 
 if __name__ == "__main__":
-    filename = "BD6"
+    filename = "jeu23"
     file = os.path.join(
         os.path.dirname(__file__),
         "..",
@@ -131,4 +131,4 @@ if __name__ == "__main__":
         "Output",
         filename,
     )
-    benchmark("R(X, f(Y))", file, "robinson", "ensemble")
+    benchmark("S(X, b, V, a, Y, j(a), V, Z, b, W, c, d, i(b, X), U, X)", file, "arbre", "arbre")
