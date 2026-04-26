@@ -91,5 +91,6 @@ def bench(candidat: Litteral, predList: list, structure: str, pretraitement: boo
     print(f"Structure           : {structure}")
     print(f"Temps prétraitement : {tps_pretraitement} s")
     print(f"Temps unification   : {tps_unification} s")
+    print(f"Le nombre d'unifications : {len(resultat)}")
 
-    return (tps_pretraitement, tps_unification)
+    return (tps_pretraitement, tps_unification, len(resultat))
