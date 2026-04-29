@@ -244,11 +244,17 @@ Nous commencerons par un rappel sur les différentes notions abordées dans notr
     D'après nos connaissances, l'UE de L3 intitulée \emph{Logique des propositions - Logique du premier ordre}, de Jean Lieber et l'UE de M1 intitulée \emph{Logiques et Modèles de Calcul}, de Didier Galmiche.
 \end{avantpropos}
 
+\vspace{0.4cm}
+\noindent\textbf{Fil conducteur.}
+\vspace{0.4cm}
+
+Tout au long de ce chapitre, nous allons construire progressivement les outils nécessaires pour répondre à une question très concrète : comment une machine peut-elle \emph{démontrer} automatiquement que « Socrate est mortel » ? Ce raisonnement, connu sous le nom de \textit{syllogisme}, peut sembler trivial au lecteur, mais sa mécanisation requiert précisément les notions que nous allons introduire : la logique des propositions, puis la logique du premier ordre, et enfin l'unification.
+\vspace{0.4cm}
+
 
 \subsection*{1. Logique des propositions}
 \phantomsection
 \label{lp}
-
 \vspace{0.4cm}
 \noindent\textbf{Logique formelle.}
 
@@ -305,7 +311,8 @@ Les connecteurs ont les lectures suivantes :
 \vspace{0.4cm}
 
 L'ensemble des variables se note $\mathcal{V}$. Il est généralement défini implicitement via les variables utilisées dans les formules.
-\newpage
+
+\vspace{0.4cm}
 Exemple :
 \vspace{0.4cm}
 
@@ -359,16 +366,31 @@ D'après la construction sémantique ci-dessus, on a :
 \end{remarque}
 
 \vspace{0.4cm}
+\newpage
 \noindent\textbf{Limites de ($\mathcal{L}\mathcal{P}, \models$).}
 
 \vspace{0.2cm}
-La logique propositionnelle ne traite que d'un individu à la fois : elle est insuffisante
+La logique propositionnelle ne traite que d'un individu à la fois~: elle est insuffisante
 pour exprimer des propriétés générales portant sur des ensembles d'objets ou des relations
-entre eux. Par exemple, la phrase « Les amis de mes amis sont mes amis » ne peut pas être
-formalisée directement en logique propositionnelle. C'est précisément ce que permet la
-logique du premier ordre, présentée dans la section suivante.
+entre eux.
 
-\newpage
+Revenons à notre syllogisme. On peut certes poser, comme dans l'exemple précédent~:
+\begin{center}
+\begin{tabular}{cl}
+    $p$ & «~Socrate est un homme~» \\
+    $q$ & «~Tout homme est mortel~» \\
+    $r$ & «~Socrate est mortel~»
+\end{tabular}
+\end{center}
+et former la tautologie $(p \wedge q) \rightarrow r$. Mais ce faisant, on \emph{encode
+en dur} chaque fait~: la proposition $q$ est un bloc opaque~; on ne peut pas en extraire
+la règle générale «~pour tout individu $x$, si $x$ est un homme, alors $x$ est mortel~».
+Si l'on voulait raisonner sur d'autres individus, e.g. Platon ou Aristote, il faudrait
+introduire autant de nouvelles variables propositionnelles, sans jamais capturer la
+généralité du raisonnement.
+
+C'est précisément cette limite que lève la logique du premier ordre, présentée dans la
+section suivante, en introduisant des \textit{variables} sur lesquelles on peut quantifier.
 
 \subsection*{2. Logique du premier ordre}
 \phantomsection
@@ -378,8 +400,6 @@ logique du premier ordre, présentée dans la section suivante.
 Pour pouvoir étendre le champs de couverture de la logique propositionnelle, on a défini la \textit{logique du premier ordre} ou logique des prédicats (noté ($\mathcal{L}1\mathcal{O}, \models$)).
 
 Cette logique permet la représentation de propriétés portant sur des ensembles d'objets ou des relations.
-
-
 
 \vspace{0.4cm}
 \noindent\textbf{Syntaxe de ($\mathcal{L}1\mathcal{O}, \models$).}
@@ -443,7 +463,6 @@ Un atome est un expression syntaxique définie par la grammaire suivante :
 \]
 
 \noindent où $n$ correspond à l'arité du prédicat.
-\newpage
 
 Soit $P$ un prédicat unaire, $Q$ un prédicat binaires et $a$, $b$, $x$, $y$, $f$ et $g$ analogiquement introduits à ci-dessus. Ces expressions sont donc des exemples d'atomes :
 
@@ -532,11 +551,52 @@ tel que $Q$ est satisfait par le couple $\bigl(g(x, y),\, f(a)\bigr)$ »}.
 \end{itemize}
 
 
+\vspace{0.4cm}
+\noindent\textbf{Retour sur notre fil conducteur.}
 
+\vspace{0.2cm}
+Nous disposons maintenant des outils pour formaliser proprement le syllogisme de Socrate.
+Introduisons la signature suivante :
+\begin{itemize}
+    \item Constante : $\mathit{socrate}$
+    \item Symboles de prédicats : $\mathit{Homme}$ d'arité $1$, $\mathit{Mortel}$ d'arité $1$
+\end{itemize}
+Le raisonnement se traduit alors par la base de connaissances :
+\[
+    B = \bigl\{\; \forall x\;\bigl(\mathit{Homme}(x) \rightarrow \mathit{Mortel}(x)\bigr),
+    \quad \mathit{Homme}(\mathit{socrate}) \;\bigr\}
+\]
+et l'on souhaite démontrer :
+\[
+    B \models \mathit{Mortel}(\mathit{socrate})
+\]
+
+\begin{remarque}
+    En logique propositionnelle, il aurait fallu créer une proposition distincte pour chaque
+    individu. Ici, une seule formule quantifiée $\forall x$ capture la règle générale,
+    applicable à n'importe quelle constante.
+\end{remarque}
+
+\vspace{0.2cm}
+Une technique courante pour réaliser ce type de preuve automatiquement est la
+\textit{démonstration par réfutation} : plutôt que de prouver $\mathit{Mortel}(\mathit{socrate})$
+directement, on ajoute sa négation à $B$ et l'on cherche une contradiction. En mettant
+les formules sous forme clausale (disjonctions de littéraux), on obtient :
+\begin{align*}
+    C_1 &= \neg\mathit{Homme}(x) \vee \mathit{Mortel}(x) \\
+    C_2 &= \mathit{Homme}(\mathit{socrate}) \\
+    C_3 &= \neg\mathit{Mortel}(\mathit{socrate})
+\end{align*}
+Pour dériver la contradiction à partir de $C_1$ et $C_2$, il faut \textit{résoudre}
+ces deux clauses, i.e. trouver une substitution qui rende $\mathit{Homme}(x)$
+identique à $\mathit{Homme}(\mathit{socrate})$. C'est exactement ce que réalise
+l'\textit{unification}, présentée dans la section suivante.
 
 \subsection*{3. L'unification}
 \phantomsection
 \label{unification}
+
+\vspace{0.2cm}
 
 \noindent\textbf{Unification de termes.}
 
@@ -575,19 +635,27 @@ sa \textit{négation} $\neg P(s_1, \ldots, s_n)$. Si une substitution $\sigma$ u
 leurs arguments :
 $$\sigma\bigl(P(t_1, \ldots, t_n)\bigr) = \sigma\bigl(P(s_1, \ldots, s_n)\bigr)$$
 alors la résolution produit une \textit{clause vide}, notée $\square$, témoin d'une
-contradiction — et donc d'une preuve par l'absurde.
+contradiction, donc d'une preuve par l'absurde.
+
+\vspace{0.4cm}
+\noindent\textbf{Clôture du fil conducteur.}
 
 \vspace{0.2cm}
-\noindent\textbf{Exemple.}
+Nous pouvons à présent achever la preuve amorcée à la section précédente.
+La substitution $\sigma = \{x \mapsto \mathit{socrate}\}$ unifie $\mathit{Homme}(x)$
+avec $\mathit{Homme}(\mathit{socrate})$.
 
-\vspace{0.2cm}
-\begin{exemple}
-    Soient les deux clauses $P(X, a)$ et $\neg P(b, Y)$. La substitution
-    $\sigma = \{X \mapsto b,\ Y \mapsto a\}$ unifie leurs atomes :
-    $$\sigma\bigl(P(X, a)\bigr) = P(b, a) = \sigma\bigl(P(b, Y)\bigr)$$
-    La résolution de ces deux clauses produit la clause vide $\square$, concluant
-    à une contradiction.
-\end{exemple}
+La résolution de $C_1$ et $C_2$ produit alors $\mathit{Mortel}(\mathit{socrate})$.
+En appliquant à nouveau la règle de résolution sur ce résultat avec $C_3 = \neg\mathit{Mortel}(\mathit{socrate})$, on obtient la clause vide $\square$,
+attestant d'une contradiction : la négation de ce que l'on voulait prouver est
+incompatible avec la base de connaissances.
+
+\begin{remarque}
+    Cet exemple illustre le rôle central de l'unification dans la démonstration
+    automatique~: sans elle, la règle de résolution ne pourrait pas \emph{instancier}
+    les variables et ne serait donc d'aucune utilité pratique. La question de
+    l'\emph{efficacité} de cette unification, en fonction des structures de données et des algorithmes utilisés, est précisément l'objet du reste de ce rapport.
+\end{remarque}
 
 
 % Structures de données et algorithmes:
