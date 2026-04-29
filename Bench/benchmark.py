@@ -26,7 +26,7 @@ def _mesurer_ressources(fonction_algo, *args, **kwargs):
 
     Retourne un dict avec toutes les mesures + le résultat brut de l'algo.
 
-    Le résultat brut a maintenant la forme :
+    Le résultat brut a la forme :
         Tuple[float, List[Tuple[float, int]]]
         = (temps_prétraitement, [(tps_unif_candidat_i, nb_unif_candidat_i), ...])
     """
@@ -179,4 +179,4 @@ if __name__ == "__main__":
         "P(X, Y, Z)",
     ]
 
-    benchmark(listeCandidats, file, "arbre", "arbre")
+    benchmark(listeCandidats, file, "robinson", "ensemble")

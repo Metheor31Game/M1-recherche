@@ -2,7 +2,7 @@ import sys
 import os
 import time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
-
+from typing import List, Dict, Any, Optional, Tuple, NamedTuple
 from Util.TermStore.TermStore import TermStore
 from Util.TermStore.terme import FabriqueDeTermes, GenerateurDeTermesAleatoires
 from Util.TermStore.ListStore import ListStore
@@ -13,66 +13,88 @@ from Util.Litteral.Litteral import Litteral
 from Util.Litteral.Litteral import GenerateurLitteralAleatoire
 from Util.Serialisation.serialisation import serialiser, deserialiser
 
-def benchRobinson(candidat: Litteral, predList: list, structure: str, pretraitement: bool, touteUnif = True):
+def benchRobinson(candidats: List[Litteral], predList: list, structure: str,
+                  pretraitement: bool, touteUnif: bool = True) -> Tuple[float, List[Tuple[float, int]]]:
     """
-    Fonction utilitaire pour bench des algos.
-    Calcul le temps de pré-traitement et le temps d'unification.
-    L'unification est paramétrée par `toutes_unifs` qui recherche soit la première unification trouvée, soit toutes.
+    Fonction utilitaire pour bench de l'algo de Robinson sur une LISTE de candidats.
+    Calcule :
+      - le temps de prétraitement (une seule fois, indépendant du candidat
+        si `pretraitement` est True ; 0 sinon),
+      - pour chaque candidat : le temps d'unification + le nombre d'unifications trouvées.
+
+    L'unification est paramétrée par `touteUnif` qui recherche soit la première
+    unification trouvée, soit toutes.
 
     Args:
-        litteraux (List[Litteral]): Les littéraux.
-        query_litteral (Litteral): Le littéral que l'on cherche à unifier.
-        structure (str): Permet de dire quelle structure on veut bench. (liste, ensemble, dictionnaire)
-        pretraitement (bool): dit si oui ou non on veut prétraiter.
-        toutes_unifs (bool, optional): Choix de trouver toutes les unifications ou seulement la première. Defaults to True.
+        candidats (List[Litteral]): Liste des littéraux que l'on cherche à unifier.
+        predList (list): Les littéraux du jeu de données (la "base").
+        structure (str): Structure de données utilisée. ("liste", "ensemble", "dictionnaire")
+        pretraitement (bool): Active ou non la phase de prétraitement.
+        touteUnif (bool, optional): True = toutes les unifications, False = la première. Defaults to True.
+
     Returns:
-        Tuple[float, float]: (temps_pretraitement, temps_unification) en secondes.
+        Tuple[float, List[Tuple[float, int]]]:
+            (temps_pretraitement,
+             [(tps_unif_candidat_0, nb_unif_candidat_0),
+              (tps_unif_candidat_1, nb_unif_candidat_1),
+              ...])
     """
-    # Choix de la structure de données utilisée pour stocker les littéraux
+    # --- Choix de la structure de données utilisée pour stocker les littéraux ---
     store = TermStore
     if structure == "liste":
         store = ListStore()
     elif structure == "ensemble":
         store = SetStore()
     elif structure == "dictionnaire":
-        # a faire plus tard
+        # à faire plus tard
         pass
 
-    # Remplir le store avec la predList
-    # Remarque : on ne mesure pas ce temps car ce n'est pas du prétraitement
-    # au sens algorithmique (c'est juste du remplissage initial de la structure).
+    # --- Remplissage initial de la structure ---
+    # On ne mesure pas ce temps : ce n'est pas du prétraitement algorithmique,
+    # juste du chargement de la structure.
     print("Creation de la structure")
     for e in predList:
         store.push(e)
 
-    # --- Calcul du temps de prétraitement ---
-    # 0 par défaut si on ne prétraite pas
+    # --- Phase de prétraitement (une seule fois pour toute la liste) ---
+    # Le prétraitement de Robinson dépend du candidat. Pour pouvoir le réutiliser
+    # sur N candidats sans le re-faire à chaque fois (ce qui fausserait la mesure),
+    # on choisit ici de le faire UNE SEULE FOIS sur le premier candidat.
+    # NB : si ton pretraitement dépend réellement du candidat, il faudra revoir
+    # cette stratégie (par exemple : pretraitement par candidat, sommé).
     tps_pretraitement = 0.0
-    if pretraitement:
-        print("debut pretraitement")
-        # On mémorise l'instant avant le prétraitement
+    if pretraitement and candidats:
+        print("Debut pretraitement")
         debut_pretraitement = time.perf_counter()
-        store.pretraitement(candidat)
-        # Différence entre maintenant et le début = durée du prétraitement
+        store.pretraitement(candidats[0])
         tps_pretraitement = time.perf_counter() - debut_pretraitement
 
-    # --- Calcul du temps d'unification ---
-    # On mémorise l'instant avant de lancer la recherche d'unifications
-    debut_unif = time.perf_counter()
-    if touteUnif:
-        print("Debut unification")
-        # Cas où on cherche toutes les unifications possibles
-        result = rechercherUnifiablesSimple(candidat, store)
-    else:
-        # A faire plus tard : recherche de la première unification seulement
-        result = None
-    # Différence = durée réelle de l'unification
-    tps_unif = time.perf_counter() - debut_unif
+    # --- Phase d'unification : on boucle sur tous les candidats ---
+    resultats: List[Tuple[float, int]] = []
+    print(f"Debut unification ({len(candidats)} candidats)")
 
-    # Affichage pour debug (attention : ça peut fausser le temps du bench
-    #afficherResultat(candidat, result)
+    for i, candidat in enumerate(candidats):
+        # Mesure du temps d'unification pour CE candidat uniquement
+        debut_unif = time.perf_counter()
+        if touteUnif:
+            # Cas standard : on cherche toutes les unifications possibles
+            result = rechercherUnifiablesSimple(candidat, store)
+        else:
+            # A faire plus tard : recherche de la première unification seulement
+            result = None
+        tps_unif = time.perf_counter() - debut_unif
 
-    return (tps_pretraitement, tps_unif)
+        # Comptage du nombre d'unifications trouvées.
+        # `result` est attendu comme une liste/itérable d'unifications ;
+        # on protège tout de même le cas None.
+        nb_unif = len(result) if result is not None else 0
+
+        # Affichage pour debug (commenté car ça fausse le bench si actif)
+        # afficherResultat(candidat, result)
+
+        resultats.append((tps_unif, nb_unif))
+
+    return (tps_pretraitement, resultats)
 
     
 
