@@ -1303,6 +1303,7 @@ et les \textit{dictionnaires}.
     A. Riazanov et A. Voronkov
 \end{avantpropos}
 
+\subsection{Présentation}
 Le \textit{discrimination tree}, ou \textit{arbre de discrimination} en français (bien 
 qu'aucun ouvrage francophone n'y fasse explicitement référence) est une véritable 
 chimère algorithmique~: une \textit{structure de données arborescente} conçue 
@@ -1321,7 +1322,7 @@ s'est imposé naturellement au regard de ses propriétés théoriques~: le
 algorithmiques classiques pour l'unification, justifiant ainsi amplement son inclusion. 
 Nous les remercions à nouveau chaleureusement pour cette piste décisive.
 
-\begin{paraph}{La structure arborescente}
+\subsection{La structure arborescente}
     Un \textit{discrimination tree} est construit en insérant les termes de la 
     base sous forme aplatie (\textit{flatten})~: chaque terme est d'abord 
     linéarisé en une \textit{p-string} par un parcours préfixe, transformant ainsi 
@@ -1350,7 +1351,6 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
     devient $\neg-P-f-{*_1}-{*_2}$. Cette distinction 
     est essentielle pour la résolution~: on ne cherche à unifier un littéral 
     qu'avec des littéraux de signe opposé.
-\end{paraph}
 
 \begin{paraph}{Exemple}
     Prenons la base $B$ définie comme suit~:
@@ -1469,7 +1469,7 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
     été adapté à notre version \emph{normalisée} du discrimination tree.
 \end{remarque}
 
-\begin{paraph}{L'algorithme d'unification}
+\subsection{L'algorithme d'unification}
     L'unification par \textit{discrimination tree} se déroule en deux phases distinctes. 
     La première phase, dite de \textit{filtrage}, consiste à parcourir l'index à partir 
     d'un prédicat requête $q$, lui-même linéarisé en \textit{p-string} par parcours préfixe. 
@@ -1515,7 +1515,6 @@ Cependant, l’unification rejette ce cas, car une même variable
 ne peut pas être associée simultanément à deux valeurs différentes. 
 C’est précisément pour détecter ce type de conflit que la substitution 
 est conservée pendant tout le parcours de la branche.
-\end{paraph}
 
 \begin{paraph}{Exemple}
     \vspace{0.2cm}
