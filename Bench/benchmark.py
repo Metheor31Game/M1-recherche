@@ -124,7 +124,7 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
       - structure : structure de données utilisée par l'algo (pour Robinson/MM)
     """
     touteUnif = True
-    pretraitement = False
+    pretraitement = True
 
     # --- chargement des données ---
     print("Début déserialisation")
@@ -179,4 +179,4 @@ if __name__ == "__main__":
         "P(X, Y, Z)",
     ]
 
-    benchmark(listeCandidats, file, "robinson", "ensemble")
+    benchmark(listeCandidats, file, "robinson", "dictionnaire")

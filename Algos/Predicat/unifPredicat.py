@@ -6,6 +6,7 @@ from Util.Litteral.Litteral import Litteral
 from Algos.Robinson.robinson import unifyAll
 from Util.TermStore.TermStore import TermStore
 from Util.TermStore.SetStore import SetStore
+from Util.TermStore.DictStore import DictStore
 from Util.TermStore.ListStore import ListStore
 from Util.TermStore.terme import NoeudTerme
 
@@ -85,6 +86,28 @@ def rechercherUnifiablesSimple(p1: Litteral, preds: TermStore[Litteral], algo: s
         if subst is not None:
             result[p] = subst
     return result
+
+def rechercherUnifiablesOptimise(p1: Litteral, preds: TermStore[Litteral], algo: str = "Robinson") -> Dict[Litteral, Dict]:
+    """
+    Recherche optimisée qui exploite l'indexation de DictStore si disponible.
+    Si un autre store est passé, se rabat sur la méthode simple.
+    """
+    result = {}
+    
+    # Si c'est notre dictionnaire optimisé, on ne parcourt QUE les candidats valides
+    if isinstance(preds, DictStore):
+        candidats = preds.get_candidats_resolution(p1)
+    else:
+        # Fallback pour ListStore et SetStore : on parcourt tout le monde
+        candidats = preds
+        
+    for p in candidats:
+        subst = unifPredicat(p1, p, algo)
+        if subst is not None:
+            result[p] = subst
+            
+    return result
+
 
 def afficherResultat(p1: Litteral, resultat: dict):
     """

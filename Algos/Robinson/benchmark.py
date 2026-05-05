@@ -12,6 +12,8 @@ from Algos.Predicat.unifPredicat import afficherResultat
 from Util.Litteral.Litteral import Litteral
 from Util.Litteral.Litteral import GenerateurLitteralAleatoire
 from Util.Serialisation.serialisation import serialiser, deserialiser
+from Util.TermStore.DictStore import DictStore
+from Algos.Predicat.unifPredicat import rechercherUnifiablesOptimise
 
 def benchRobinson(candidats: List[Litteral], predList: list, structure: str,
                   pretraitement: bool, touteUnif: bool = True) -> Tuple[float, List[Tuple[float, int]]]:
@@ -46,8 +48,9 @@ def benchRobinson(candidats: List[Litteral], predList: list, structure: str,
     elif structure == "ensemble":
         store = SetStore()
     elif structure == "dictionnaire":
-        # à faire plus tard
-        pass
+        store = DictStore()
+    else:
+        raise ValueError(f"Structure non supportée : {structure}")
 
     # --- Remplissage initial de la structure ---
     # On ne mesure pas ce temps : ce n'est pas du prétraitement algorithmique,
@@ -56,42 +59,43 @@ def benchRobinson(candidats: List[Litteral], predList: list, structure: str,
     for e in predList:
         store.push(e)
 
-    # --- Phase de prétraitement (une seule fois pour toute la liste) ---
-    # Le prétraitement de Robinson dépend du candidat. Pour pouvoir le réutiliser
-    # sur N candidats sans le re-faire à chaque fois (ce qui fausserait la mesure),
-    # on choisit ici de le faire UNE SEULE FOIS sur le premier candidat.
-    # NB : si ton pretraitement dépend réellement du candidat, il faudra revoir
-    # cette stratégie (par exemple : pretraitement par candidat, sommé).
+    # --- Phase de prétraitement (Construction / Indexation) ---
     tps_pretraitement = 0.0
-    if pretraitement and candidats:
-        print("Debut pretraitement")
+    
+    if pretraitement:
+        print(f"Debut pretraitement (Indexation dans {structure})")
         debut_pretraitement = time.perf_counter()
-        store.pretraitement(candidats[0])
+        
+        # Le prétraitement EST l'insertion dans la structure intelligente
+        for e in predList:
+            store.push(e)
+            
+        # (Optionnel) Ici tu pourrais ajouter un store.optimiser_globalement() 
+        # pour la ListStore si tu veux la trier une fois pour toutes.
+            
         tps_pretraitement = time.perf_counter() - debut_pretraitement
+    else:
+        # Si on ne veut pas compter le prétraitement dans le bench, 
+        # on fait le remplissage hors du chrono
+        print(f"Creation de la structure sans chrono ({structure})")
+        for e in predList:
+            store.push(e)
 
     # --- Phase d'unification : on boucle sur tous les candidats ---
     resultats: List[Tuple[float, int]] = []
     print(f"Debut unification ({len(candidats)} candidats)")
 
     for i, candidat in enumerate(candidats):
-        # Mesure du temps d'unification pour CE candidat uniquement
         debut_unif = time.perf_counter()
+        
         if touteUnif:
-            # Cas standard : on cherche toutes les unifications possibles
-            result = rechercherUnifiablesSimple(candidat, store)
+            result = rechercherUnifiablesOptimise(candidat, store, "Robinson")
         else:
-            # A faire plus tard : recherche de la première unification seulement
             result = None
+            
         tps_unif = time.perf_counter() - debut_unif
 
-        # Comptage du nombre d'unifications trouvées.
-        # `result` est attendu comme une liste/itérable d'unifications ;
-        # on protège tout de même le cas None.
         nb_unif = len(result) if result is not None else 0
-
-        # Affichage pour debug (commenté car ça fausse le bench si actif)
-        # afficherResultat(candidat, result)
-
         resultats.append((tps_unif, nb_unif))
 
     return (tps_pretraitement, resultats)
