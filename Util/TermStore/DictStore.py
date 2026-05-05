@@ -72,21 +72,3 @@ class DictStore(TermStore[Litteral]):
         
         # On retourne un générateur qui filtre aussi sur l'arité
         return (c for c in candidats if c.arity == pred.arity)
-    
-    def pretraitement(self, pred: Litteral) -> 'DictStore':
-        """
-        Filtre le store pour ne retenir que les littéraux compatibles avec pred.
-        
-        On garde les littéraux qui ont :
-        - Le même prédicat que pred
-        - Le même arité que pred
-        - Le signe opposé de pred
-        """
-        nouveau_store = DictStore()
-        
-        # Vu que get_candidats_resolution fait EXACTEMENT ce filtrage, 
-        # on peut simplement le réutiliser pour remplir le nouveau store !
-        for candidat in self.get_candidats_resolution(pred):
-            nouveau_store.push(candidat)
-            
-        return nouveau_store

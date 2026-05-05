@@ -30,26 +30,5 @@ class ListStore(TermStore[T]):
     def __iter__(self) -> Iterator[T]:
         return iter(self._data)
     
-    def pretraitement(self, pred) -> 'ListStore[T]':
-        """
-        Filtre le store pour ne retenir que les littéraux compatibles avec pred.
-        
-        Seuls sont gardés les littéraux qui ont :
-        - Le même prédicat que pred
-        - Le même arité que pred
-        - Le signe opposé de pred
-        
-        Args:
-            pred: Le littéral de référence pour le filtrage.
-        
-        Returns:
-            ListStore[T]: Un nouveau store contenant uniquement les littéraux compatibles.
-        """
-        self._data = [
-        litteral for litteral in self._data
-        if (litteral.predicat == pred.predicat
-            and litteral.arity == pred.arity
-            and litteral.sign != pred.sign)
-        ]
     
     
