@@ -1,5 +1,10 @@
 \documentclass[11pt]{article}
 
+% TODO :
+% pas mettre sommaire decharge + remerciement
+% corriger double apparition sommaire Introduction
+% corriger bug link des titres dans le sommaire (pourtant utilisation des sections et parties latex...)
+
 % ========================= En-Tête ======================= %
 % --- Packages --- %
 \usepackage[T1]{fontenc}
@@ -8,7 +13,6 @@
 \usepackage[french]{babel}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{amsmath, amssymb}
-\usepackage{hyperref}
 \usepackage{enumitem}
 \usepackage{xcolor}
 \usepackage{titlesec}
@@ -19,8 +23,7 @@
 \usepackage{forest}
 \usepackage{array}
 \usepackage{cancel}
-\usepackage{titlesec}
-
+\usepackage{hyperref}
 
 \pagestyle{empty}
 
@@ -74,7 +77,7 @@
 
 % --- Règles --- %
 \algdef{SE}[TRY]{Try}{EndTry}{\textbf{try}}{\textbf{end try}}
-\algdef{C}[TRY]{TRY}{Catch}[1]{\textbf{catch} #1}          
+\algdef{C}[TRY]{TRY}{Catch}[1]{\textbf{catch} #1}      
 \titleformat{\part}[hang]{\LARGE\bfseries}{\thepart.}{0.5em}{\setcounter{section}{0}} % Met compteur romain devant part
 \titleformat{\section}[hang]{\Large\bfseries}{\thesection.}{0.5em}{}
 \titleformat{\subsection}[hang]{\large\bfseries}{\thesubsection.}{0.5em}{}
@@ -90,14 +93,90 @@
 % ========================= Corps ======================= %
 \begin{document}
 \maketitle                                      % Ecrit le titre
+\thispagestyle{empty}
+
+% Page vide :
+\newpage
+\null
+
+% Decharge de resp :
+\newpage
+\part*{DÉCHARGE DE RESPONSABILITÉS}
+\vspace*{\fill}
+\textit{« L’Université de Lorraine n’entend donner ni approbation ni improbation aux opinions émises dans ce
+rapport, ces opinions devant être considérées comme propres à leur auteur. »}
+\vspace*{\fill}
+
+% Remerciements : 
+\newpage
+\part*{REMERCIEMENTS}
+A FAIRE.
+
+% Sommaire :
 \newpage
 \tableofcontents                                % Ecrit la table des matières
 \newpage
 \pagestyle{plain}
-\setcounter{page}{1}
-\part*{Introduction}                            % On ne le numérote pas 
+\setcounter{page}{1}                            % On commence à compter les pages
+
+\part*{Introduction}                            % On ne le numérote pas    
+\phantomsection                     
 \addcontentsline{toc}{part}{Introduction}       % Mais on met en table des matières
-Blablabla
+% Paragraphe 1 : Mise en abime du sujet / actualité ou autre
+En informatique, la représentation de l'information est un point 
+clé dans la réalisation de divers projets. Ainsi le choix des 
+\textbf{structures de données} représente une étape cruciale pour 
+le bon déroulement de tout projet. 
+
+En logique du premier ordre, ce sont les \textbf{termes} qui servent 
+de base afin de représenter des expressions symboliques construites 
+à partir de symboles de fonction, de constantes et de variables. 
+Représenter ces termes via la meilleure structure de donnée, la plus 
+adéquate, représente donc un point majeur dans tout travaux portés 
+à ce domaine.
+
+L’\textbf{unification} est une opération essentielle dans ce cadre. 
+Elle intervient notamment dans les moteurs d’inférence, les systèmes 
+de réécriture de termes, et les prouveurs logiques. Les différents 
+algorithmes connus d'unification sont parfois adaptés à certaines 
+structures de données précises, il est donc important de comparer 
+ces algorithmes et de diversifier ses choix pour parvenir aux résultats 
+les plus efficaces.
+
+\vspace{0.5cm}
+% Paragraphe 2 : Définitions des notions clés
+Une structure de données est une représentation permettant d'organiser, 
+traiter et stocker des données de manière efficace dans la mémoire d'un 
+ordinateur. Elle permet un meilleur accès et une manipulation plus 
+efficace des données afin de résoudre un problème spécifique. 
+
+Un terme est une expression qui consiste à nommer ou construire un 
+objet en logique. Cela peut être une variable, une constante ou une 
+fonction. Il est en quelque sorte le plus petit composant d'une formule 
+logique.
+
+L'unification consiste à déterminer s’il existe une substitution des 
+variables (i.e.~une affectation des variables $(X, Y , \ldots)$ 
+vers des termes $(a, b, f(a), \ldots)$) permettant de rendre identiques 
+deux termes.
+
+\vspace{0.5cm}
+% Paragraphe 3 : Présentation de la problématique
+Ainsi, dans le cadre de ce travail de recherche, nous nous demanderons 
+quelles sont les structures de données les plus adaptées pour 
+l'unification dans la logique du premier ordre. Le choix d'une 
+structure impactant l'efficacité d'un algorithme, nous réfléchirons 
+donc aussi aux meilleurs algorithmes d'unification à utiliser en 
+fonction de la structure de donnée choisie.
+
+\vspace{0.5cm}
+% Paragraphe 4 : Annonce du plan
+Nous commencerons par un rappel sur les différentes notions abordées 
+dans notre sujet. Ensuite nous présenterons plus en détails les 
+différentes structures de données que nous avons utilisées, et nous 
+finirons par la présentation des algorithmes d'unification connus sur 
+lesquels nous avons travaillé.
+
 \newpage
 \part{Généralités}
 \begin{avantpropos}
@@ -115,6 +194,7 @@ logique du premier ordre, avant de présenter cette dernière puis l'unification
 les deux notions centrales de ce rapport.
 \end{paraph}
 \section{Logique des propositions}
+\subsection{Définition}
 La \textit{logique des propositions} (ou logique propositionnelle) repose 
 sur une idée simple~: on représente des \textit{faits élémentaires}, 
 par exemple «~Socrate est un homme~», auxquels on attribue une 
@@ -158,7 +238,7 @@ et former la \textit{formule} $(p \wedge q) \rightarrow r$, qui se lit
 «~si Socrate est un homme et tout homme est mortel, alors Socrate est mortel~».
 \end{paraph}
 \newpage
-\begin{paraph}{Limites}
+\subsection{Limites}
 La logique propositionnelle ne traite que d'un individu à la 
 fois~: elle est insuffisante pour exprimer des propriétés générales 
 portant sur des ensembles d'objets ou des relations entre eux.
@@ -178,8 +258,9 @@ C'est précisément cette limite que lève la
 \textit{logique du premier ordre}, présentée dans 
 la section suivante, en introduisant des \textit{variables} 
 sur lesquelles on peut quantifier.
-\end{paraph}
+
 \section{Logique du premier ordre}
+\subsection{Définition}
 Pour pouvoir étendre le champs de couverture de la 
 \textit{logique propositionnelle}, on a défini la 
 \textit{logique du premier ordre} (ou logique des prédicats).
@@ -218,7 +299,7 @@ Pour définir la structure d'une \textit{formule} en \textit{logique du premier 
 il nous faut définir la notion d'\textit{atome} qui s'appuie elle même 
 sur la notion de \textit{terme}.
 
-\begin{paraph}{Terme}
+\subsection{Terme}
 Un \textit{terme} est une expression désignant un \textit{objet}. 
 Il peut être une \textit{variable}, une \textit{constante} ou un 
 \textit{symbole de fonction} appliqué à d'autres \textit{termes}. 
@@ -238,16 +319,17 @@ Par exemple, avec $\mathit{socrate}$ comme constante, $x$ comme variable et
 $\mathit{pere}$ comme symbole de fonction d'arité $1$, on 
 peut construire les \textit{termes}~:
 
-$$
+\[
 \mathit{socrate} \qquad x \qquad \mathit{pere}(\mathit{socrate}) \qquad 
 \mathit{pere}(x)
-$$
-\end{paraph}
+\]
+
 \begin{remarque}
     Un terme \emph{n'est pas} une formule, il désigne un objet, 
     il n'exprime pas une propriété.
 \end{remarque}
-\begin{paraph}{Atome}
+
+\subsection{Atome}
 Là où un \textit{terme} désigne un \textit{objet}, un \textit{atome} exprime 
 une \textit{propriété} sur des objets. Il est formé 
 d'un \textit{symbole de prédicat} appliqué à des termes. Formellement~:
@@ -265,20 +347,21 @@ Par exemple, avec $\mathit{Homme}$ et $\mathit{Mortel}$
 comme prédicats d'arité $1$, $\mathit{socrate}$ comme 
 constante et $x$ comme variable~:
 
-$$
+\[
 \mathit{Homme}(\mathit{socrate}) \qquad \mathit{Mortel}(\mathit{socrate}) 
 \qquad \mathit{Mortel}(x)
-$$
+\]
 
 sont des atomes. $\mathit{Homme}(\mathit{socrate})$ 
 exprime que Socrate est un homme, $\mathit{Mortel}(x)$ 
 exprime que l'individu désigné par $x$ est mortel.
-\end{paraph}
+
 \begin{remarque}
     Un littéral (ou des littéraux) est un prédicat auquel on a ajouté un signe.\\
     Exemple~: P(f(x)) et ¬P(f(x))
 \end{remarque}
-\begin{paraph}{Formule}
+
+\subsection{Formule}
 Les \textit{atomes} peuvent être combinés à l'aide des connecteurs 
 logiques vus en \textit{logique propositionnelle}, et enrichis par 
 deux \textit{quantificateurs}~:
@@ -305,13 +388,13 @@ Une \textit{formule} de la \textit{logique du premier ordre} est alors définie 
 
 \vspace{0.2cm}
 Par exemple, «~pour tout individu $x$, si $x$ est un homme alors $x$ est mortel~» 
-s'écrit~:$$\forall x\; \bigl(\mathit{Homme}(x) \rightarrow \mathit{Mortel}(x)\bigr)$$
+s'écrit~:
+\[\forall x\; \bigl(\mathit{Homme}(x) \rightarrow \mathit{Mortel}(x)\bigr)\]
 
 \vspace{0.2cm}
 Ce que la \textit{logique propositionnelle} ne pouvait pas 
 exprimer, i.e.~la généralité du raisonnement sur tout individu $x$, 
 est ici capturé par une unique \textit{formule quantifiée}.
-\end{paraph}
 
 \section{Preuve automatisée}
 Nous disposons maintenant des outils pour formaliser proprement notre syllogisme.
@@ -341,7 +424,7 @@ Et l'on cherche à démontrer d'après les deux prémisses~:
     applicable à n'importe quelle constante.
 \end{remarque}
 
-\begin{paraph}{Forme clausale et réfutation}
+\subsection{Forme clausale et réfutation}
 La mise sous \textit{forme clausale} consiste à transformer les formules de 
 la base de connaissances en un ensemble de \textit{clauses}, 
 i.e.~des disjonctions de littéraux, qui leur est logiquement équivalent. 
@@ -386,13 +469,12 @@ prémisses et en les mettant sous forme clausale, on obtient trois clauses~:
 
 Il nous reste à dériver une contradiction à partir de ces trois clauses, 
 ce que réalise la \textit{règle de résolution}, présentée ci-après.
-\end{paraph}
 
 \begin{remarque}
     Il existe un théorème, que l'on utilise ici, qui nous dit que toute formule de la logique du premier ordre peut être mise sous forme clausale. Cette transformation, bien que non triviale dans le cas général, est toujours possible et constitue une étape préalable indispensable à l'application de la règle de résolution.
 \end{remarque}
 
-\begin{paraph}{Règle de résolution}
+\subsection{Règle de résolution}
 La \textit{règle de résolution} permet de dériver une nouvelle clause 
 à partir de deux clauses existantes. Si une clause contient un littéral 
 $L$ et une autre contient sa négation $\neg L$, on peut en dériver une 
@@ -412,10 +494,9 @@ $x$, l'autre une constante $\mathit{socrate}$. Pour pouvoir appliquer
 la règle de résolution, il faut d'abord les rendre identiques en 
 \textit{substituant} $x$ par $\mathit{socrate}$. C'est précisément ce 
 que réalise l'\textit{unification}, que nous définirons dans la section suivante.
-\end{paraph}
 
 \section{Unification}
-\begin{paraph}{Substitution}
+\subsection{Substitution}
 Une \textit{substitution} $\sigma$ est une fonction qui associe à 
 certaines variables des termes. Par exemple, $\sigma = \{X \mapsto b,\ Y \mapsto f(a)\}$ 
 associe la variable $X$ au terme $b$ et la variable $Y$ au terme 
@@ -428,9 +509,8 @@ Par exemple, si $t = g(X, Y)$, alors~:
 \[
     \sigma(t) = \sigma(g(X, Y)) = g(b, f(a))
 \]
-\end{paraph}
 
-\begin{paraph}{Unification}
+\subsection{Unification}
 L'\textit{unification} consiste à déterminer s'il existe 
 une substitution $\sigma$, appelée \textit{unificateur}, 
 telle que $\sigma(t_1) = \sigma(t_2)$ pour deux termes 
@@ -444,7 +524,6 @@ on cherche le plus général, noté \textit{MGU} (de l'anglais
 impose le moins de contraintes sur les variables. Il est 
 dit «~le plus général~» car tout autre unificateur peut 
 s'obtenir en composant le MGU avec une substitution supplémentaire.
-\end{paraph}
 
 \begin{remarque}
     L'unification n'est pas toujours possible. Par exemple, les termes $f(a)$ et $g(a)$ ne sont pas unifiables car leurs symboles de tête sont différents. De même, une variable $x$ ne peut pas être unifiée avec un terme qui la contient déjà, comme $f(x)$, car cela produirait un terme de taille infinie.
@@ -513,8 +592,8 @@ Revenons à nos trois clauses obtenues à la section précédente~:
 \newpage
 Pour appliquer la règle de résolution sur $C_1$ et $C_2$, il 
 faut unifier $\mathit{Homme}(x)$ et $\mathit{Homme}(\mathit{socrate})$. 
-La substitution $\sigma = \{x \mapsto \mathit{socrate}\}$ est leur MGU. 
-On peut alors dériver la contradiction en deux étapes~:
+La substitution $\sigma = \{x \mapsto \mathit{socrate}\}$ est leur MGU. On 
+peut alors dériver la contradiction en deux étapes~:
 
 \begin{center}
     \begin{forest}
@@ -554,7 +633,7 @@ On peut alors dériver la contradiction en deux étapes~:
     résolvante $\mathit{Mortel}(\mathit{socrate})$.
     \item \textbf{Étape 2 :} On résout $\mathit{Mortel}(\mathit{socrate})$ 
     et $C_3 = \neg\mathit{Mortel}(\mathit{socrate})$. Les deux littéraux 
-    sont identiques, aucune substitution n'est nécessaire. On obtient la 
+    sont identiques, aucune autre substitution n'est nécessaire. On obtient la 
     \textit{clause vide} $\square$, témoin de la contradiction.
 \end{itemize}
 
@@ -776,11 +855,11 @@ capturée par l'\textit{arbre} lui-même.
     que nous n'avons pas eu l'occasion d'explorer dans le cadre de ce rapport.
 \end{remarque}
 
-\section{Structures de données représentant un ensemble de termes}
+\section{Structures de données représentant un ensemble de prédicats}
 Maintenant que la représentation d'un terme est acquise, 
 nous cherchons à évaluer quelle structure de données est la 
-plus \textit{efficace} pour unifier un terme donné avec un grand nombre 
-d'autres termes. Nous avons ainsi retenu trois structures 
+plus \textit{efficace} pour unifier un prédicat donné avec un grand nombre 
+d'autres prédicats. Nous avons ainsi retenu trois structures 
 principales pour nos comparaisons~: les \textit{listes}, les \textit{ensembles} 
 et les \textit{dictionnaires}.
 
@@ -788,20 +867,20 @@ et les \textit{dictionnaires}.
 
 \begin{paraph}{Principe général}
     La liste est la structure séquentielle la plus élémentaire 
-    pour stocker notre base de termes. Elle conserve l'ordre 
+    pour stocker notre base de prédicats. Elle conserve l'ordre 
     d'insertion et autorise la présence de doublons. 
 \end{paraph}
 
 \begin{paraph}{Avantages}
     \begin{itemize}
         \item \textbf{Coût de construction quasi nul~:} L'ajout d'un 
-        terme dans la base d'unification se fait en $O(1)$. 
+        prédicat dans la base d'unification se fait en $O(1)$. 
         Cela peut être avantageux dans les cas ou l'on souhaite 
         unifier sans faire de prétraitement, sur une base construite 
         à la volée et peu réutilisée.
         \item \textbf{Parcours brut rapide~:} La nature séquentielle 
         de la liste favorise une itération très efficace, le surcoût 
-        lié à l'accès en mémoire lors du passage d'un terme à l'autre 
+        lié à l'accès en mémoire lors du passage d'un prédicat à l'autre 
         est quasi inexistant.
     \end{itemize}
 \end{paraph}
@@ -812,10 +891,10 @@ et les \textit{dictionnaires}.
     de cette simplicité est l'obligation d'une recherche aveugle. 
     Pour unifier un candidat, il est impératif de le confronter 
     un à un à tous les éléments de la liste ($O(N)$  tentatives). 
-    Si l'on souhaite filtrer les termes incompatibles pour éviter 
+    Si l'on souhaite filtrer les prédicats incompatibles pour éviter 
     ce balayage systématique, un prétraitement devient alors obligatoire.
     \item \textbf{Redondance des calculs~:} La liste n'empêchant pas 
-    les doublons, si un même terme est présent plusieurs fois, 
+    les doublons, si un même prédicat est présent plusieurs fois, 
     l'algorithme d'unification sera exécuté de manière répétée et inutile.
 \end{itemize}
 \end{paraph}
@@ -832,22 +911,22 @@ et les \textit{dictionnaires}.
 \begin{paraph}{Principe général}
     Un ensemble (\textit{Set}) est une collection non ordonnée 
     qui garantit l'unicité de ses éléments. Dans notre contexte, 
-    il s'assure qu'aucun terme strictement identique n'est stocké 
+    il s'assure qu'aucun prédicat strictement identique n'est stocké 
     deux fois dans la base.
 \end{paraph}
 
 \begin{paraph}{Avantages}
     \begin{itemize}
         \item \textbf{Élimination native des doublons~:} C'est son 
-        atout principal. En filtrant les termes redondants dès 
+        atout principal. En filtrant les prédicats redondants dès 
         l'insertion, l'ensemble réduit mécaniquement la taille $N$ 
         de la base. Cela garantit qu'un candidat ne sera jamais 
-        unifié deux fois avec le même terme, économisant potentiellement 
+        unifié deux fois avec le même prédicat, économisant potentiellement 
         du temps.
         \item \textbf{Vérification d'existence immédiate~:} Si l'on 
         cherche une égalité stricte plutôt qu'une unification (par 
         exemple lors de la subsomption), l'ensemble permet de vérifier 
-        la présence d'un terme en $O(1)$ moyen, contre $O(N)$ pour une 
+        la présence d'un prédicat en $O(1)$ moyen, contre $O(N)$ pour une 
         liste.
     \end{itemize}
 \end{paraph}
@@ -856,7 +935,7 @@ et les \textit{dictionnaires}.
     \begin{itemize}
         \item \textbf{Coût d'insertion des termes~:} Pour garantir 
         l'unicité en $O(1)$, lors de l'insertion, l'ensemble vérifie 
-        si le terme inséré n'est pas déjà présent, ce qui peut 
+        si le prédicat inséré n'est pas déjà présent, ce qui peut 
         prendre un peu de temps.
         \item \textbf{Absence de filtrage pour l'unification~:} Tout 
         comme la liste, l'ensemble ne permet pas de sous-sélectionner 
@@ -878,8 +957,8 @@ et les \textit{dictionnaires}.
 \begin{paraph}{Principe général}
     Le dictionnaire permet de stocker des paires clé-valeur. 
     Dans le cadre de l'unification, il introduit une première 
-    forme d'\textit{indexation de termes}~: au lieu de stocker 
-    les termes en vrac, on les classe dans le dictionnaire en 
+    forme d'\textit{indexation de prédicats}~: au lieu de stocker 
+    les prédicats en vrac, on les classe dans le dictionnaire en 
     utilisant une propriété structurelle comme clé (par exemple, 
     le symbole de tête et son arité).
 \end{paraph}
@@ -888,34 +967,34 @@ et les \textit{dictionnaires}.
     \begin{itemize}
         \item \textbf{Filtrage des candidats~:} C'est la première 
         structure qui permet de réduire le nombre de tentatives 
-        d'unification. Si l'on cherche à unifier le terme $f(x, y)$, 
-        on interroge le dictionnaire avec la clé \texttt{'f/2'}. 
-        On récupère instantanément uniquement les termes de la base 
+        d'unification. Si l'on cherche à unifier le prédicat $P(f(X, Y), Y)$, 
+        on interroge le dictionnaire avec la clé \texttt{'P/2'}. 
+        On récupère instantanément uniquement les prédicats de la base 
         partageant cette même racine. 
         \item \textbf{Gain de performance en résolution~:} En évitant 
-        les tentatives d'unification avec des termes structurellement 
+        les tentatives d'unification avec des prédicats structurellement 
         incompatibles (clash de symboles), on passe d'une complexité 
         de recherche de $O(N)$ à $O(K)$, où $K$ est le nombre de 
-        termes partageant la même clé (avec $K \ll N$).
+        prédicats partageant la même clé (avec $K \ll N$).
     \end{itemize}
 \end{paraph}
 
 \begin{paraph}{Inconvénients}
     \begin{itemize}
         \item \textbf{Complexité et coût mémoire~:} Organiser les 
-        termes par clés demande davantage d'allocations mémoire 
+        prédicats par clés demande davantage d'allocations mémoire 
         (gestion de la table de hachage, listes sous-jacentes pour 
-        gérer les collisions ou les groupes de termes).
+        gérer les collisions ou les groupes de prédicats).
     \end{itemize}
 \end{paraph}
 
 \begin{paraph}{Bilan pour l'unification}
     Le dictionnaire, bien qu'une structure plus complexe, marque la 
     transition entre le stockage simple et l'indexation. En 
-    regroupant les termes par «~famille~» (symbole de tête/arité), 
+    regroupant les prédicats par «~famille~» (symbole de tête/arité), 
     il réduit considérablement le nombre d'appels à l'algorithme 
     d'unification. Cette approche profite directement du fonctionnement 
-    intrinsèque des termes logiques pour optimiser la recherche, 
+    intrinsèque des prédicats logiques pour optimiser la recherche, 
     le temps investi lors de la mise en place de cette structure 
     peut être bénéfique pour l'unification.
 \end{paraph}
@@ -952,54 +1031,53 @@ et les \textit{dictionnaires}.
     Le déroulement de cet algorithme s'effectue en plusieurs 
     étapes pour unifier deux littéraux~:
     \begin{algorithm}[H]
-    \small
-    \caption{Unification de deux littéraux (Robinson)}
-    \label{alg:unification_robinson}
-    \begin{algorithmic}[1] % Le [1] permet d'afficher les numéros de ligne
-        
-        \Procedure{UnifierLitteraux}{$L_1$, $L_2$}
+        \footnotesize
+        \caption{Unification de deux littéraux (Robinson)}
+        \label{alg:unification_robinson}
+        \begin{algorithmic}[1] % Le [1] permet d'afficher les numéros de ligne
             
-            \vspace{0.1cm}
-            \State \Comment{\textbf{Étape 1 :} Vérification des signes}
-            \If{$\text{Signe}(L_1) == \text{Signe}(L_2)$}
-                \State \Return \textbf{Échec} \Comment{Pas de résolution possible si même signe}
-            \EndIf
-
-            \vspace{0.1cm}
-            \State \Comment{\textbf{Étape 2 :} Vérification du nom du prédicat}
-            \If{$\text{Prédicat}(L_1) \neq \text{Prédicat}(L_2)$}
-                \State \Return \textbf{Échec} \Comment{Les littéraux n'ont pas le même symbole de prédicat}
-            \EndIf
-            
-            \vspace{0.1cm}
-            \State \Comment{\textbf{Étape 3 :} Vérification de l'arité}
-            \If{$\text{Arité}(L_1) \neq \text{Arité}(L_2)$}
-                \State \Return \textbf{Échec} \Comment{Nombre d'arguments différent}
-            \EndIf
-            
-            \vspace{0.1cm}
-            \State \Comment{\textbf{Étape 4 :} Unification itérative des termes (enfants)}
-            \State $Subst \gets \emptyset$ \Comment{Initialisation de la substitution commune}
-            \State $N \gets \text{Arité}(L_1)$
-            
-            \For{$i \gets 1 \textbf{ à } N$}
-                \State $T_1 \gets \text{Enfant}(L_1, i)$
-                \State $T_2 \gets \text{Enfant}(L_2, i)$
+            \Procedure{UnifierLitteraux}{$L_1$, $L_2$}
                 
-                \State \Comment{Unification en accumulant les substitutions précédentes}
-                \State $Subst \gets \Call{UnifierTermes}{T_1, T_2, Subst}$ 
-                
-                \If{$Subst == \text{\textbf{Échec}}$}
-                    \State \Return \textbf{Échec} \Comment{Dès qu'une paire échoue, tout le prédicat échoue}
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 1~:} Vérification des signes}
+                \If{$\text{Signe}(L_1) == \text{Signe}(L_2)$}
+                    \State\Return\textbf{Échec} \Comment{Pas de résolution possible si même signe}
                 \EndIf
-            \EndFor
-            
-            \State \Return $Subst$ \Comment{Retourne la substitution commune (MGU)}
-        \EndProcedure
 
-    \end{algorithmic}
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 2~:} Vérification du nom du prédicat}
+                \If{$\text{Prédicat}(L_1) \neq \text{Prédicat}(L_2)$}
+                    \State\Return\textbf{Échec} \Comment{Les littéraux n'ont pas le même symbole de prédicat}
+                \EndIf
+                
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 3~:} Vérification de l'arité}
+                \If{$\text{Arité}(L_1) \neq \text{Arité}(L_2)$}
+                    \State\Return\textbf{Échec} \Comment{Nombre d'arguments différent}
+                \EndIf
+                
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 4~:} Unification itérative des termes (enfants)}
+                \State$Subst \gets \emptyset$ \Comment{Initialisation de la substitution commune}
+                \State$N \gets \text{Arité}(L_1)$
+                
+                \For{$i \gets 1 \textbf{ à } N$}
+                    \State$T_1 \gets \text{Enfant}(L_1, i)$
+                    \State$T_2 \gets \text{Enfant}(L_2, i)$
+                    
+                    \State\Comment{Unification en accumulant les substitutions précédentes}
+                    \State$Subst \gets \Call{UnifierTermes}{T_1, T_2, Subst}$ 
+                    
+                    \If{$Subst == \text{\textbf{Échec}}$}
+                        \State\Return\textbf{Échec} \Comment{Dès qu'une paire échoue, tout le prédicat échoue}
+                    \EndIf
+                \EndFor
+                
+                \State\Return$Subst$ \Comment{Retourne la substitution commune (MGU)}
+            \EndProcedure
+
+        \end{algorithmic}
     \end{algorithm}
-
 
     \vspace{0.2cm}
     Pour trouver la substitution qui unifie deux termes, on utilise 
@@ -1013,45 +1091,45 @@ et les \textit{dictionnaires}.
         \Procedure{UnifierTermes}{$T_1$, $T_2$, $Subst$}
             
             \vspace{0.1cm}
-            \State \Comment{\textbf{Cas 1 :} Les termes ont le même symbole (Nom et Type)}
+            \State\Comment{\textbf{Cas 1~:} Les termes ont le même symbole (Nom et Type)}
             \If{$\text{Nom}(T_1) == \text{Nom}(T_2)$}
                 \If{\Call{EstFonction}{$T_1$}}
                     \Comment{Cas trivial, pas besoin de substituer}
-                    \State \Comment{Unification récursive des arguments (enfants)}
+                    \State\Comment{Unification récursive des arguments (enfants)}
                     \For{$i \gets 1 \textbf{ à } \text{Arité}(T_1)$}
-                        \State $S_i \gets \Call{UnifierTermes}{\text{Enfant}(T_1, i), \text{Enfant}(T_2, i)}$
+                        \State$S_i \gets \Call{UnifierTermes}{\text{Enfant}(T_1, i), \text{Enfant}(T_2, i)}$
                         \If{$S_i == \text{\textbf{Échec}}$}
-                            \State \Return \textbf{Échec}
+                            \State\Return\textbf{Échec}
                         \EndIf
-                        \State $Subst \gets Subst \cup S_i$
+                        \State$Subst \gets Subst \cup S_i$
                     \EndFor
-                    \State \Return $Subst$
+                    \State\Return$Subst$
                 \Else
-                    \State \Return $\emptyset$ \Comment{Constantes ou variables identiques : succès, aucune substitution}
+                    \State\Return$\emptyset$ \Comment{Constantes ou variables identiques : succès, aucune substitution}
                 \EndIf
             \EndIf
             
             \vspace{0.1cm}
-            \State \Comment{\textbf{Cas 2 :} Le premier terme est une variable}
+            \State\Comment{\textbf{Cas 2~:} Le premier terme est une variable}
             \If{\Call{EstVariable}{$T_1$}}
                 \If{\Call{OccursCheck}{$T_1, T_2$}}
-                    \State \Return \textbf{Échec} \Comment{Cycle détecté ($T_1$ apparaît dans $T_2$)}
+                    \State\Return\textbf{Échec} \Comment{Cycle détecté ($T_1$ apparaît dans $T_2$)}
                 \EndIf
-                \State \Return $\{T_1 \mapsto T_2\}$
+                \State\Return$\{T_1 \mapsto T_2\}$
             \EndIf
             
             \vspace{0.1cm}
-            \State \Comment{\textbf{Cas 3 :} Le second terme est une variable}
+            \State \Comment{\textbf{Cas 3~:} Le second terme est une variable}
             \If{\Call{EstVariable}{$T_2$}}
                 \If{\Call{OccursCheck}{$T_2, T_1$}}
-                    \State \Return \textbf{Échec} \Comment{Cycle détecté ($T_2$ apparaît dans $T_1$)}
+                    \State\Return\textbf{Échec} \Comment{Cycle détecté ($T_2$ apparaît dans $T_1$)}
                 \EndIf
-                \State \Return $\{T_2 \mapsto T_1\}$
+                \State\Return$\{T_2 \mapsto T_1\}$
             \EndIf
             
             \vspace{0.1cm}
-            \State \Comment{\textbf{Cas 4 :} Conflit (Clash)}
-            \State \Return \textbf{Échec} \Comment{Symboles différents ou arités incompatibles}
+            \State\Comment{\textbf{Cas 4~:} Conflit (Clash)}
+            \State\Return\textbf{Échec} \Comment{Symboles différents ou arités incompatibles}
             
         \EndProcedure
 
@@ -1088,7 +1166,7 @@ et les \textit{dictionnaires}.
     et à itérer sur lui jusqu'à atteindre une forme résolue ou 
     détecter un échec. $E$ a pour forme $E = \{ s_1 \overset{?}{=} t_1, \dots, s_n \overset{?}{=} t_n \}$, 
     où les $s_i$ et $t_i$ sont des termes du premier ordre. 
-    Or, dans notre cas, les deux entrées sont des \textbf{prédicats} 
+    Or, dans notre cas, les deux entrées sont des \textit{prédicats} 
     de la forme $P(S_1, \ldots, S_n)$ et $P(t_1, \ldots, t_n)$. 
     Un prétraitement est donc nécessaire afin de pouvoir passer 
     le système d'équation à l'algorithme de Martelli Montanari.
@@ -1133,7 +1211,7 @@ et les \textit{dictionnaires}.
 
     \newpage
     \vspace{0.2cm}
-    \textbf{Comment se passe l'unification au sein de Martelli Montanari~?}(Étape 4)\\
+    \textbf{Comment se passe l'unification au sein de Martelli Montanari~?} (Étape 4)\\
     On applique les règles suivantes sur le système d'équation jusqu'a épuisement.
     \begin{itemize}
     \vspace{0.2cm}
@@ -1356,19 +1434,67 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
 
     \vspace{0.2cm}
     La seconde phase, dite d'\textit{unification}, applique 
-    alors un algorithme d'unification classique (Robinson) entre $q$ et chacun des candidats retenus, 
+    alors un algorithme d'unification plus classique, e.g.~Robinson, entre $q$ et chacun des candidats retenus, 
     confirmant ou infirmant l'existence d'un unificateur. L'intérêt de cette approche réside 
     dans le fait que le filtrage élimine rapidement et à moindre coût les termes 
     non-unifiables, réduisant considérablement le nombre d'unifications effectives à réaliser.
+    Cette phase est essentielle car le filtrage ne correspond qu'à la vérification d'une correspondance \textit{locale}
+    entre des symboles, il ne garantit pas la cohérence globale des substitutions. Cette contrainte est imposée
+    par l'unification. À chaque étape du parcours, lorsqu'une variable $*_i$ est associée à un terme, cette
+    association est mémorisée dans la substitution courante. Si la même variable $*_i$ réapparaît
+    plus loin dans la branche, il faut vérifier que la nouvelle correspondace est compatible
+    avec la substitutio déjà en mémoire, sinon la branche est abandonnée. Ainsi, la substitution n'est pas recalculée
+    à chaque noeud~: elle est conservée et propagée tout au long de l'exploration d'une branche afin
+    de garantir la cohérence de l'unification sur l'ensemble du terme ou prédicat.
+
+    \vspace{0.2cm}
+    Par exemple, pour la requête
+\[
+f(X, X)
+\]
+et le terme stocké
+\[
+f(a, b),
+\]
+un filtrage purement local accepterait les correspondances
+\[
+X \mapsto a
+\quad \text{et} \quad
+X \mapsto b.
+\]
+
+Cependant, l’unification rejette ce cas, car une même variable 
+ne peut pas être associée simultanément à deux valeurs différentes. 
+C’est précisément pour détecter ce type de conflit que la substitution 
+est conservée pendant tout le parcours de la branche.
 \end{paraph}
 
-\vspace{0.2cm}
-Considérons le prédicat requête $q = \neg P(f(g(a, Z), c))$, linéarisé et normalisé en 
-$\neg -P-f-g-a-{?_1}-c$.
+\begin{paraph}{Exemple}
+    \vspace{0.2cm}
+    Considérons le prédicat requête $q = \neg P(f(g(a, Z), c))$, linéarisé et normalisé en 
+    $\neg -P-f-g-a-{?_1}-c$ et la même base $B$ que dans l'exemple précédent.
 
-\vspace{0.4em}
-\noindent\textbf{Phase 1 — Filtrage.} On descend dans le \textit{discrimination tree} 
-en suivant la \textit{p-string} $\neg -P-f-g-a-{?_1}-c$~:
+    \vspace{0.4em}
+    \noindent\textbf{Phase 1 — Filtrage.} On descend dans le \textit{discrimination tree} 
+    en suivant la \textit{p-string} $\neg -P-f-g-a-{?_1}-c$~:
+\end{paraph}
+
+\begin{itemize}
+    \item $\neg$~: on suit la branche $+$, symbole inverse~;
+    \item $P$~: on suit la branche $P$, symbole identique~;
+    \item $f$~: on suit la branche $f$, symbole identique~;
+    \item $g$~: on suit la branche $g$, symbole identique~;
+    \item $a$~: on suit la branche $a$, symbole identique~;
+    \item $?_1$~: variable du requête, compatible avec tout nœud, on suit 
+          les branches $*_1$ \textcolor{green!60!black}{(\checkmark)} et 
+          $b$ \textcolor{orange!80!black}{(\checkmark)}~;
+    \item $c$~: depuis $*_1$, on suit $c$ 
+          \textcolor{green!60!black}{\checkmark}~; depuis $b$, aucune 
+          branche $c$ \textcolor{red}{$\Rightarrow$ éliminé}.
+\end{itemize}
+
+\noindent Le filtrage retient uniquement $p_1 = P(f(g(a, X), c))$ comme candidat.
+
 
 \begin{center}
 \begin{forest}
@@ -1438,27 +1564,11 @@ en suivant la \textit{p-string} $\neg -P-f-g-a-{?_1}-c$~:
 \end{forest}
 \end{center}
 
-\begin{itemize}
-    \item $\neg$~: on suit la branche $+$, symbole inverse~;
-    \item $P$~: on suit la branche $P$, symbole identique~;
-    \item $f$~: on suit la branche $f$, symbole identique~;
-    \item $g$~: on suit la branche $g$, symbole identique~;
-    \item $a$~: on suit la branche $a$, symbole identique~;
-    \item $?_1$~: variable du requête, compatible avec tout nœud, on suit 
-          les branches $*_1$ \textcolor{green!60!black}{(\checkmark)} et 
-          $b$ \textcolor{orange!80!black}{(\checkmark)}~;
-    \item $c$~: depuis $*_1$, on suit $c$ 
-          \textcolor{green!60!black}{\checkmark}~; depuis $b$, aucune 
-          branche $c$ \textcolor{red}{$\Rightarrow$ éliminé}.
-\end{itemize}
-
-\noindent Le filtrage retient uniquement $p_1 = P(f(g(a, X), c))$ comme candidat.
-
 \vspace{0.4cm}
 \noindent\textbf{Phase 2 — Unification.} On applique l'algorithme d'unification entre 
 $q = \neg P(f(g(a, Z), c))$ et $p_1 = P(f(g(a, X), c))$~:
 \[
-    \sigma = \{Z \mapsto X\} \quad \text{(ou symétriquement } \{X \mapsto Z\}\text{)}
+    \sigma = \{Z \mapsto X\} \quad \text{(ou symétriquement }\{X \mapsto Z\} \text{)}
 \]
 L'unification réussit avec la substitution $\sigma$. Les prédicats $p_2, \ldots, p_9$ n'ont 
 jamais été considérés, illustrant l'efficacité du filtrage.
