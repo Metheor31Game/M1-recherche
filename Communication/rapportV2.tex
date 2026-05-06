@@ -78,9 +78,11 @@
 % --- Règles --- %
 \algdef{SE}[TRY]{Try}{EndTry}{\textbf{try}}{\textbf{end try}}
 \algdef{C}[TRY]{TRY}{Catch}[1]{\textbf{catch} #1}      
-\titleformat{\part}[hang]{\LARGE\bfseries}{\thepart.}{0.5em}{\setcounter{section}{0}} 
+\titleformat{\part}[hang]{\LARGE\bfseries}{\thepart.}{0.5em}{} 
 \titleformat{\section}[hang]{\Large\bfseries}{\thesection.}{0.5em}{}
 \titleformat{\subsection}[hang]{\large\bfseries}{\thesubsection.}{0.5em}{}
+\renewcommand{\theHsection}{\thepart.\thesection}
+\renewcommand{\theHsubsection}{\thepart.\thesection.\thesubsection}
 
 % --- Style Bibliographie --- %
 \bibliographystyle{plain}
@@ -146,7 +148,7 @@
 
 % Decharge de resp :
 \newpage
-\addtocontents{toc}{\setcounter{tocdepth}{-2}}
+\addtocontents{toc}{\setcounter{tocdepth}{-2}}  % Ne pas afficher dans sommaire
 \part*{DÉCHARGE DE RESPONSABILITÉS}
 \vspace*{\fill}
 \textit{« L’Université de Lorraine n’entend donner ni approbation ni improbation aux opinions émises dans ce
@@ -164,7 +166,8 @@ A FAIRE.
 \newpage
 \pagestyle{plain}
 \setcounter{page}{1}                            % On commence à compter les pages
-\addtocontents{toc}{\setcounter{tocdepth}{2}}
+\addtocontents{toc}{\setcounter{tocdepth}{2}}   % On recommence à afficher dans sommaire
+
 \part*{Introduction}                            % On ne le numérote pas                        
 % Paragraphe 1 : Mise en abime du sujet / actualité ou autre
 En informatique, la représentation de l'information est un point 
@@ -694,6 +697,7 @@ l'objet du reste de ce rapport.
 \end{paraph}
 \newpage
 \part{Structures de données et algorithmes}
+\setcounter{section}{0}
 \section{Structures de données représentant un terme}
 \subsection{Problématique}
 La définition d'un terme en logique du premier ordre impose des contraintes 
@@ -1619,6 +1623,7 @@ jamais été considérés, illustrant l'efficacité du filtrage.
 \newpage
 
 \part{Résultats}
+\setcounter{section}{0}
 \section{Protocole de benchmarks}
 \section{Résultats}
 
