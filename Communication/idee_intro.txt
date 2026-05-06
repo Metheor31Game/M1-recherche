@@ -1,0 +1,53 @@
+Imaginez une machine capable de raisonner d'elle-même, comme
+les meilleurs logiciens du XXe siècle : face aux prémisses "tout 
+homme est mortel" et "Socrate est un homme", elle déduirait seule que
+"Socrate est mortelé. Ce raisonnement, trivial au lecteur exige pour 
+être mécanisé d'outils formels d'une précision redoutable. Au coeur de 
+ces outils se trouve une opération aussi discrète qu'incontournable : l'unification.
+
+
+En logique du premier ordre, les expressions symboles sont représentées par
+des termes : des structures hiérarchiques commposées de variables, de constantes et 
+de symboles de fonction. L'unification consiste à déterminer s'il existe une
+substitution des variables permettant de rendre deux termes syntaxiquement identiques.
+Cette opération est au fondement des moteurs d'inférence, des prouveurs automatiques de thérorèmes et 
+des langages de programmation logique tels que Prolog. Aussi fondamentale
+soit-elle, son efficacité dépend crucialement d'un paramètre souvent négligé :
+le choix des structures de données sous-jacentes.
+
+Car unifier efficacement des milliers de termes ne s'improvise pas.
+Stocker naivement une base de prédicats dans une liste et les parcourir
+un à un devient vite prohibitif à grande échelle. Des structures plus élaborées,
+dictionnaire ou arbres, permettent de réduire drastiquement le nb de comparaisons effectuées.
+De m^même, les algo d'unif eux-meme ont evolue : de l'algo fondateur de Robinson au cadre
+formel de MM, jusqu'aux struct d'indexation spécialisés telles que les DT,
+chaque avancée répond à un meme objectif : unifier plus vite, sur de plus grandes bases.
+
+
+C'est dans ce contexte que s'inscrit ce travaile de recherche, mené dans le cadre
+de l'UE Initiation à la Recherche au sein du LORIA. Nous nous posons la questions suivante :
+
+Quelles structures de données et quels algorithmes permettent de réaliser l'unification
+de manière optimale en logique du premier ordre ? Dans quelle mesure le choix d'une
+structure conditionn-t-il les perf d'un algo d'unif ?
+
+
+Pour y répondre, ce rapport s'articule en trois parties.
+
+La prmeière partie pose les fondements théoriques nécessaires : nous y 
+rappelons les notions clés de la logique prop et premier ordre (termes, atomes, formules, substitution) 
+puis nous formalisons l'unification et son rôle central dans la démonstration automatique
+par résolution, à travers un fil conducteur illustré par l'exemple posé plus haut.
+
+La deuxieme partie constitue le coeur technique du rapport. Nous y présentons
+d'abord les structures de données retenues pour représenter un terme (arbres etiquetes) puis
+celles utilisées pour indexer une base de prédicats : listes, ens, dictionnaires. Nous
+détaillons ensuite les algo d'unif etudiées : Robinson, MM et les DT, structure hybride
+alliant indexation et unif dont les propriétés théroqiues se sont revelees particulierement remarquables.
+
+La troisième partie présente les résultats de nos benchmarks : le protocol
+expérimental mis en place, les metriques mesurees et l'analyse comparative de sapproches implémentées.
+
+
+Au fil de ces trois parties, nous esperons convaince le lecteur que derrière la simplicité apparente de l'unif
+se cachent des enjeux algorithmiques profonds et que le choix d'une struct de données peut faire toute la diff.

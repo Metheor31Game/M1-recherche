@@ -6,6 +6,7 @@
 !*.tex
 !*.pdf
 !*.png
+!*.txt
 
 # ...even if they are in subdirectories
 !*/
