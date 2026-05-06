@@ -124,7 +124,7 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
       - structure : structure de données utilisée par l'algo (pour Robinson/MM)
     """
     touteUnif = True
-    pretraitement = False
+    pretraitement = True
 
     # --- chargement des données ---
     print("Début déserialisation")
@@ -162,7 +162,7 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
 
 
 if __name__ == "__main__":
-    filename = "jeu23"
+    filename = "jeu1"
     file = os.path.join(
         os.path.dirname(__file__),
         "..",
@@ -173,10 +173,18 @@ if __name__ == "__main__":
     )
 
     # Exemple : on passe maintenant une LISTE de candidats
-    listeCandidats = [
-        "S(X, b, V, a, Y, j(a), V, Z, b, W, c, d, i(b, X), U, X)",
-        "S(a, b, c, a, Y, j(a), V, Z, b, W, c, d, i(b, X), U, X)",
-        "P(X, Y, Z)",
+    listeCandidats1 = [
+        "¬R(X, Y, X, Z, V, U, X)",
+        "¬P(f(X, X), X, Y)",
+        "¬Q(X, Z, b, Y, V, X)",
+        "R(Y, U, Y, e, e, V, h(l(e,c)))"
+
     ]
 
-    benchmark(listeCandidats, file, "robinson", "ensemble")
+    listeCandidats2 = [
+
+    ]
+
+    benchmark(listeCandidats1, file, "arbre", "liste")
+    benchmark(listeCandidats1, file, "mm", "liste")
+    benchmark(listeCandidats1, file, "robinson", "liste")

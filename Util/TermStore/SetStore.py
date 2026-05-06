@@ -30,26 +30,3 @@ class SetStore(TermStore[T]):
     def __iter__(self) -> Iterator[T]:
         return iter(self._data)
     
-    def pretraitement(self, pred) -> 'SetStore[T]':
-        """
-        Filtre le store pour ne retenir que les littéraux compatibles avec pred.
-        
-        on garde les littéraux qui ont :
-        - Le même prédicat que pred
-        - Le même arité que pred
-        - Le signe opposé de pred
-        
-        Args:
-            pred: Le littéral de référence pour le filtrage.
-        
-        Returns:
-            SetStore[T]: Un nouveau store contenant uniquement les littéraux compatibles.
-        """
-        nouveau_store = SetStore()
-        for litteral in self._data:
-            # Vérifier compatibilité : même prédicat, même arité, signe opposé
-            if (litteral.predicat == pred.predicat and 
-                litteral.arity == pred.arity and 
-                litteral.sign != pred.sign):
-                nouveau_store.push(litteral)
-        return nouveau_store

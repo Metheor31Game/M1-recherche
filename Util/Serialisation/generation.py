@@ -89,46 +89,47 @@ if __name__ == "__main__":
 
     # Seconde génération
 
-    # Signature : P, Q, R
-    # Arité = 1
-    serialisation(["P", "Q", "R"], 1, 10,    10_000, "jeu1")
-    serialisation(["P", "Q", "R"], 1, 10,   100_000, "jeu2")
-    serialisation(["P", "Q", "R"], 1, 10, 1_000_000, "jeu3")  
+   # Signature : P, Q, R
+    # Profondeur = 1
+    serialisation(["P", "Q", "R"], 10, 1,    10_000, "jeu1")
+    serialisation(["P", "Q", "R"], 10, 1,   100_000, "jeu2")
+    serialisation(["P", "Q", "R"], 10, 1, 1_000_000, "jeu3")
 
-    # Arité = 5 
-    serialisation(["P", "Q", "R"], 5, 10,    10_000, "jeu4")
-    serialisation(["P", "Q", "R"], 5, 10,   100_000, "jeu5")
-    serialisation(["P", "Q", "R"], 5, 10, 1_000_000, "jeu6")
+    # Profondeur = 5
+    serialisation(["P", "Q", "R"], 10, 5,    10_000, "jeu4")
+    serialisation(["P", "Q", "R"], 10, 5,   100_000, "jeu5")
+    serialisation(["P", "Q", "R"], 10, 5, 1_000_000, "jeu6")
 
-    # Arité = 10
+    # Profondeur = 10
     serialisation(["P", "Q", "R"], 10, 10,    10_000, "jeu7")
     serialisation(["P", "Q", "R"], 10, 10,   100_000, "jeu8")
     serialisation(["P", "Q", "R"], 10, 10, 1_000_000, "jeu9")
 
-    # Arité = 20
-    serialisation(["P", "Q", "R"], 20, 10,    10_000, "jeu10")
-    serialisation(["P", "Q", "R"], 20, 10,   100_000, "jeu11")
-    serialisation(["P", "Q", "R"], 20, 10, 1_000_000, "jeu12")
+    # Profondeur = 20
+    serialisation(["P", "Q", "R"], 10, 20,    10_000, "jeu10")
+    serialisation(["P", "Q", "R"], 10, 20,   100_000, "jeu11")
+    serialisation(["P", "Q", "R"], 10, 20, 1_000_000, "jeu12")
 
     # Signature : P, Q, R, S, T, U
-    # Arité = 1
-    serialisation(["P", "Q", "R", "S", "T", "U"], 1, 10,    10_000, "jeu13")
-    serialisation(["P", "Q", "R", "S", "T", "U"], 1, 10,   100_000, "jeu14")
-    serialisation(["P", "Q", "R", "S", "T", "U"], 1, 10, 1_000_000, "jeu15")  
+    # Profondeur = 1
+    serialisation(["P", "Q", "R", "S", "T", "U"], 10, 1,    10_000, "jeu13")
+    serialisation(["P", "Q", "R", "S", "T", "U"], 10, 1,   100_000, "jeu14")
+    serialisation(["P", "Q", "R", "S", "T", "U"], 10, 1, 1_000_000, "jeu15")
 
-    # Arité = 5 
-    serialisation(["P", "Q", "R", "S", "T", "U"], 5, 10,    10_000, "jeu16")
-    serialisation(["P", "Q", "R", "S", "T", "U"], 5, 10,   100_000, "jeu17")
-    serialisation(["P", "Q", "R", "S", "T", "U"], 5, 10, 1_000_000, "jeu18")
+    # Profondeur = 5
+    serialisation(["P", "Q", "R", "S", "T", "U"], 10, 5,    10_000, "jeu16")
+    serialisation(["P", "Q", "R", "S", "T", "U"], 10, 5,   100_000, "jeu17")
+    serialisation(["P", "Q", "R", "S", "T", "U"], 10, 5, 1_000_000, "jeu18")
 
-    # Arité = 10
+    # Profondeur = 10
     serialisation(["P", "Q", "R", "S", "T", "U"], 10, 10,    10_000, "jeu19")
     serialisation(["P", "Q", "R", "S", "T", "U"], 10, 10,   100_000, "jeu20")
     serialisation(["P", "Q", "R", "S", "T", "U"], 10, 10, 1_000_000, "jeu21")
 
-    # Arité = 20
-    serialisation(["P", "Q", "R", "S", "T", "U"], 20, 10,    10_000, "jeu22")
-    serialisation(["P", "Q", "R", "S", "T", "U"], 20, 10,   100_000, "jeu23")
-    serialisation(["P", "Q", "R", "S", "T", "U"], 20, 10, 1_000_000, "jeu24")
+    # Profondeur = 20
+    serialisation(["P", "Q", "R", "S", "T", "U"], 10, 20,    10_000, "jeu22")
+    serialisation(["P", "Q", "R", "S", "T", "U"], 10, 20,   100_000, "jeu23")
+    serialisation(["P", "Q", "R", "S", "T", "U"], 10, 20, 1_000_000, "jeu24")
+
 
     pass
