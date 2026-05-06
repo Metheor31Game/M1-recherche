@@ -1,7 +1,7 @@
 \documentclass[11pt]{article}
 
 % TODO :
-% pas mettre sommaire decharge + remerciement
+% pas mettre sommaire decharge + remerciement -> OK
 % corriger double apparition sommaire Introduction
 % corriger bug link des titres dans le sommaire (pourtant utilisation des sections et parties latex...)
 
@@ -27,7 +27,7 @@
 
 \pagestyle{empty}
 
-% --- Env --- %
+% --- Envs --- %
 \newenvironment{avantpropos}{%
     \begin{mdframed}[
         linecolor=sectioncolor!40,
@@ -78,22 +78,17 @@
 % --- Règles --- %
 \algdef{SE}[TRY]{Try}{EndTry}{\textbf{try}}{\textbf{end try}}
 \algdef{C}[TRY]{TRY}{Catch}[1]{\textbf{catch} #1}      
-\titleformat{\part}[hang]{\LARGE\bfseries}{\thepart.}{0.5em}{\setcounter{section}{0}} % Met compteur romain devant part
+\titleformat{\part}[hang]{\LARGE\bfseries}{\thepart.}{0.5em}{\setcounter{section}{0}} 
 \titleformat{\section}[hang]{\Large\bfseries}{\thesection.}{0.5em}{}
 \titleformat{\subsection}[hang]{\large\bfseries}{\thesubsection.}{0.5em}{}
 
 % --- Style Bibliographie --- %
 \bibliographystyle{plain}
 
-% --- Titre --- %
-\title{Test Rapport Titre}
-\author{Ayath ABOGOUNRIN, Guillaume POTEL, Mathéo VIGNERES}
-\date{Année Universitaire 2025-2026}
-
 % ========================= Corps ======================= %
 \begin{document}
 \begin{titlepage}
-        \begin{center}
+    \begin{center}
         \begin{minipage}[c]{0.45\textwidth}
             \centering
             \includegraphics[width=0.30\linewidth]{img/logo_LORIA.png}
@@ -103,7 +98,7 @@
             \centering
             \includegraphics[width=0.6\linewidth]{img/logo_UL.png}
         \end{minipage}
-        \end{center}
+    \end{center}
 
     \vspace{1cm} % Espace vertical après les logos
     \vspace*{\fill}
@@ -118,19 +113,22 @@
 
     \vspace*{\fill}
 
+    % Noms auteurs :
     \begin{minipage}[t]{0.45\textwidth}
         \begin{flushleft}
-            \small Etudiants : \\
+            \small Etudiants~: \\
             \hspace*{1.5em} Ayath ABOGOUNRIN \\
             \hspace*{1.5em} Guillaume POTEL \\
             \hspace*{1.5em} Matheo VIGNERES
         \end{flushleft}
     \end{minipage}%
+    % Barre séparatrice auteurs / encadrants :
     \begin{minipage}[t]{0.1\textwidth}
         \vspace*{0.5em} % Ajustement vertical pour aligner la barre
         \centering
-        \rule{1pt}{\dimexpr 3\baselineskip + 0.5em} % Ajustement précis de la hauteur
+        \rule{1pt}{\dimexpr3\baselineskip+ 0.5em} % Ajustement précis de la hauteur
     \end{minipage}%
+    % Noms encadrants :
     \begin{minipage}[t]{0.45\textwidth}
         \begin{flushright}
             \small Encadrants : \\
@@ -139,7 +137,6 @@
             \hspace*{0pt}\llap{\hspace*{1.5em}} Engel LEFAUCHEUX
         \end{flushright}
     \end{minipage}
-
 \end{titlepage}
 \thispagestyle{empty}
 
@@ -149,6 +146,7 @@
 
 % Decharge de resp :
 \newpage
+\addtocontents{toc}{\setcounter{tocdepth}{-2}}
 \part*{DÉCHARGE DE RESPONSABILITÉS}
 \vspace*{\fill}
 \textit{« L’Université de Lorraine n’entend donner ni approbation ni improbation aux opinions émises dans ce
@@ -166,10 +164,8 @@ A FAIRE.
 \newpage
 \pagestyle{plain}
 \setcounter{page}{1}                            % On commence à compter les pages
-
-\part*{Introduction}                            % On ne le numérote pas    
-\phantomsection                     
-\addcontentsline{toc}{part}{Introduction}       % Mais on met en table des matières
+\addtocontents{toc}{\setcounter{tocdepth}{2}}
+\part*{Introduction}                            % On ne le numérote pas                        
 % Paragraphe 1 : Mise en abime du sujet / actualité ou autre
 En informatique, la représentation de l'information est un point 
 clé dans la réalisation de divers projets. Ainsi le choix des 
