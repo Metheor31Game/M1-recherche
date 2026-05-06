@@ -162,7 +162,7 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
 
 
 if __name__ == "__main__":
-    filename = "jeu1"
+    filename = "jeu5"
     file = os.path.join(
         os.path.dirname(__file__),
         "..",
@@ -182,9 +182,32 @@ if __name__ == "__main__":
     ]
 
     listeCandidats2 = [
-
+        "R(X,Z)",
+        "¬Q(f(Z, a), Y, W, g(X, Z, Y))",
+        "P(a, f(X, X))"
     ]
 
-    benchmark(listeCandidats1, file, "arbre", "liste")
-    benchmark(listeCandidats1, file, "mm", "liste")
-    benchmark(listeCandidats1, file, "robinson", "liste")
+    listeCandidats3 = [
+        "P(X, Y)",
+        "¬P(f(b, X), j(X, Z, b ))",
+        "Q(f(X, Y), a, X, W, K(X, Z), Y)",
+        "¬R(Y, f(Y, X), c, Z, Z, f(Z, X), W, X, Z)"
+    ]
+
+    listeCandidats4 = [
+        "P(X, Y, f(Z, Y), X, b, Z, W, Y)",
+        "Q(a, X)",
+        "¬Q(f(X, X), Y)",
+        "Q(h(V), b)"
+    ]
+
+    listeCandidats5 = [
+        "¬Q(a, X, c)",
+        "Q(X, Y, g(X, W, U))",
+        "¬P(X, Y, g(a, Y, W), c, W, V, Y, X)",
+        "¬R(a, X, Y, W, Y, l(k(U, h(X)), l(c, X)), k(l(V, U), Y))"
+    ]
+
+    benchmark(listeCandidats5, file, "mm", "liste")
+    benchmark(listeCandidats5, file, "robinson", "liste")
+    benchmark(listeCandidats5, file, "arbre", "liste")
