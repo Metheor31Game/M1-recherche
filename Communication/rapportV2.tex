@@ -78,9 +78,6 @@
 \titleformat{\subsubsection}[hang]{\large\bfseries}{\thesubsubsection.}{0.5em}{}
 \renewcommand{\theHsubsection}{\thesection.\thesubsection}
 
-% --- Style Bibliographie --- %
-\bibliographystyle{plain}
-
 % ========================= Corps ======================= %
 \begin{document}
 \begin{titlepage}
@@ -1328,9 +1325,9 @@ et les \textit{dictionnaires}.
 \subsection{Discrimination Tree}
 
 \begin{avantpropos}
-    D'après \emph{Term Indexing} - R. Sekar, I.V. Ramakrishnan et A. Voronkov, \emph{An Algorithm for the Retrieval of Unifiers from
-    Discrimination Trees} - H. De Nivelle et \emph{On the Evaluation of Indexing Techniques for Theorem Proving} - R. Nieuwenhuis, T. Hillenbrand,
-    A. Riazanov et A. Voronkov
+    D'après \emph{Term Indexing} - R. Sekar, I.V. Ramakrishnan et A. Voronkov \cite{TermIndexing}, \emph{An Algorithm for the Retrieval of Unifiers from
+    Discrimination Trees} - H. De Nivelle \cite{DT} et \emph{On the Evaluation of Indexing Techniques for Theorem Proving} - R. Nieuwenhuis, T. Hillenbrand,
+    A. Riazanov et A. Voronkov \cite{Eval}.
 \end{avantpropos}
 
 \subsubsection{Présentation}
@@ -1495,7 +1492,7 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
 
 \begin{remarque}
     Cet exemple est tiré de \emph{Term Indexing} - R. Sekar, 
-    I.V. Ramakrishnan et A. Voronkov. Il a par ailleurs 
+    I.V. Ramakrishnan et A. Voronkov\cite{TermIndexing}. Il a par ailleurs 
     été adapté à notre version \emph{normalisée} du discrimination tree.
 \end{remarque}
 
@@ -1697,5 +1694,12 @@ le filtrage structurel puis l'unification effective.
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
+
+
+\newpage
+
+% --- Bibliographie --- %
+\bibliographystyle{plain}
+\bibliography{biblio}
 
 \end{document}
