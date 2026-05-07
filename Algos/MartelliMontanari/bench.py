@@ -50,7 +50,6 @@ def bench(candidats: list, predList: list, structure: str, pretraitement: bool, 
                 sousCollection = dict.get("negatif", [])
             else:
                 sousCollection = dict.get("positif", [])
-
         for l2 in sousCollection:
             # Si il y a pas de prétraitement, le filtre se fait ici pendant l'unification
             if structure != "dictionnaire":

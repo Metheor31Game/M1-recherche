@@ -57,7 +57,7 @@ def unifPredicat(p1: Litteral, p2: Litteral, algo):
     
     return None
 
-def rechercherUnifiablesSimple(p1: Litteral, preds: TermStore[Litteral], algo: str = "Robinson") -> Dict[Litteral, Dict]:
+def rechercherUnifiablesSimple(p1: Litteral, preds: TermStore[Litteral], algo: str = "Robinson", touteUnif: bool = True) -> Dict[Litteral, Dict]:
     """
     Recherche "bêtement" tous les littéraux unifiables avec p1 dans un ensemble de littéraux.
     
@@ -85,9 +85,12 @@ def rechercherUnifiablesSimple(p1: Litteral, preds: TermStore[Litteral], algo: s
         subst = unifPredicat(p1, p, algo)
         if subst is not None:
             result[p] = subst
+            # Si on ne veut qu'une seule unification, on coupe la boucle !
+            if not touteUnif:
+                break
     return result
 
-def rechercherUnifiablesOptimise(p1: Litteral, preds: TermStore[Litteral], algo: str = "Robinson") -> Dict[Litteral, Dict]:
+def rechercherUnifiablesOptimise(p1: Litteral, preds: TermStore[Litteral], algo: str = "Robinson", touteUnif: bool = True) -> Dict[Litteral, Dict]:
     """
     Recherche optimisée qui exploite l'indexation de DictStore si disponible.
     Si un autre store est passé, se rabat sur la méthode simple.
@@ -105,6 +108,8 @@ def rechercherUnifiablesOptimise(p1: Litteral, preds: TermStore[Litteral], algo:
         subst = unifPredicat(p1, p, algo)
         if subst is not None:
             result[p] = subst
+            if not touteUnif:
+                break
             
     return result
 
