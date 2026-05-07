@@ -125,7 +125,7 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
       - algo      : "arbre" | "robinson" | "mm"
       - structure : structure de données utilisée par l'algo (pour Robinson/MM)
     """
-    touteUnif = True
+    touteUnif = False
     pretraitement = True
 
     # --- chargement des données ---
@@ -162,54 +162,8 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
     _afficher_mesures(algo, structure, candidats, mesures)
     return mesures
 
-def afficher_arites_fichier(filepath: str, symboles_recherches: list[str]):
-    """
-    Lit un fichier de littéraux sérialisés et affiche l'arité des symboles demandés.
-    S'arrête dès que tous les symboles ont été trouvés.
-    """
-    arites_trouvees = {}
-    symboles_set = set(symboles_recherches)
-    
-    # Lecture du fichier (gestion automatique du format compressé ou brut)
-    try:
-        with gzip.open(filepath, "rt", encoding="utf-8") as f:
-            contenu = f.read()
-    except OSError:
-        # Si ça échoue, c'est que le fichier n'est pas compressé (texte brut)
-        with open(filepath, "rt", encoding="utf-8") as f:
-            contenu = f.read()
-
-    # Découpage du fichier en chaînes de littéraux
-    litteraux_str = [pred.strip() for pred in contenu.split(".") if pred.strip()]
-    
-    for lit_str in litteraux_str:
-        try:
-            # L'utilisation de from_string évite la confusion entre Predicat U et Variable U
-            lit = Litteral.from_string(lit_str)
-            
-            # Si le prédicat fait partie de notre liste et qu'on ne l'a pas encore vu
-            if lit.predicat in symboles_set and lit.predicat not in arites_trouvees:
-                arites_trouvees[lit.predicat] = lit.arity
-                
-            # Optimisation : On arrête tout si on a trouvé tous les symboles
-            if len(arites_trouvees) == len(symboles_set):
-                break
-                
-        except ValueError:
-            # Ignore les chaînes mal formées s'il y en a
-            continue
-
-    # Affichage des résultats
-    print(f"--- Arités dans le fichier {os.path.basename(filepath)} ---")
-    for sym in symboles_recherches:
-        if sym in arites_trouvees:
-            print(f"{sym}: {arites_trouvees[sym]}")
-        else:
-            print(f"{sym}: Non trouvé dans le fichier")
-
-
 if __name__ == "__main__":
-    filename = "jeu5"
+    filename = "jeu1"
     file = os.path.join(
         os.path.dirname(__file__),
         "..",
@@ -618,8 +572,8 @@ if __name__ == "__main__":
         "U(k(U, V), l(W, X), m(Y, Z, a), n(U, b), o(V, c), p(W, d), q(X, e), r(Y, f), Z, a)"
     ]
 
-    benchmark(listeCandidats5, file, "mm", "liste")
-    benchmark(listeCandidats5, file, "robinson", "liste")
-    benchmark(listeCandidats5, file, "arbre", "liste")
+    benchmark(listeCandidats1, file, "mm", "dictionnaire")
+    # benchmark(listeCandidats5, file, "robinson", "dictionnaire")
+    # benchmark(listeCandidats5, file, "arbre", "liste")
 
-    afficher_arites_fichier(file, ['P', 'Q', 'R'])
+    # afficher_arites_fichier(file, ['P', 'Q', 'R'])
