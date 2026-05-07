@@ -20,6 +20,15 @@
 \usepackage{cancel}
 \usepackage{hyperref}
 
+% Configuration biblatex
+\usepackage[
+    backend=biber,
+    style=numeric,    
+    sorting=none 
+]{biblatex}
+
+\addbibresource{biblio.bib}  % Fichier .bib
+
 \pagestyle{empty}
 
 % --- Envs --- %
@@ -228,7 +237,7 @@ est disponible dans le dépôt git du projet~: \url{https://github.com/Metheor31
 \newpage
 \section{Généralités}
 \begin{avantpropos}
-    D'après nos connaissances, l'UE de L3 intitulée \emph{Logique des propositions - Logique du premier ordre}, de Jean Lieber et l'UE de M1 intitulée \emph{Logiques et Modèles de Calcul}, de Didier Galmiche.
+    D'après nos connaissances, l'UE de L3 intitulée \emph{Logique des propositions - Logique du premier ordre}, de Jean Lieber~\cite{lieber2024cours} et l'UE de M1 intitulée \emph{Logiques et Modèles de Calcul}, de Didier Galmiche.
 \end{avantpropos}
 
 \begin{paraph}{Fil conducteur}
@@ -322,13 +331,13 @@ sur des ensembles d'objets ou des relations. Pour les décrire
 au sein de \textit{formules}, on se donne un \textit{alphabet} 
 composé des éléments suivants~:
 \begin{itemize}
-    \item Ensemble de \textit{variables}~: $x, y, z, \ldots$ Représentant des individus \textit{indéterminés}~;
+    \item Ensemble de \textit{variables}~: $x, y, z$, etc. Elles représentent des individus \textit{indéterminés}~;
 \end{itemize}
 On définit également ce que l'on appelle une \textit{signature}, 
 qui rend notre représentation unique, composée de deux ensembles~:
 \begin{itemize}
-    \item Ensemble de symboles de \textit{fonctions}~: $f, g, h, \ldots$ Permettant de construire de nouveaux objets à partir d'objets existants, e.g.~$\mathit{pere}(\mathit{socrate})$ désigne le père de Socrate~;
-    \item Ensemble de symboles de \textit{prédicats}~: $P, Q, R, \ldots$ Exprimant des propriétés ou des relations entre objets, e.g.~$\mathit{Homme}(\mathit{socrate})$ exprime que Socrate est un homme.
+    \item Ensemble de symboles de \textit{fonctions}~: $f, g, h$, etc. Elles permettent de construire de nouveaux objets à partir d'objets existants, e.g.~$\mathit{pere}(\mathit{socrate})$ désigne le père de Socrate~;
+    \item Ensemble de symboles de \textit{prédicats}~: $P, Q, R$, etc. Ils expriment des propriétés ou des relations entre objets, e.g.~$\mathit{Homme}(\mathit{socrate})$ exprime que Socrate est un homme.
 \end{itemize}
 On associe à ces fonctions et prédicats une \textit{arité} 
 (i.e.~le nombre d'arguments qu'ils prennent). Par exemple, 
@@ -337,7 +346,7 @@ tandis qu'un prédicat comme $\mathit{EstParentDe}(x, y)$ est d'arité
 $2$ car il met en relation deux individus. Parmi les symboles de 
 fonctions, ceux d'arité $0$ sont appelés \textit{constantes}~:
 \begin{itemize}
-    \item Ensemble de symboles de constantes~: $a, b, c, \ldots$ Représentant des individus précis et fixes, e.g.~$\mathit{socrate}$.
+    \item Ensemble de symboles de constantes~: $a, b, c$, etc. Elles représentent des individus précis et fixes, e.g.~$\mathit{socrate}$.
 \end{itemize}
 
 
@@ -1080,7 +1089,7 @@ et les \textit{dictionnaires}.
     par l'explosion combinatoire des recherches de preuves. J. A. 
     Robinson a révolutionné le domaine en publiant son article de 
     référence~: \textit{A Machine-Oriented Logic Based on the Resolution 
-    Principle}. Il y introduit l'unification comme un moyen de 
+    Principle}~\cite{robinson1965machine}. Il y introduit l'unification comme un moyen de 
     sélectionner intelligemment les substitutions nécessaires pour 
     appliquer la règle de résolution, évitant de tester une infinité 
     de combinaisons de manière aveugle.
@@ -1211,11 +1220,11 @@ et les \textit{dictionnaires}.
 \end{remarque}
 \newpage
 
-\subsubsection{Martelli-Montanari}
+\subsubsection{Martelli-Montanari}\label{sec:mm}
 
 \begin{paraph}{Origine et principe}
     L’algorithme Martelli Montanari a été publié en 1982 par Alberto Martelli et Ugo
-    Montanari dans la revue ACM \textit{Transactions on Programming Languages and Systems}.
+    Montanari dans la revue ACM \textit{Transactions on Programming Languages and Systems}.~\cite{martelli1982efficient}
     Élément clé dans l’étude de l’unification du premier ordre, sa principale contribution est
     de modéliser l'unification comme un système de transformation, offrant ainsi un cadre
     formel qui permet de démontrer la correction de plusieurs algorithmes pratiques. Il
@@ -1347,7 +1356,11 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
     sa structure hiérarchique en une séquence de symboles. Ces \textit{p-strings} 
     sont ensuite insérées dans un \textit{arbre}, de sorte que les préfixes communs 
     à plusieurs termes soient \textit{factorisés} au maximum en un unique chemin 
-    partagé, évitant toute redondance et constituant ainsi l'index.
+    partagé, évitant toute redondance et constituant ainsi l'index. Enfin, 
+    chaque chemin se termine par une feuille contenant un ou plusieurs pointeurs 
+    vers les objets originaux (termes ou prédicats), permettant ainsi de 
+    récupérer instantanément les données correspondantes une fois le parcours 
+    de l'arbre terminé.
 
     \vspace{0.2cm}
     Il existe plusieurs variantes du \textit{discrimination tree}, se distinguant 
@@ -1648,29 +1661,165 @@ le filtrage structurel puis l'unification effective.
 \begin{paraph}{Insertion}
     L'insertion d'un prédicat dans un discrimination tree consiste à parcourir sa représentation
     linéarisée puis à insérer successivement chaque symbole dans l'arbre (ou le parcourir si le symbole
-    est déjà partagé à une autre branche).
+    est déjà partagé à une autre branche). L'algorithme suivant détaille ce processus~:
 
-    \newpage
-    Soit $n$ la taille d'un prédicat, i.e~son nombre total de symboles.
-    Chaque symbole nécessite~:
+    \begin{algorithm}[H]
+        \footnotesize
+        \caption{Insertion d'un prédicat dans l'arbre de discrimination}
+        \label{alg:insertion_dt}
+        \begin{algorithmic}[1]
+            
+            \Procedure{InsererPredicat}{$Arbre$, $Predicat$, $Pointeur$}
+                
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 1~:} Linéarisation et normalisation des variables}
+                \State$S \gets \Call{MiseAPlat}{Predicat}$ \Comment{Transforme le prédicat en p-string}
+                
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 2~:} Descente et construction de l'arbre}
+                \State$NoeudCourant \gets Arbre.racine$
+                
+                \For{\textbf{chaque} $Symbole$ \textbf{dans} $S$}
+                    \If{$Symbole \notin NoeudCourant.enfants$} 
+                        \State\Comment{Création d'un nouveau nœud si la branche n'existe pas}
+                        \State$NouveauNoeud \gets \Call{CreerNoeud}{Symbole}$
+                        \State$NoeudCourant.enfants[Symbole] \gets NouveauNoeud$
+                    \EndIf
+                    \State$NoeudCourant \gets NoeudCourant.enfants[Symbole]$
+                \EndFor
+                
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 3~:} Ajout du pointeur à la feuille}
+                \If{$Pointeur \notin NoeudCourant.pointeurs$}
+                    \State$NoeudCourant.pointeurs \gets NoeudCourant.pointeurs \cup \{Pointeur\}$
+                \EndIf
+                
+            \EndProcedure
+
+        \end{algorithmic}
+    \end{algorithm}
+
+    \vspace{0.2cm}
+    Soit $n$ la taille d'un prédicat, i.e.~son nombre total de symboles (par exemple, pour un 
+    prédicat $\neg P(X, g(X, b))$, $n=6$ puisque sa \textit{p-string} est $\neg -P-*_1-g-*_1-b$). 
+    Évaluons la complexité de chaque étape de l'algorithme~:
+
     \begin{itemize}
-        \item Une consultation des fils du nœud courant~;
-        \item La création éventuelle d'un nouveau nœud~;
-        \item Une descente dans l'arbre.
+        \item \textbf{Linéarisation (Étape 1)~:} La fonction de mise à plat effectue un parcours 
+        en profondeur du prédicat. Elle visite chaque nœud (symbole, fonction ou variable) exactement 
+        une fois, ce qui requiert un temps proportionnel au nombre de symboles, soit $\mathcal{O}(n)$.
+        
+        \item \textbf{Construction (Étape 2)~:} L'algorithme itère sur les $n$ symboles de la 
+        \textit{p-string}. Pour chaque symbole, la vérification de son existence parmi les enfants du 
+        nœud courant s'effectue en $\mathcal{O}(1)$ en moyenne, grâce à l'utilisation d'une table 
+        de hachage (\textit{Dictionnaire} en Python). La création et l'ajout d'un nœud, si nécessaire, 
+        se font également en temps constant $\mathcal{O}(1)$. Cette boucle s'exécute donc en $\mathcal{O}(n)$.
+        
+        \item \textbf{Mise à jour (Étape 3)~:} L'ajout du pointeur à la fin du chemin est une opération 
+        élémentaire en $\mathcal{O}(1)$.
     \end{itemize}
 
-    La complexité temporelle de l'insertion est donc~:
+    \vspace{0.2cm}
+    La complexité temporelle globale de l'insertion d'un prédicat dans le \textit{discrimination tree} 
+    est donc strictement linéaire par rapport à la taille du prédicat~:
     \[
     \mathcal{O}(n)
     \]
+
+    \vspace{0.2cm}
+    \noindent Du point de vue de la \textit{complexité spatiale}, dans le pire des cas (où le 
+    prédicat ne partage aucun préfixe avec les termes déjà indexés dans l'arbre), l'algorithme allouera 
+    exactement $n$ nouveaux nœuds en mémoire. La complexité spatiale par insertion est donc, elle aussi, 
+    au pire de $\mathcal{O}(n)$. Le partage de préfixes rend cependant cette empreinte mémoire bien plus 
+    faible en pratique.
 \end{paraph}
 
-\begin{paraph}{Filtrage structurelle}
-    
-\end{paraph}
+\begin{paraph}{Filtrage structurel}
+    Le filtrage structurel est la première phase de la recherche. Il consiste à 
+    parcourir l'arbre en suivant la \textit{p-string} du terme requête. 
+    Contrairement à l'insertion, ce processus doit gérer le non-déterminisme 
+    induit par les variables présentes dans l'arbre (notées $*_i$) 
+    qui peuvent correspondre à n'importe quel sous-terme de la requête.
 
-\begin{paraph}{Unification}
-    
+    \begin{algorithm}[H]
+        \footnotesize
+        \caption{Filtrage structurel (Collecte de candidats)}
+        \label{alg:filtrage_dt}
+        \begin{algorithmic}[1]
+            \Procedure{CollecterCandidats}{$Noeud$, $Seq$, $i$, $Candidats$}
+                
+                \If{$i \ge \Call{Taille}{Seq}$} \Comment{Condition d'arrêt : fin de la séquence}
+                    \State $Candidats \gets Candidats \cup Noeud.pointeurs$
+                    \State \Return
+                \EndIf
+                
+                \State $s \gets Seq[i]$
+                
+                \State\Comment{\textbf{Cas 0~:} Signe du prédicat (recherche de l'opposé pour résolution)}
+                \If{$s \in \{\text{'+', '¬'}\}$}
+                    \State $oppose \gets (s == \text{'+'} ? \text{'¬'} : \text{'+'})$
+                    \If{$oppose \in Noeud.enfants$}
+                        \State \Call{CollecterCandidats}{$Noeud.enfants[oppose], Seq, i+1, Candidats$}
+                    \EndIf
+                    \State \Return
+                \EndIf
+
+                \State\Comment{\textbf{Cas 1~:} Symbole identique (hors variables)}
+                \If{$s \in Noeud.enfants$ \textbf{et} $s$ n'est pas une variable}
+                    \State \Call{CollecterCandidats}{$Noeud.enfants[s], Seq, i+1, Candidats$}
+                \EndIf
+
+                \State\Comment{\textbf{Cas 2~:} Variable dans la requête (symbole '?')}
+                \If{$s$ est une variable requête}
+                    \For{\textbf{chaque} $Enfant$ \textbf{dans} $Noeud.enfants$}
+                        \For{\textbf{chaque} $DernierNoeud$ \textbf{de} \Call{SousTermes}{Enfant, 1}}
+                            \State \Call{CollecterCandidats}{$DernierNoeud, Seq, i+1, Candidats$}
+                        \EndFor
+                    \EndFor
+                    \State \Return
+                \EndIf
+
+                \State\Comment{\textbf{Cas 3~:} Variable dans l'arbre (symbole '*')}
+                \State $prof \gets \Call{CalculerProfondeur}{i}$
+                \For{\textbf{chaque} $(symb, enfant)$ \textbf{dans} $Noeud.enfants$}
+                    \If{$symb$ est une variable arbre \textbf{et} $i + prof \le \Call{Taille}{Seq}$}
+                        \State \Call{CollecterCandidats}{$enfant, Seq, i + prof, Candidats$}
+                    \EndIf
+                \EndFor
+                
+            \EndProcedure
+        \end{algorithmic}
+    \end{algorithm}
+
+    \vspace{0.2cm}
+    \textbf{Analyse de complexité :}
+    Soit $n$ la taille du prédicat de requête et $M$ le nombre total de nœuds dans l'arbre.
+    \begin{itemize}
+        \item \textbf{Pire cas~:} Dans le cas d'une requête très générale ou d'un arbre fortement peuplé de variables, l'algorithme peut explorer plusieurs branches (backtracking). La complexité peut atteindre $\mathcal{O}(M)$ dans le pire des cas théorique.
+        \item \textbf{Cas moyen~:} Grâce à la structure d'index, on élimine massivement les branches incompatibles dès le début du parcours. La complexité moyenne est proche de $\mathcal{O}(n)$, rendant la recherche extrêmement performante par rapport à un parcours séquentiel de la base de données.
+    \end{itemize}
+\end{paraph}
+\newpage
+\begin{paraph}{Unification effective}
+    Une fois le filtrage structurel terminé, nous obtenons un ensemble de 
+    candidats qui \textit{ressemblent} à la requête. Cependant, l'arbre de 
+    discrimination «~standard » ne capture pas les contraintes de co-occurrence 
+    des variables (par exemple, que le premier et le second argument doivent 
+    être identiques). Il est donc nécessaire de procéder à une unification 
+    classique sur les candidats restants.
+
+    \vspace{0.2cm}
+    \textbf{Analyse de complexité~:}
+    Soit $k$ le nombre de candidats renvoyés par le filtrage ($k \ll \text{taille de la base}$).
+    \begin{itemize}
+        \item L'opération dominante est l'appel à l'algorithme d'unification pour chaque candidat.
+        \item Si l'unification est en $\mathcal{O}(n)$ (cas de \hyperref[sec:mm]{Martelli-Montanari} sans \textit{occur-check} coûteux), la complexité de cette phase est $\mathcal{O}(k \cdot n)$.
+    \end{itemize}
+    \textbf{Conclusion sur la performance~:} 
+    L'intérêt majeur du \textit{Discrimination Tree} réside dans sa capacité 
+    à maintenir $k$ très petit, souvent proche de 1, ce qui permet de passer 
+    d'une recherche en $\mathcal{O}(Base \cdot n)$ à une recherche quasi-linéaire 
+    $\mathcal{O}(n)$ par rapport à la taille de la requête.
 \end{paraph}
 
 \newpage
@@ -1690,7 +1839,6 @@ le filtrage structurel puis l'unification effective.
 \newpage
 
 % --- Bibliographie --- %
-\bibliographystyle{plain}
-\bibliography{biblio}
+\printbibliography
 
 \end{document}
