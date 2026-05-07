@@ -125,7 +125,7 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
       - algo      : "arbre" | "robinson" | "mm"
       - structure : structure de données utilisée par l'algo (pour Robinson/MM)
     """
-    touteUnif = False
+    touteUnif = True
     pretraitement = True
 
     # --- chargement des données ---
@@ -163,7 +163,7 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
     return mesures
 
 if __name__ == "__main__":
-    filename = "jeu1"
+    filename = "jeu7"
     file = os.path.join(
         os.path.dirname(__file__),
         "..",
@@ -175,14 +175,14 @@ if __name__ == "__main__":
 
     listeCandidats1 = [
         "¬P(U, V, W)",
-        "P(a, b, X)",
-        "¬P(f(U, V), g(W, a), b)",
+        "P(a, X, Y)",
+        "¬P(h(Z), U, V)",
         "Q(U, V, W, X, Y, Z)",
-        "¬Q(a, b, c, d, e, X)",
-        "Q(f(U, V), g(W, X), h(Y, Z), i(U, a), j(V, b), c)",
-        "¬R(U, V, W, X, Y, Z, T)",
-        "R(a, b, c, d, e, f, X)",
-        "¬R(f(U, V), g(W, X, a), h(Y, Z), i(T, b), j(U, c), k(V, d), e)"
+        "¬Q(a, b, U, V, W, X)",
+        "Q(f(U, V), g(W, X, Y), c, Z, U, V)",
+        "¬R(U, V, W, X, Y, Z, U)",
+        "R(a, b, U, V, W, X, Y)",
+        "¬R(k(U, V), i(W), l(X, Y), d, Z, U, V)"
     ]
 
     listeCandidats2 = [
@@ -191,22 +191,22 @@ if __name__ == "__main__":
         "¬P(f(X, Y), g(a))",
         "Q(X, Y, Z, W)",
         "¬Q(a, b, c, d)",
-        "Q(f(X, Y), g(Z, W), h(a), b)",
+        "Q(f(X, Y), g(Z, W, Y), h(a), b)",
         "¬R(U, V)",
         "R(e, f)",
         "¬R(i(U), j(V, a))"
     ]
 
     listeCandidats3 = [
-        "P(U, V)",
-        "¬P(a, b)",
-        "P(f(U), g(V))",
-        "¬Q(U, V, W, X, Y, Z)",
-        "Q(a, b, c, d, e, f)",
-        "¬Q(f(U, V), g(W, X), h(Y), i(Z), j(a), k(b))",        
-        "R(U, V, W, X, Y, Z, S, T, M)",
-        "¬R(a, b, c, d, e, f, g, h, i)",
-        "R(f(U, V), g(W, X), h(Y, Z), i(S), j(T), k(M), l(a), m(b), n(c))"
+        "¬P(U, V)",
+        "P(a, W)",
+        "¬P(h(X), Y)",
+        "Q(U, V, W, X, Y, Z)",
+        "¬Q(a, b, U, V, W, X)",
+        "Q(f(U, V), i(W), c, X, Y, Z)",
+        "¬R(U, V, W, X, Y, Z, U, V, W)",
+        "R(a, b, c, U, V, W, X, Y, Z)",
+        "¬R(f(U, V), g(W, X, Y), h(Z), i(U), d, V, W, X, Y)"
     ]
 
     listeCandidats4 = [
@@ -572,8 +572,6 @@ if __name__ == "__main__":
         "U(k(U, V), l(W, X), m(Y, Z, a), n(U, b), o(V, c), p(W, d), q(X, e), r(Y, f), Z, a)"
     ]
 
-    benchmark(listeCandidats1, file, "mm", "dictionnaire")
-    # benchmark(listeCandidats5, file, "robinson", "dictionnaire")
-    # benchmark(listeCandidats5, file, "arbre", "liste")
-
-    # afficher_arites_fichier(file, ['P', 'Q', 'R'])
+    benchmark(listeCandidats7, file, "mm", "dictionnaire")
+    benchmark(listeCandidats7, file, "robinson", "dictionnaire")
+    benchmark(listeCandidats7, file, "arbre", "liste")

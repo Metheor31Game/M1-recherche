@@ -69,6 +69,6 @@ def test3():
 #test2()
 # test3()
 
-print(Litteral.from_string("R(Z, i(V), h(f(c, h(f(e, g(U, Z, Y))))), g(X, b, U), d, V, c, i(Y), i(W), c)").afficher_arbre())
+print(Litteral.from_string("R(b, g(a, Y, U), b, f(a, V), U, l(b, Y), a, g(e, Y, b), f(a, c))").afficher_arbre())
 
 
