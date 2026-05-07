@@ -7,12 +7,12 @@ def indexer(liste_litteraux):
 
     for lit in liste_litteraux:
         if lit.predicat not in index:
-            index[lit.predicat] = {"positifs": [], "negatifs": []}
+            index[lit.predicat] = {"positif": [], "negatif": []}
 
         if lit.sign:
-            index[lit.predicat]["positifs"].append(lit)
+            index[lit.predicat]["positif"].append(lit)
         else:
-            index[lit.predicat]["negatifs"].append(lit)
+            index[lit.predicat]["negatif"].append(lit)
 
     return index
 
