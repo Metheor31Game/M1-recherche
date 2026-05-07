@@ -88,10 +88,7 @@ def benchRobinson(candidats: List[Litteral], predList: list, structure: str,
     for i, candidat in enumerate(candidats):
         debut_unif = time.perf_counter()
         
-        if touteUnif:
-            result = rechercherUnifiablesOptimise(candidat, store, "Robinson")
-        else:
-            result = None
+        result = rechercherUnifiablesOptimise(candidat, store, "Robinson", touteUnif)
             
         tps_unif = time.perf_counter() - debut_unif
 

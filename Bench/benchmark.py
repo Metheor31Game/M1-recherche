@@ -163,7 +163,7 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
     return mesures
 
 if __name__ == "__main__":
-    filename = "jeu7"
+    filename = "jeu5"
     file = os.path.join(
         os.path.dirname(__file__),
         "..",
@@ -572,6 +572,6 @@ if __name__ == "__main__":
         "U(k(U, V), l(W, X), m(Y, Z, a), n(U, b), o(V, c), p(W, d), q(X, e), r(Y, f), Z, a)"
     ]
 
-    benchmark(listeCandidats7, file, "mm", "dictionnaire")
-    benchmark(listeCandidats7, file, "robinson", "dictionnaire")
-    benchmark(listeCandidats7, file, "arbre", "liste")
+    benchmark(listeCandidats5, file, "robinson", "dictionnaire")
+    # benchmark(listeCandidats5, file, "mm", "dictionnaire")
+    # benchmark(listeCandidats5, file, "arbre", "liste")
