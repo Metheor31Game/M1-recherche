@@ -17,6 +17,7 @@
 \usepackage{float}
 \usepackage{forest}
 \usepackage{array}
+\usepackage{dirtree}
 \usepackage{cancel}
 \usepackage{hyperref}
 
@@ -1075,7 +1076,7 @@ et les \textit{dictionnaires}.
 \end{paraph}
 
 \subsection{Algorithmes d'unification}
-\subsubsection{Robinson}
+\subsubsection{Robinson}\label{sec:rob}
 
 \begin{paraph}{Origine et principe}
     L'algorithme d'unification de Robinson est un processus algorithmique 
@@ -1249,37 +1250,36 @@ et les \textit{dictionnaires}.
     \vspace{0.2cm}
 
     \begin{algorithm}[H]
-    \caption{Création du système d'équations et unification de littéraux}
-    \label{algo:lit_liste}
+    \caption{Création du système d'équations et unification de littéraux}\label{algo:lit_liste}
     \begin{algorithmic}[1]
     \Function{lit\_liste}{$l_1$, $\text{list\_litteraux}$, $\text{touteUnif}=True$}
         \State $resultat \gets \emptyset$
         \For{$l_2 \in \text{list\_litteraux}$} \Comment{Étape 1~: Comparaison de $l_1$ aux autres littéraux}
             
-            \State \Comment{Étape 2 : Vérif. symbole, signe et arité}
+            \State\Comment{Étape 2~: Vérif. symbole, signe et arité}
             \If{$l_1.\text{predicat} = l_2.\text{predicat}$ \textbf{and} $l_1.\text{sign} \neq l_2.\text{sign}$ \textbf{and} $l_1.\text{arity} = l_2.\text{arity}$} 
                 
-                \State $system \gets \text{TermSystem()}$ \Comment{Init.~du système de termes (équations)}
+                \State$system \gets \text{TermSystem()}$ \Comment{Init.~du système de termes (équations)}
                 
                 \For{$(t_1, t_2) \in \text{zip}(l_1.\text{enfants}, l_2.\text{enfants})$}
-                    \State $system.\text{add}(t_1, t_2)$ \Comment{Étape 3~: Ajout des paires d'enfants}
+                    \State$system.\text{add}(t_1, t_2)$ \Comment{Étape 3~: Ajout des paires d'enfants}
                 \EndFor
                 
-                \State $mm \gets \text{MartelliMontanari}(system)$ \Comment{Étape 4~: Résolution via Martelli-Montanari}
+                \State$mm \gets \text{MartelliMontanari}(system)$ \Comment{Étape 4~: Résolution via Martelli-Montanari}
                 
                 \Try
-                    \State $unificateur \gets mm.\text{solve}()$
-                    \State $resultat[l_2] \gets unificateur$
+                    \State$unificateur \gets mm.\text{solve}()$
+                    \State$resultat[l_2] \gets unificateur$
                     \If{\textbf{not} $\text{touteUnif}$}
-                        \State \Return $resultat$ \Comment{Retour dès le premier succès}
+                        \State\Return$resultat$ \Comment{Retour dès le premier succès}
                     \EndIf
                 \Catch{\textit{UnificationError}}
-                    \State \textbf{pass} \Comment{Échec de l'unification, on continue}
+                    \State\textbf{pass} \Comment{Échec de l'unification, on continue}
                 \EndTry
                 
             \EndIf
         \EndFor
-        \State \Return $resultat$
+        \State \Return$resultat$
     \EndFunction
     \end{algorithmic}
     \end{algorithm}
@@ -1322,12 +1322,12 @@ et les \textit{dictionnaires}.
     le MGU du système initial.
 
 \end{paraph}
-\subsection{Discrimination Tree}
+\subsection{Discrimination Tree}\label{sec:dt}
 
 \begin{avantpropos}
-    D'après \emph{Term Indexing} - R. Sekar, I.V. Ramakrishnan et A. Voronkov \cite{TermIndexing}, \emph{An Algorithm for the Retrieval of Unifiers from
-    Discrimination Trees} - H. De Nivelle \cite{DT} et \emph{On the Evaluation of Indexing Techniques for Theorem Proving} - R. Nieuwenhuis, T. Hillenbrand,
-    A. Riazanov et A. Voronkov \cite{Eval}.
+    D'après \emph{Term Indexing} -~R. Sekar, I.V. Ramakrishnan et A. Voronkov~\cite{TermIndexing}, \emph{An Algorithm for the Retrieval of Unifiers from
+    Discrimination Trees} -~H. De Nivelle \cite{DT} et \emph{On the Evaluation of Indexing Techniques for Theorem Proving} -~R. Nieuwenhuis, T. Hillenbrand,
+    A. Riazanov et A. Voronkov~\cite{Eval}.
 \end{avantpropos}
 
 \subsubsection{Présentation}
@@ -1376,7 +1376,7 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
 
     \vspace{0.2cm}
     Lorsqu'on travaille avec des prédicats, on ajoute en tête de la \textit{p-string} un 
-    symbole indiquant le \textit{signe} du littéral : $+$ pour un prédicat positif 
+    symbole indiquant le \textit{signe} du littéral~: $+$ pour un prédicat positif 
     $P(\ldots)$ et $\neg$ pour sa négation $\neg P(\ldots)$. Ainsi $P(f(X, Y))$ 
     devient $+-P-f-{*_1}-{*_2}$ et $\neg P(f(X, Y))$ 
     devient $\neg-P-f-{*_1}-{*_2}$. Cette distinction 
@@ -1495,7 +1495,7 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
 \end{paraph}
 
 \begin{remarque}
-    Cet exemple est tiré de \emph{Term Indexing} - R. Sekar, 
+    Cet exemple est tiré de \emph{Term Indexing} -~R. Sekar, 
     I.V. Ramakrishnan et A. Voronkov\cite{TermIndexing}. Il a par ailleurs 
     été adapté à notre version \emph{normalisée} du discrimination tree.
 \end{remarque}
@@ -1509,7 +1509,7 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
     d'apparition dans le parcours préfixe. Cette distinction est essentielle~: lors du 
     filtrage, une variable $?_i$ du terme requête est compatible avec \textit{tout} nœud de 
     l'arbre, symbole concret ou variable $*_j$, tandis qu'un symbole concret de $q$ ne 
-    peut correspondre qu'à un nœud identique. À l'issue de ce parcours, on obtient un ensemble de \textit{candidats}, i.e. les prédicats de la base dont la \textit{p-string} est compatible avec celle de $q$. Il est a noté que pour notre version adaptée à la résolution de prédicats, si la \textit{p-string} de $q$ commence par $\neg$ (respectivement $+$) on filtrera les \textit{p-strings} en cherchant le signe opposé : $+$ (respectivement $\neg$).
+    peut correspondre qu'à un nœud identique. À l'issue de ce parcours, on obtient un ensemble de \textit{candidats}, i.e.~les prédicats de la base dont la \textit{p-string} est compatible avec celle de $q$. Il est a noté que pour notre version adaptée à la résolution de prédicats, si la \textit{p-string} de $q$ commence par $\neg$ (respectivement $+$) on filtrera les \textit{p-strings} en cherchant le signe opposé : $+$ (respectivement $\neg$).
 
     \vspace{0.2cm}
     La seconde phase, dite d'\textit{unification}, applique 
@@ -1553,7 +1553,7 @@ est conservée pendant tout le parcours de la branche.
     $\neg -P-f-g-a-{?_1}-c$ et la même base $B$ que dans l'exemple précédent.
 
     \vspace{0.4em}
-    \noindent\textbf{Phase 1 : Filtrage.} On descend dans le \textit{discrimination tree} 
+    \noindent\textbf{Phase 1~: Filtrage.} On descend dans le \textit{discrimination tree} 
     en suivant la \textit{p-string} $\neg -P-f-g-a-{?_1}-c$~:
 \end{paraph}
 
@@ -1643,7 +1643,7 @@ est conservée pendant tout le parcours de la branche.
 \end{center}
 
 \vspace{0.4cm}
-\noindent\textbf{Phase 2 : Unification.} On applique l'algorithme d'unification entre 
+\noindent\textbf{Phase 2~: Unification.} On applique l'algorithme d'unification entre 
 $q = \neg P(f(g(a, Z), c))$ et $p_1 = P(f(g(a, X), c))$~:
 \[
     \sigma = \{Z \mapsto X\} \quad \text{(ou symétriquement }\{X \mapsto Z\} \text{)}
@@ -1665,8 +1665,7 @@ le filtrage structurel puis l'unification effective.
 
     \begin{algorithm}[H]
         \footnotesize
-        \caption{Insertion d'un prédicat dans l'arbre de discrimination}
-        \label{alg:insertion_dt}
+        \caption{Insertion d'un prédicat dans l'arbre de discrimination}\label{alg:insertion_dt}
         \begin{algorithmic}[1]
             
             \Procedure{InsererPredicat}{$Arbre$, $Predicat$, $Pointeur$}
@@ -1743,47 +1742,46 @@ le filtrage structurel puis l'unification effective.
 
     \begin{algorithm}[H]
         \footnotesize
-        \caption{Filtrage structurel (Collecte de candidats)}
-        \label{alg:filtrage_dt}
+        \caption{Filtrage structurel (Collecte de candidats)}\label{alg:filtrage_dt}
         \begin{algorithmic}[1]
             \Procedure{CollecterCandidats}{$Noeud$, $Seq$, $i$, $Candidats$}
                 
-                \If{$i \ge \Call{Taille}{Seq}$} \Comment{Condition d'arrêt : fin de la séquence}
-                    \State $Candidats \gets Candidats \cup Noeud.pointeurs$
-                    \State \Return
+                \If{$i \ge \Call{Taille}{Seq}$} \Comment{Condition d'arrêt~: fin de la séquence}
+                    \State$Candidats \gets Candidats \cup Noeud.pointeurs$
+                    \State\Return
                 \EndIf
                 
-                \State $s \gets Seq[i]$
+                \State$s \gets Seq[i]$
                 
                 \State\Comment{\textbf{Cas 0~:} Signe du prédicat (recherche de l'opposé pour résolution)}
                 \If{$s \in \{\text{'+', '¬'}\}$}
-                    \State $oppose \gets (s == \text{'+'} ? \text{'¬'} : \text{'+'})$
+                    \State$oppose \gets (s == \text{'+'} ? \text{'¬'} : \text{'+'})$
                     \If{$oppose \in Noeud.enfants$}
-                        \State \Call{CollecterCandidats}{$Noeud.enfants[oppose], Seq, i+1, Candidats$}
+                        \State\Call{CollecterCandidats}{$Noeud.enfants[oppose], Seq, i+1, Candidats$}
                     \EndIf
-                    \State \Return
+                    \State\Return
                 \EndIf
 
                 \State\Comment{\textbf{Cas 1~:} Symbole identique (hors variables)}
                 \If{$s \in Noeud.enfants$ \textbf{et} $s$ n'est pas une variable}
-                    \State \Call{CollecterCandidats}{$Noeud.enfants[s], Seq, i+1, Candidats$}
+                    \State\Call{CollecterCandidats}{$Noeud.enfants[s], Seq, i+1, Candidats$}
                 \EndIf
 
                 \State\Comment{\textbf{Cas 2~:} Variable dans la requête (symbole '?')}
                 \If{$s$ est une variable requête}
                     \For{\textbf{chaque} $Enfant$ \textbf{dans} $Noeud.enfants$}
                         \For{\textbf{chaque} $DernierNoeud$ \textbf{de} \Call{SousTermes}{Enfant, 1}}
-                            \State \Call{CollecterCandidats}{$DernierNoeud, Seq, i+1, Candidats$}
+                            \State\Call{CollecterCandidats}{$DernierNoeud, Seq, i+1, Candidats$}
                         \EndFor
                     \EndFor
-                    \State \Return
+                    \State\Return
                 \EndIf
 
                 \State\Comment{\textbf{Cas 3~:} Variable dans l'arbre (symbole '*')}
-                \State $prof \gets \Call{CalculerProfondeur}{i}$
+                \State$prof \gets \Call{CalculerProfondeur}{i}$
                 \For{\textbf{chaque} $(symb, enfant)$ \textbf{dans} $Noeud.enfants$}
                     \If{$symb$ est une variable arbre \textbf{et} $i + prof \le \Call{Taille}{Seq}$}
-                        \State \Call{CollecterCandidats}{$enfant, Seq, i + prof, Candidats$}
+                        \State\Call{CollecterCandidats}{$enfant, Seq, i + prof, Candidats$}
                     \EndIf
                 \EndFor
                 
@@ -1792,7 +1790,7 @@ le filtrage structurel puis l'unification effective.
     \end{algorithm}
 
     \vspace{0.2cm}
-    \textbf{Analyse de complexité :}
+    \textbf{Analyse de complexité~:}
     Soit $n$ la taille du prédicat de requête et $M$ le nombre total de nœuds dans l'arbre.
     \begin{itemize}
         \item \textbf{Pire cas~:} Dans le cas d'une requête très générale ou d'un arbre fortement peuplé de variables, l'algorithme peut explorer plusieurs branches (backtracking). La complexité peut atteindre $\mathcal{O}(M)$ dans le pire des cas théorique.
@@ -1826,6 +1824,99 @@ le filtrage structurel puis l'unification effective.
 
 \section{Expérimentations}
 \subsection{Organisation et implémentation}
+\begin{paraph}{Organisation du travail}
+    La conduite de ce projet s'est inscrite dans une démarche collaborative inspirée
+    du cadre \textit{SCRUM}, une méthode agile privilégiant l'adaptabilité et la communication
+    continue. \textit{SCRUM} repose traditionnellement sur des cycles de travails courts
+    appelés \textit{sprints} et des points de synchronisation réguliers (\textit{sprints review}).
+    Dans notre cas, nous avons adopté un fonctionnement simplifié mais rigoureux,
+    rythmé par des réunions hebdomadaires avec nos encadrants. Ces échanges nous ont
+    permis de valider nos avancées techniques et de réévaluer nos priorités à chaque
+    étape, garantissant ainsi une convergence constante vers les objectifs du projet.
+
+    Sur le plan technique, nous avons utilisé \textit{Git}, permettant un développement 
+    asynchrone mais coordonné. Le choix du langage \textit{Python} s'est imposé 
+    naturellement par notre expertise commune. Notre méthodologie de développement 
+    s'est articulée autour d'une progression logique~:
+    \begin{itemize}
+        \item \textbf{Socle commun et standardisation~:} Nous avons conçu collectivement la structure 
+        de données fondamentale pour la représentation des termes. Ce travail à 
+        trois était crucial pour établir une base stable avant d'entamer la phase 
+        de spécialisation. L'importance de ce socle réside dans sa 
+        \textit{modularité}~: en définissant une interface de programmation commune 
+        pour la manipulation des termes, nous avons pu garantir que chaque 
+        algorithme, bien qu'implémenté indépendamment, soit capable de 
+        traiter des données issues du même réservoir. Cette 
+        standardisation a non seulement facilité l'intégration finale, mais a surtout 
+        permis de réaliser des tests croisés rigoureux, où chaque algorithme 
+        d'unification pouvait être indifféremment sollicité sans nécessiter 
+        de conversion de format coûteuse ou risquée.
+        \item \textbf{Développement distribué~:} Chaque membre du groupe a ensuite 
+        pris la responsabilité de l'implémentation d'un algorithme spécifique~: 
+        l'unification classique de \hyperref[sec:rob]{\textit{Robinson}}, l'approche par système 
+        d'équations de \hyperref[sec:mm]{\textit{Martelli-Montanari}}, ou l'indexation par 
+        \hyperref[sec:dt]{\textit{Discrimination Tree}}.
+        \item \textbf{Adaptation aux prédicats~:} Une fois les cœurs algorithmiques 
+        stabilisés, nous avons collaboré pour étendre ces outils à la gestion des 
+        littéraux (prédicats signés), permettant le traitement de bases de 
+        connaissances réelles.
+    \end{itemize}
+\end{paraph}
+
+\begin{paraph}{Détails d'implémentation et spécificités Python}
+    L'implémentation a tiré profit de la flexibilité de \textit{Python}, notamment via 
+    l'usage intensif de \textit{dictionnaires} pour le \textit{discrimination tree} 
+    et d'\textit{ensembles} pour \textit{Martelli-Montanari}. Deux points d'ingénierie 
+    méritent d'être soulignés~:
+    \begin{itemize}
+        \item \textbf{Modularité par encapsulation~:} Afin de permettre une flexibilité 
+        totale dans le traitement des données, nous avons développé une structure 
+        «~enveloppe~» englobant les différents types de collections. Cette abstraction 
+        permet aux algorithmes de \textit{Robinson} et de \textit{Martelli-Montanari} de travailler de 
+        manière totalement agnostique vis-à-vis du stockage physique des prédicats. 
+        L'algorithme manipule une interface globale sans avoir à déterminer, en amont, 
+        s'il traite des \textit{listes}, des \textit{dictionnaires} ou des 
+        \textit{ensembles} de prédicats. Cette déconnexion entre la logique de 
+        résolution et la représentation interne des collections rend le système 
+        évolutif et robuste.
+        \item \textbf{Générateur de termes aléatoires~:} Pour valider la robustesse 
+        de nos implémentations et préparer le \textit{benchmark}, nous avons 
+        conçu un générateur automatique de termes. Cet outil permet de produire 
+        des structures de \textit{profondeur} et de \textit{complexité} variables, 
+        assurant ainsi une couverture de test exhaustive au-delà des cas 
+        manuels classiques.
+    \end{itemize}
+
+    Toutefois, le passage de la théorie à la pratique en \textit{Python} a révélé 
+    certaines «~pythonneries\textregistered\footnote{Terme déposé par l'équipe 
+    de développement et ses encadrants. Désigne les spécificités, 
+    parfois surprenantes, propres au langage Python.}~» qui ont nécessité 
+    une attention particulière, comme la gestion des \textit{objets mutables}. 
+    Le passage par référence en Python peut engendrer des effets de bord lors 
+    de l'application de substitutions successives sur un terme~; l'usage 
+    stratégique de copies profondes (\textit{deepcopy}) ou de mécanismes 
+    d'immutabilité a été essentiel pour garantir l'intégrité des données 
+    pendant les calculs.
+\end{paraph}
+
+\begin{paraph}{Architecture du projet}
+    Voici l'arborescence de notre projet, illustrant la séparation entre les outils de stockage des termes (\textit{Util}), les algorithmes (\textit{Core}) et les scripts de test. 
+    (l'arbre en dessous ne correspond pas au git mais on va modifier pour professionnaliser et mieux
+    structurer le git, je le modifierai une fois la refonte structurelle faite)  
+    \dirtree{%
+        .1 /.
+        .2 Core.
+        .3 robinson.py.
+        .3 martelli\_montanari.py.
+        .3 arbre\_de\_discrimination.py.
+        .2 Util.
+        .3 TermStore.
+        .4 terme.py.
+        .4 generateur.py.
+        .2 Benchs.
+    }
+\end{paraph}
+
 \subsection{Protocole de benchmarks}
 \subsection{Résultats}
 \subsection{Analyse des résultats}
