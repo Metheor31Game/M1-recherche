@@ -20,6 +20,15 @@
 \usepackage{cancel}
 \usepackage{hyperref}
 
+% Configuration biblatex
+\usepackage[
+    backend=biber,
+    style=numeric,    
+    sorting=none 
+]{biblatex}
+
+\addbibresource{biblio.bib}  % Fichier .bib
+
 \pagestyle{empty}
 
 % --- Envs --- %
@@ -73,14 +82,10 @@
 % --- Règles --- %
 \algdef{SE}[TRY]{Try}{EndTry}{\textbf{try}}{\textbf{end try}}
 \algdef{C}[TRY]{TRY}{Catch}[1]{\textbf{catch} #1}      
-\titleformat{\part}[hang]{\LARGE\bfseries}{\thepart.}{0.5em}{} 
 \titleformat{\section}[hang]{\Large\bfseries}{\thesection.}{0.5em}{}
 \titleformat{\subsection}[hang]{\large\bfseries}{\thesubsection.}{0.5em}{}
-\renewcommand{\theHsection}{\thepart.\thesection}
-\renewcommand{\theHsubsection}{\thepart.\thesection.\thesubsection}
-
-% --- Style Bibliographie --- %
-\bibliographystyle{plain}
+\titleformat{\subsubsection}[hang]{\large\bfseries}{\thesubsubsection.}{0.5em}{}
+\renewcommand{\theHsubsection}{\thesection.\thesubsection}
 
 % ========================= Corps ======================= %
 \begin{document}
@@ -144,7 +149,7 @@
 % Decharge de resp :
 \newpage
 \addtocontents{toc}{\setcounter{tocdepth}{-2}}  % Ne pas afficher dans sommaire
-\part*{DÉCHARGE DE RESPONSABILITÉS}
+\section*{DÉCHARGE DE RESPONSABILITÉS}
 \vspace*{\fill}
 \textit{« L’Université de Lorraine n’entend donner ni approbation ni improbation aux opinions émises dans ce
 rapport, ces opinions devant être considérées comme propres à leur auteur. »}
@@ -152,7 +157,7 @@ rapport, ces opinions devant être considérées comme propres à leur auteur. �
 
 % Remerciements : 
 \newpage
-\part*{REMERCIEMENTS}
+\section*{REMERCIEMENTS}
 Nous tenons à remercier toutes les personnes qui ont contribué au bon déroulement de notre projet
 et qui nous ont aidé dans la rédaction de ce rapport.
 
@@ -179,68 +184,60 @@ de ce rapport.
 \newpage
 \pagestyle{plain}
 \setcounter{page}{1}                            % On commence à compter les pages
-\addtocontents{toc}{\setcounter{tocdepth}{2}}   % On recommence à afficher dans sommaire
+\addtocontents{toc}{\setcounter{tocdepth}{3}}   % On recommence à afficher dans sommaire
 
-\part*{Introduction}                            % On ne le numérote pas                        
-% Paragraphe 1 : Mise en abime du sujet / actualité ou autre
-En informatique, la représentation de l'information est un point 
-clé dans la réalisation de divers projets. Ainsi le choix des 
-\textbf{structures de données} représente une étape cruciale pour 
-le bon déroulement de tout projet. 
-
-En logique du premier ordre, ce sont les \textbf{termes} qui servent 
-de base afin de représenter des expressions symboliques construites 
-à partir de symboles de fonction, de constantes et de variables. 
-Représenter ces termes via la meilleure structure de donnée, la plus 
-adéquate, représente donc un point majeur dans tout travaux portés 
-à ce domaine.
-
-L’\textbf{unification} est une opération essentielle dans ce cadre. 
-Elle intervient notamment dans les moteurs d’inférence, les systèmes 
-de réécriture de termes, et les prouveurs logiques. Les différents 
-algorithmes connus d'unification sont parfois adaptés à certaines 
-structures de données précises, il est donc important de comparer 
-ces algorithmes et de diversifier ses choix pour parvenir aux résultats 
-les plus efficaces.
+\section*{Introduction}                         % On ne le numérote pas  
+\addcontentsline{toc}{section}{Introduction}                                                  
+% Paragraphe 1 : Mise en abime du sujet
+En informatique, le choix des \textbf{structures de données} est une décision 
+fondamentale~: elle conditionne directement l'efficacité des algorithmes qui 
+les manipulent. Ce principe, universel en programmation, prend une dimension 
+particulière dans le domaine de la \textbf{logique}, où la représentation 
+des objets manipulés doit non seulement être correcte, mais aussi permettre 
+un traitement automatique efficace. C'est précisément ce défi qui est au cœur 
+de ce rapport.
 
 \vspace{0.5cm}
 % Paragraphe 2 : Définitions des notions clés
-Une structure de données est une représentation permettant d'organiser, 
-traiter et stocker des données de manière efficace dans la mémoire d'un 
-ordinateur. Elle permet un meilleur accès et une manipulation plus 
-efficace des données afin de résoudre un problème spécifique. 
-
-Un terme est une expression qui consiste à nommer ou construire un 
-objet en logique. Cela peut être une variable, une constante ou une 
-fonction. Il est en quelque sorte le plus petit composant d'une formule 
-logique.
-
-L'unification consiste à déterminer s’il existe une substitution des 
-variables (i.e.~une affectation des variables $(X, Y , \ldots)$ 
-vers des termes $(a, b, f(a), \ldots)$) permettant de rendre identiques 
-deux termes.
+La \textbf{logique du premier ordre} est un langage formel permettant d'exprimer 
+des propriétés et des relations sur des objets. Elle repose sur des expressions 
+symboliques appelées \textbf{termes}, construits à partir de \textbf{variables}, 
+de \textbf{constantes} et de \textbf{symboles de fonction}. Ces termes constituent 
+la brique de base des \textbf{formules logiques}, et leur manipulation efficace 
+est un enjeu central dans de nombreux systèmes automatiques. Parmi les opérations 
+fondamentales sur ces termes, l'\textbf{unification} occupe une place de choix~: 
+elle consiste à déterminer s'il existe une \textbf{substitution} de variables 
+permettant de rendre deux termes identiques. Cette opération intervient notamment 
+dans les \textbf{moteurs d'inférence}, les \textbf{systèmes de réécriture de termes} 
+et les \textbf{prouveurs de théorèmes automatiques}.
 
 \vspace{0.5cm}
 % Paragraphe 3 : Présentation de la problématique
-Ainsi, dans le cadre de ce travail de recherche, nous nous demanderons 
-quelles sont les structures de données les plus adaptées pour 
-l'unification dans la logique du premier ordre. Le choix d'une 
-structure impactant l'efficacité d'un algorithme, nous réfléchirons 
-donc aussi aux meilleurs algorithmes d'unification à utiliser en 
-fonction de la structure de donnée choisie.
+Dans ce contexte, une question naturelle se pose~: quelles sont les 
+\textbf{structures de données} les plus adaptées pour représenter et manipuler 
+efficacement des termes dans le cadre de l'unification~? Le choix d'une structure 
+impactant directement l'efficacité des algorithmes qui l'exploitent, nous nous 
+interrogerons également sur les \textbf{algorithmes d'unification} les mieux 
+adaptés à chaque représentation. C'est autour de cette double problématique, 
+structures et algorithmes, que s'articule ce travail de recherche.
+
 
 \vspace{0.5cm}
 % Paragraphe 4 : Annonce du plan
-Nous commencerons par un rappel sur les différentes notions abordées 
-dans notre sujet. Ensuite nous présenterons plus en détails les 
-différentes structures de données que nous avons utilisées, et nous 
-finirons par la présentation des algorithmes d'unification connus sur 
-lesquels nous avons travaillé.
+Nous commencerons par établir les \textbf{généralités} nécessaires à la 
+compréhension du sujet~: logique des propositions, logique du premier ordre, 
+preuve automatisée et unification. Nous présenterons ensuite les 
+\textbf{structures de données} retenues pour représenter les termes et les 
+organiser en base, ainsi que les \textbf{algorithmes d'unification} étudiés, 
+en particulier le \textbf{discrimination tree}. Enfin, nous exposerons les 
+\textbf{résultats expérimentaux} obtenus lors de nos benchmarks, avant de 
+conclure sur les enseignements tirés de cette étude. L'ensemble du code source 
+est disponible dans le dépôt git du projet~: \url{https://github.com/Metheor31Game/M1-recherche}.
 
 \newpage
-\part{Généralités}
+\section{Généralités}
 \begin{avantpropos}
-    D'après nos connaissances, l'UE de L3 intitulée \emph{Logique des propositions - Logique du premier ordre}, de Jean Lieber et l'UE de M1 intitulée \emph{Logiques et Modèles de Calcul}, de Didier Galmiche.
+    D'après nos connaissances, l'UE de L3 intitulée \emph{Logique des propositions - Logique du premier ordre}, de Jean Lieber~\cite{lieber2024cours} et l'UE de M1 intitulée \emph{Logiques et Modèles de Calcul}, de Didier Galmiche.
 \end{avantpropos}
 
 \begin{paraph}{Fil conducteur}
@@ -253,15 +250,16 @@ Nous introduirons d'abord brièvement la logique des propositions, sur laquelle 
 logique du premier ordre, avant de présenter cette dernière puis l'unification, 
 les deux notions centrales de ce rapport.
 \end{paraph}
-\section{Logique des propositions}
-\subsection{Définition}
+\subsection{Logique des propositions}
+\begin{paraph}{Définition}
 La \textit{logique des propositions} (ou logique propositionnelle) repose 
 sur une idée simple~: on représente des \textit{faits élémentaires}, 
 par exemple «~Socrate est un homme~», auxquels on attribue une 
 \textit{valeur de vérité} ($vrai$ ou $faux$). Ces \textit{faits élémentaires} 
 sont appelés \textit{variables propositionnelles}, notées 
-conventionnellement $p$, $q$, $r$, \ldots Ces \textit{variables} peuvent ensuite être combinés à 
+conventionnellement $p$, $q$, $r$, etc. Ces \textit{variables} peuvent ensuite être combinés à 
 l'aide de \textit{connecteurs logiques} pour former des \textit{formules}.
+\end{paraph}
 
 \vspace{0.2cm}
 Voici une définition formelle d'une \textit{formule} en \textit{logique propositionnelle} :
@@ -298,10 +296,11 @@ et former la \textit{formule} $(p \wedge q) \rightarrow r$, qui se lit
 «~si Socrate est un homme et tout homme est mortel, alors Socrate est mortel~».
 \end{paraph}
 \newpage
-\subsection{Limites}
+\begin{paraph}{Limites}
 La logique propositionnelle ne traite que d'un individu à la 
 fois~: elle est insuffisante pour exprimer des propriétés générales 
 portant sur des ensembles d'objets ou des relations entre eux.
+\end{paraph}
 
 \vspace{0.2cm}
 Revenons à notre syllogisme, on \emph{encode en dur} chaque 
@@ -319,8 +318,9 @@ C'est précisément cette limite que lève la
 la section suivante, en introduisant des \textit{variables} 
 sur lesquelles on peut quantifier.
 
-\section{Logique du premier ordre}
-\subsection{Définition}
+\subsection{Logique du premier ordre}
+
+\vspace{0.2cm}
 Pour pouvoir étendre le champs de couverture de la 
 \textit{logique propositionnelle}, on a défini la 
 \textit{logique du premier ordre} (ou logique des prédicats).
@@ -331,13 +331,13 @@ sur des ensembles d'objets ou des relations. Pour les décrire
 au sein de \textit{formules}, on se donne un \textit{alphabet} 
 composé des éléments suivants~:
 \begin{itemize}
-    \item Ensemble de \textit{variables}~: $x, y, z, \ldots$ Représentant des individus \textit{indéterminés}~;
+    \item Ensemble de \textit{variables}~: $x, y, z$, etc. Elles représentent des individus \textit{indéterminés}~;
 \end{itemize}
 On définit également ce que l'on appelle une \textit{signature}, 
 qui rend notre représentation unique, composée de deux ensembles~:
 \begin{itemize}
-    \item Ensemble de symboles de \textit{fonctions}~: $f, g, h, \ldots$ Permettant de construire de nouveaux objets à partir d'objets existants, e.g.~$\mathit{pere}(\mathit{socrate})$ désigne le père de Socrate~;
-    \item Ensemble de symboles de \textit{prédicats}~: $P, Q, R, \ldots$ Exprimant des propriétés ou des relations entre objets, e.g.~$\mathit{Homme}(\mathit{socrate})$ exprime que Socrate est un homme.
+    \item Ensemble de symboles de \textit{fonctions}~: $f, g, h$, etc. Elles permettent de construire de nouveaux objets à partir d'objets existants, e.g.~$\mathit{pere}(\mathit{socrate})$ désigne le père de Socrate~;
+    \item Ensemble de symboles de \textit{prédicats}~: $P, Q, R$, etc. Ils expriment des propriétés ou des relations entre objets, e.g.~$\mathit{Homme}(\mathit{socrate})$ exprime que Socrate est un homme.
 \end{itemize}
 On associe à ces fonctions et prédicats une \textit{arité} 
 (i.e.~le nombre d'arguments qu'ils prennent). Par exemple, 
@@ -346,8 +346,9 @@ tandis qu'un prédicat comme $\mathit{EstParentDe}(x, y)$ est d'arité
 $2$ car il met en relation deux individus. Parmi les symboles de 
 fonctions, ceux d'arité $0$ sont appelés \textit{constantes}~:
 \begin{itemize}
-    \item Ensemble de symboles de constantes~: $a, b, c, \ldots$ Représentant des individus précis et fixes, e.g.~$\mathit{socrate}$.
+    \item Ensemble de symboles de constantes~: $a, b, c$, etc. Elles représentent des individus précis et fixes, e.g.~$\mathit{socrate}$.
 \end{itemize}
+
 
 \begin{remarque}
     Le choix de ces différents symboles est purement arbitraire~: 
@@ -359,7 +360,7 @@ Pour définir la structure d'une \textit{formule} en \textit{logique du premier 
 il nous faut définir la notion d'\textit{atome} qui s'appuie elle même 
 sur la notion de \textit{terme}.
 
-\subsection{Terme}
+\begin{paraph}{Terme}
 Un \textit{terme} est une expression désignant un \textit{objet}. 
 Il peut être une \textit{variable}, une \textit{constante} ou un 
 \textit{symbole de fonction} appliqué à d'autres \textit{termes}. 
@@ -383,13 +384,14 @@ peut construire les \textit{termes}~:
 \mathit{socrate} \qquad x \qquad \mathit{pere}(\mathit{socrate}) \qquad 
 \mathit{pere}(x)
 \]
+\end{paraph}
 
 \begin{remarque}
     Un terme \emph{n'est pas} une formule, il désigne un objet, 
     il n'exprime pas une propriété.
 \end{remarque}
 
-\subsection{Atome}
+\begin{paraph}{Atome}
 Là où un \textit{terme} désigne un \textit{objet}, un \textit{atome} exprime 
 une \textit{propriété} sur des objets. Il est formé 
 d'un \textit{symbole de prédicat} appliqué à des termes. Formellement~:
@@ -415,13 +417,14 @@ constante et $x$ comme variable~:
 sont des atomes. $\mathit{Homme}(\mathit{socrate})$ 
 exprime que Socrate est un homme, $\mathit{Mortel}(x)$ 
 exprime que l'individu désigné par $x$ est mortel.
+\end{paraph}
 
 \begin{remarque}
     Un littéral (ou des littéraux) est un prédicat auquel on a ajouté un signe.\\
     Exemple~: P(f(x)) et ¬P(f(x))
 \end{remarque}
 
-\subsection{Formule}
+\begin{paraph}{Formule}
 Les \textit{atomes} peuvent être combinés à l'aide des connecteurs 
 logiques vus en \textit{logique propositionnelle}, et enrichis par 
 deux \textit{quantificateurs}~:
@@ -450,14 +453,28 @@ Une \textit{formule} de la \textit{logique du premier ordre} est alors définie 
 Par exemple, «~pour tout individu $x$, si $x$ est un homme alors $x$ est mortel~» 
 s'écrit~:
 \[\forall x\; \bigl(\mathit{Homme}(x) \rightarrow \mathit{Mortel}(x)\bigr)\]
+\end{paraph}
 
 \vspace{0.2cm}
 Ce que la \textit{logique propositionnelle} ne pouvait pas 
 exprimer, i.e.~la généralité du raisonnement sur tout individu $x$, 
 est ici capturé par une unique \textit{formule quantifiée}.
 
-\section{Preuve automatisée}
+\subsection{Recherche de preuve}
+\begin{paraph}{Définition}
+De manière informelle, une \textit{preuve} est une suite finie d'étapes de 
+\textit{dérivation}~: chaque étape produit une nouvelle formule à partir de 
+formules déjà établies (les hypothèses ou les formules dérivées précédemment), 
+en appliquant une règle d'inférence autorisée. Une telle suite est dite valide 
+si elle part des \textit{prémisses} et aboutit à la \textit{conclusion} souhaitée 
+en ne franchissant que des étapes justifiées. Dans le cadre de la \textit{résolution} 
+présentée ci-après, une preuve prend la forme d'une suite de \textit{résolvantes} 
+dérivées deux à deux, jusqu'à l'obtention de la \textit{clause vide} $\square$, 
+témoin d'une contradiction.
+\end{paraph}
+
 Nous disposons maintenant des outils pour formaliser proprement notre syllogisme.
+
 Introduisons la \textit{signature} suivante~:
 \begin{itemize}
     \item Constante~: $\mathit{socrate}$
@@ -484,7 +501,7 @@ Et l'on cherche à démontrer d'après les deux prémisses~:
     applicable à n'importe quelle constante.
 \end{remarque}
 
-\subsection{Forme clausale et réfutation}
+\subsubsection{Forme clausale et réfutation}
 La mise sous \textit{forme clausale} consiste à transformer les formules de 
 la base de connaissances en un ensemble de \textit{clauses}, 
 i.e.~des disjonctions de littéraux, qui leur est logiquement équivalent. 
@@ -534,7 +551,7 @@ ce que réalise la \textit{règle de résolution}, présentée ci-après.
     Il existe un théorème, que l'on utilise ici, qui nous dit que toute formule de la logique du premier ordre peut être mise sous forme clausale. Cette transformation, bien que non triviale dans le cas général, est toujours possible et constitue une étape préalable indispensable à l'application de la règle de résolution.
 \end{remarque}
 
-\subsection{Règle de résolution}
+\subsubsection{Règle de résolution}
 La \textit{règle de résolution} permet de dériver une nouvelle clause 
 à partir de deux clauses existantes. Si une clause contient un littéral 
 $L$ et une autre contient sa négation $\neg L$, on peut en dériver une 
@@ -555,8 +572,8 @@ la règle de résolution, il faut d'abord les rendre identiques en
 \textit{substituant} $x$ par $\mathit{socrate}$. C'est précisément ce 
 que réalise l'\textit{unification}, que nous définirons dans la section suivante.
 
-\section{Unification}
-\subsection{Substitution}
+\subsection{Unification}
+\begin{paraph}{Substitution}
 Une \textit{substitution} $\sigma$ est une fonction qui associe à 
 certaines variables des termes. Par exemple, $\sigma = \{X \mapsto b,\ Y \mapsto f(a)\}$ 
 associe la variable $X$ au terme $b$ et la variable $Y$ au terme 
@@ -569,8 +586,9 @@ Par exemple, si $t = g(X, Y)$, alors~:
 \[
     \sigma(t) = \sigma(g(X, Y)) = g(b, f(a))
 \]
-
-\subsection{Unification}
+\end{paraph}
+\newpage
+\begin{paraph}{Unification}
 L'\textit{unification} consiste à déterminer s'il existe 
 une substitution $\sigma$, appelée \textit{unificateur}, 
 telle que $\sigma(t_1) = \sigma(t_2)$ pour deux termes 
@@ -584,6 +602,7 @@ on cherche le plus général, noté \textit{MGU} (de l'anglais
 impose le moins de contraintes sur les variables. Il est 
 dit «~le plus général~» car tout autre unificateur peut 
 s'obtenir en composant le MGU avec une substitution supplémentaire.
+\end{paraph}
 
 \begin{remarque}
     L'unification n'est pas toujours possible. Par exemple, les termes $f(a)$ et $g(a)$ ne sont pas unifiables car leurs symboles de tête sont différents. De même, une variable $x$ ne peut pas être unifiée avec un terme qui la contient déjà, comme $f(x)$, car cela produirait un terme de taille infinie.
@@ -610,11 +629,11 @@ D’autres substitutions permettent également l’unification, par exemple~:
 \[
     \sigma_1 = \{X \mapsto a,\ Y \mapsto b,\ Z \mapsto b\}
 \]
-ce qui donne :
+ce qui donne~:
 \[
     \sigma_1(t_1)=f(a,\, b)=\sigma_1(t_2)
 \]
-Ou encore :
+Ou encore~:
 \[
     \sigma_2 = \{X \mapsto a,\ Y \mapsto g(c),\ Z \mapsto g(c)\}
 \]
@@ -626,10 +645,7 @@ pour laquelle~:
 \vspace{0.2cm}
 Ces substitutions sont plus spécifiques que le MGU, 
 car elles s’obtiennent en composant $\sigma$ avec une substitution 
-supplémentaire appliquée à $Z$. En revanche, la substitution
-\[
-    \sigma_3 = \{X \mapsto b,\ Y \mapsto Z\}
-\]
+supplémentaire appliquée à $Z$. En revanche, la substitution $\sigma_3 = \{X \mapsto b,\ Y \mapsto Z\}$
 n’est pas un unificateur, car~:
 \[
     \sigma_3(t_1)=f(b,\, Z)\neq f(a,\, Z)=\sigma_3(t_2)
@@ -649,7 +665,7 @@ Revenons à nos trois clauses obtenues à la section précédente~:
     C_2 &= \mathit{Homme}(\mathit{socrate}) \\
     C_3 &= \neg\mathit{Mortel}(\mathit{socrate})
 \end{align*}
-\newpage
+
 Pour appliquer la règle de résolution sur $C_1$ et $C_2$, il 
 faut unifier $\mathit{Homme}(x)$ et $\mathit{Homme}(\mathit{socrate})$. 
 La substitution $\sigma = \{x \mapsto \mathit{socrate}\}$ est leur MGU. On 
@@ -709,10 +725,9 @@ structures de données et des algorithmes utilisés, est précisément
 l'objet du reste de ce rapport.
 \end{paraph}
 \newpage
-\part{Structures de données et algorithmes}
-\setcounter{section}{0}
-\section{Structures de données représentant un terme}
-\subsection{Problématique}
+\section{Structures de données et algorithmes}
+\subsection{Structures de données représentant un terme}
+\subsubsection{Problématique}
 La définition d'un terme en logique du premier ordre impose des contraintes 
 naturelles sur sa représentation~: un terme est soit une variable, soit une 
 constante, soit une fonction appliquée à d'autres termes. Toute structure de 
@@ -732,7 +747,7 @@ Notons que, formellement, une constante est une fonction d'arité $0$. Nous
 choisissons néanmoins de les distinguer explicitement, cette séparation étant 
 naturelle et utile en pratique lors de l'unification.
 
-\subsection{Intuition}
+\subsubsection{Intuition}
 La structure d'un terme est naturellement hiérarchique~: une fonction est 
 composée de sous-termes, qui peuvent eux-mêmes être des fonctions, et ainsi 
 de suite. Cette imbrication définit la \textit{profondeur} du terme. Les 
@@ -767,7 +782,7 @@ des feuilles, au niveau $2$. C'est cette structure hiérarchique qui nous
 amène naturellement à proposer les \textit{arbres} comme structure de données 
 pour représenter un terme.
 
-\subsection{Implémentation}
+\subsubsection{Implémentation}
 La structure hiérarchique d'un terme nous amène donc naturellement 
 à le représenter par un \textit{arbre}. Testons cette idée sur 
 la base $B$ définie comme~:
@@ -916,7 +931,7 @@ capturée par l'\textit{arbre} lui-même.
     que nous n'avons pas eu l'occasion d'explorer dans le cadre de ce rapport.
 \end{remarque}
 
-\section{Structures de données représentant un ensemble de prédicats}
+\subsection{Structures de données représentant un ensemble de prédicats}
 Maintenant que la représentation d'un terme est acquise, 
 nous cherchons à évaluer quelle structure de données est la 
 plus \textit{efficace} pour unifier un prédicat donné avec un grand nombre 
@@ -924,7 +939,7 @@ d'autres prédicats. Nous avons ainsi retenu trois structures
 principales pour nos comparaisons~: les \textit{listes}, les \textit{ensembles} 
 et les \textit{dictionnaires}.
 
-\subsection{Liste}
+\subsubsection{Liste}
 
 \begin{paraph}{Principe général}
     La liste est la structure séquentielle la plus élémentaire 
@@ -935,7 +950,7 @@ et les \textit{dictionnaires}.
 \begin{paraph}{Avantages}
     \begin{itemize}
         \item \textbf{Coût de construction quasi nul~:} L'ajout d'un 
-        prédicat dans la base d'unification se fait en $O(1)$. 
+        prédicat dans la base d'unification se fait en $\mathcal{O}(1)$. 
         Cela peut être avantageux dans les cas ou l'on souhaite 
         unifier sans faire de prétraitement, sur une base construite 
         à la volée et peu réutilisée.
@@ -951,7 +966,7 @@ et les \textit{dictionnaires}.
     \item \textbf{Comparaison exhaustive obligatoire~:} La contrepartie 
     de cette simplicité est l'obligation d'une recherche aveugle. 
     Pour unifier un candidat, il est impératif de le confronter 
-    un à un à tous les éléments de la liste ($O(N)$  tentatives). 
+    un à un à tous les éléments de la liste ($\mathcal{O}(N)$  tentatives). 
     Si l'on souhaite filtrer les prédicats incompatibles pour éviter 
     ce balayage systématique, un prétraitement devient alors obligatoire.
     \item \textbf{Redondance des calculs~:} La liste n'empêchant pas 
@@ -967,7 +982,7 @@ et les \textit{dictionnaires}.
     volumes de données, cette approche naïve reste toutefois intéressante à analyser.
 \end{paraph}
 
-\subsection{Ensemble}
+\subsubsection{Ensemble}
 
 \begin{paraph}{Principe général}
     Un ensemble (\textit{Set}) est une collection non ordonnée 
@@ -985,9 +1000,8 @@ et les \textit{dictionnaires}.
         unifié deux fois avec le même prédicat, économisant potentiellement 
         du temps.
         \item \textbf{Vérification d'existence immédiate~:} Si l'on 
-        cherche une égalité stricte plutôt qu'une unification (par 
-        exemple lors de la subsomption), l'ensemble permet de vérifier 
-        la présence d'un prédicat en $O(1)$ moyen, contre $O(N)$ pour une 
+        cherche une égalité stricte plutôt qu'une unification, l'ensemble permet de vérifier 
+        la présence d'un prédicat en $\mathcal{O}(1)$ moyen, contre $\mathcal{O}(N)$ pour une 
         liste.
     \end{itemize}
 \end{paraph}
@@ -995,13 +1009,13 @@ et les \textit{dictionnaires}.
 \begin{paraph}{Inconvénients}
     \begin{itemize}
         \item \textbf{Coût d'insertion des termes~:} Pour garantir 
-        l'unicité en $O(1)$, lors de l'insertion, l'ensemble vérifie 
+        l'unicité en $\mathcal{O}(1)$, lors de l'insertion, l'ensemble vérifie 
         si le prédicat inséré n'est pas déjà présent, ce qui peut 
         prendre un peu de temps.
         \item \textbf{Absence de filtrage pour l'unification~:} Tout 
-        comme la liste, l'ensemble ne permet pas de sous-sélectionner 
-        les candidats à l'unification. Il faut toujours itérer sur 
-        l'intégralité de l'ensemble, menant aussi à $O(N)$ tentatives.
+        comme la liste, l'ensemble ne permet pas de pré-sélectionner 
+        les candidats à l'unification, e.g.~des littéraux de même tête et signes opposés. Il faut toujours itérer sur 
+        l'intégralité de l'ensemble, menant aussi à $\mathcal{O}(N)$ tentatives.
     \end{itemize}
 \end{paraph}
 
@@ -1013,7 +1027,7 @@ et les \textit{dictionnaires}.
     d'unifications inutiles). Toutefois, le problème du parcours 
     exhaustif n'est toujours pas résolu.
 \end{paraph}
-\subsection{Dictionnaire}
+\subsubsection{Dictionnaire}
 
 \begin{paraph}{Principe général}
     Le dictionnaire permet de stocker des paires clé-valeur. 
@@ -1034,8 +1048,8 @@ et les \textit{dictionnaires}.
         partageant cette même racine. 
         \item \textbf{Gain de performance en résolution~:} En évitant 
         les tentatives d'unification avec des prédicats structurellement 
-        incompatibles (clash de symboles), on passe d'une complexité 
-        de recherche de $O(N)$ à $O(K)$, où $K$ est le nombre de 
+        incompatibles, i.e.~symboles de prédicat différents, on passe d'une complexité 
+        de recherche de $\mathcal{O}(N)$ à $\mathcal{O}(K)$, où $K$ est le nombre de 
         prédicats partageant la même clé (avec $K \ll N$).
     \end{itemize}
 \end{paraph}
@@ -1060,10 +1074,10 @@ et les \textit{dictionnaires}.
     peut être bénéfique pour l'unification.
 \end{paraph}
 
-\section{Algorithmes d'unification}
-\subsection{Robinson}
+\subsection{Algorithmes d'unification}
+\subsubsection{Robinson}
 
-\begin{paraph}{Origine et principe.}
+\begin{paraph}{Origine et principe}
     L'algorithme d'unification de Robinson est un processus algorithmique 
     fondamental en logique mathématique et en informatique théorique. 
     Publié en 1965 par John Alan Robinson, il constitue un pilier du 
@@ -1075,15 +1089,14 @@ et les \textit{dictionnaires}.
     par l'explosion combinatoire des recherches de preuves. J. A. 
     Robinson a révolutionné le domaine en publiant son article de 
     référence~: \textit{A Machine-Oriented Logic Based on the Resolution 
-    Principle}. Il y introduit l'unification comme un moyen de 
+    Principle}~\cite{robinson1965machine}. Il y introduit l'unification comme un moyen de 
     sélectionner intelligemment les substitutions nécessaires pour 
     appliquer la règle de résolution, évitant de tester une infinité 
     de combinaisons de manière aveugle.
 
     \vspace{0.2cm}
     L'objectif de l'algorithme de Robinson (ainsi que de tous ses 
-    successeurs) est de calculer l'\textit{unificateur le plus général} 
-    (ou MGU pour \textit{Most General Unifier}) entre deux littéraux, 
+    successeurs) est de calculer le MGU entre deux littéraux, 
     permettant de les rendre identiques via une substitution commune 
     à tous les termes.
 \end{paraph}
@@ -1199,20 +1212,19 @@ et les \textit{dictionnaires}.
 \end{paraph}
 
 \begin{remarque}
-    Cette dernière vérification, appelée \textit{occur-check}, 
-    est une étape essentielle de l'algorithme. Elle empêche 
-    d'unifier une variable $x$ avec un terme qui la contient déjà 
-    (par exemple, $f(x)$). Sans ce test, l'algorithme entrerait 
-    dans une boucle infinie ou produirait des résultats logiquement 
-    faux (création d'un terme de taille infinie).
+    $\Call{OccursCheck}{T_2, T_1}$ est la fonction booléenne vérifiant
+    qu'un terme $T_2$ \emph{n'apparait pas} dans un terme $T_1$.
+    C'est une vérification essentielle dans n'importe quel algorithme
+    d'unification.\\
+    Exemple : $\Call{OccursCheck}{f(X), g(f(X), Y)}$ renvoie donc $true$ puisque le terme $g(f(X), Y)$ est composé de $f(X)$.
 \end{remarque}
 \newpage
 
-\subsection{Martelli-Montanari}
+\subsubsection{Martelli-Montanari}\label{sec:mm}
 
 \begin{paraph}{Origine et principe}
     L’algorithme Martelli Montanari a été publié en 1982 par Alberto Martelli et Ugo
-    Montanari dans la revue ACM \textit{Transactions on Programming Languages and Systems}.
+    Montanari dans la revue ACM \textit{Transactions on Programming Languages and Systems}.~\cite{martelli1982efficient}
     Élément clé dans l’étude de l’unification du premier ordre, sa principale contribution est
     de modéliser l'unification comme un système de transformation, offrant ainsi un cadre
     formel qui permet de démontrer la correction de plusieurs algorithmes pratiques. Il
@@ -1223,10 +1235,12 @@ et les \textit{dictionnaires}.
 \end{paraph}
 
 \begin{paraph}{Fonctionnement de l'algorithme}
-    L'algorithme consiste à considérer un système d'équation $E$ 
+    L'algorithme consiste à considérer un système d'équation $E$
+    de forme $E = \{ s_1 \overset{?}{=} t_1, \dots, s_n \overset{?}{=} t_n \}$
+    où les $s_i$ et $t_i$ sont des termes du premier ordre,
     et à itérer sur lui jusqu'à atteindre une forme résolue ou 
-    détecter un échec. $E$ a pour forme $E = \{ s_1 \overset{?}{=} t_1, \dots, s_n \overset{?}{=} t_n \}$, 
-    où les $s_i$ et $t_i$ sont des termes du premier ordre. 
+    détecter un échec. Une équation $s_1 \overset{?}{=} t_1$ à la signification suivante~:
+    «~Les terme $s_1$ et $t_1$ sont-ils unifiables~?~».
     Or, dans notre cas, les deux entrées sont des \textit{prédicats} 
     de la forme $P(S_1, \ldots, S_n)$ et $P(t_1, \ldots, t_n)$. 
     Un prétraitement est donc nécessaire afin de pouvoir passer 
@@ -1272,7 +1286,7 @@ et les \textit{dictionnaires}.
 
     \newpage
     \vspace{0.2cm}
-    \textbf{Comment se passe l'unification au sein de Martelli Montanari~?} (Étape 4)\\
+    \textbf{Comment se passe l'unification au sein de Martelli Montanari~?}\\
     On applique les règles suivantes sur le système d'équation jusqu'a épuisement.
     \begin{itemize}
     \vspace{0.2cm}
@@ -1308,15 +1322,15 @@ et les \textit{dictionnaires}.
     le MGU du système initial.
 
 \end{paraph}
-\section{Discrimination Tree}
+\subsection{Discrimination Tree}
 
 \begin{avantpropos}
-    D'après \emph{Term Indexing} - R. Sekar, I.V. Ramakrishnan et A. Voronkov, \emph{An Algorithm for the Retrieval of Unifiers from
-    Discrimination Trees} - H. De Nivelle et \emph{On the Evaluation of Indexing Techniques for Theorem Proving} - R. Nieuwenhuis, T. Hillenbrand,
-    A. Riazanov et A. Voronkov
+    D'après \emph{Term Indexing} - R. Sekar, I.V. Ramakrishnan et A. Voronkov \cite{TermIndexing}, \emph{An Algorithm for the Retrieval of Unifiers from
+    Discrimination Trees} - H. De Nivelle \cite{DT} et \emph{On the Evaluation of Indexing Techniques for Theorem Proving} - R. Nieuwenhuis, T. Hillenbrand,
+    A. Riazanov et A. Voronkov \cite{Eval}.
 \end{avantpropos}
 
-\subsection{Présentation}
+\subsubsection{Présentation}
 Le \textit{discrimination tree}, ou \textit{arbre de discrimination} en français (bien 
 qu'aucun ouvrage francophone n'y fasse explicitement référence) est une véritable 
 chimère algorithmique~: une \textit{structure de données arborescente} conçue 
@@ -1335,14 +1349,18 @@ s'est imposé naturellement au regard de ses propriétés théoriques~: le
 algorithmiques classiques pour l'unification, justifiant ainsi amplement son inclusion. 
 Nous les remercions à nouveau chaleureusement pour cette piste décisive.
 
-\subsection{La structure arborescente}
+\subsubsection{La structure arborescente}
     Un \textit{discrimination tree} est construit en insérant les termes de la 
     base sous forme aplatie (\textit{flatten})~: chaque terme est d'abord 
     linéarisé en une \textit{p-string} par un parcours préfixe, transformant ainsi 
     sa structure hiérarchique en une séquence de symboles. Ces \textit{p-strings} 
     sont ensuite insérées dans un \textit{arbre}, de sorte que les préfixes communs 
     à plusieurs termes soient \textit{factorisés} au maximum en un unique chemin 
-    partagé, évitant toute redondance et constituant ainsi l'index.
+    partagé, évitant toute redondance et constituant ainsi l'index. Enfin, 
+    chaque chemin se termine par une feuille contenant un ou plusieurs pointeurs 
+    vers les objets originaux (termes ou prédicats), permettant ainsi de 
+    récupérer instantanément les données correspondantes une fois le parcours 
+    de l'arbre terminé.
 
     \vspace{0.2cm}
     Il existe plusieurs variantes du \textit{discrimination tree}, se distinguant 
@@ -1478,11 +1496,11 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
 
 \begin{remarque}
     Cet exemple est tiré de \emph{Term Indexing} - R. Sekar, 
-    I.V. Ramakrishnan et A. Voronkov. Il a par ailleurs 
+    I.V. Ramakrishnan et A. Voronkov\cite{TermIndexing}. Il a par ailleurs 
     été adapté à notre version \emph{normalisée} du discrimination tree.
 \end{remarque}
 
-\subsection{L'algorithme d'unification}
+\subsubsection{L'algorithme d'unification}
     L'unification par \textit{discrimination tree} se déroule en deux phases distinctes. 
     La première phase, dite de \textit{filtrage}, consiste à parcourir l'index à partir 
     d'un prédicat requête $q$, lui-même linéarisé en \textit{p-string} par parcours préfixe. 
@@ -1535,7 +1553,7 @@ est conservée pendant tout le parcours de la branche.
     $\neg -P-f-g-a-{?_1}-c$ et la même base $B$ que dans l'exemple précédent.
 
     \vspace{0.4em}
-    \noindent\textbf{Phase 1 — Filtrage.} On descend dans le \textit{discrimination tree} 
+    \noindent\textbf{Phase 1 : Filtrage.} On descend dans le \textit{discrimination tree} 
     en suivant la \textit{p-string} $\neg -P-f-g-a-{?_1}-c$~:
 \end{paraph}
 
@@ -1625,7 +1643,7 @@ est conservée pendant tout le parcours de la branche.
 \end{center}
 
 \vspace{0.4cm}
-\noindent\textbf{Phase 2 — Unification.} On applique l'algorithme d'unification entre 
+\noindent\textbf{Phase 2 : Unification.} On applique l'algorithme d'unification entre 
 $q = \neg P(f(g(a, Z), c))$ et $p_1 = P(f(g(a, X), c))$~:
 \[
     \sigma = \{Z \mapsto X\} \quad \text{(ou symétriquement }\{X \mapsto Z\} \text{)}
@@ -1633,15 +1651,194 @@ $q = \neg P(f(g(a, Z), c))$ et $p_1 = P(f(g(a, X), c))$~:
 L'unification réussit avec la substitution $\sigma$. Les prédicats $p_2, \ldots, p_9$ n'ont 
 jamais été considérés, illustrant l'efficacité du filtrage.
 
+\subsubsection{Complexité}
+
+L'analyse de la complexité des opérations sur un \textit{discrimination tree}
+nécessite de distinguer deux types d'opérations principales~: l'ajout d'un prédicat dans
+la structure et la recherche d'unification. Cette dernière est elle même décomposée en deux phases~: 
+le filtrage structurel puis l'unification effective.
+
+\begin{paraph}{Insertion}
+    L'insertion d'un prédicat dans un discrimination tree consiste à parcourir sa représentation
+    linéarisée puis à insérer successivement chaque symbole dans l'arbre (ou le parcourir si le symbole
+    est déjà partagé à une autre branche). L'algorithme suivant détaille ce processus~:
+
+    \begin{algorithm}[H]
+        \footnotesize
+        \caption{Insertion d'un prédicat dans l'arbre de discrimination}
+        \label{alg:insertion_dt}
+        \begin{algorithmic}[1]
+            
+            \Procedure{InsererPredicat}{$Arbre$, $Predicat$, $Pointeur$}
+                
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 1~:} Linéarisation et normalisation des variables}
+                \State$S \gets \Call{MiseAPlat}{Predicat}$ \Comment{Transforme le prédicat en p-string}
+                
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 2~:} Descente et construction de l'arbre}
+                \State$NoeudCourant \gets Arbre.racine$
+                
+                \For{\textbf{chaque} $Symbole$ \textbf{dans} $S$}
+                    \If{$Symbole \notin NoeudCourant.enfants$} 
+                        \State\Comment{Création d'un nouveau nœud si la branche n'existe pas}
+                        \State$NouveauNoeud \gets \Call{CreerNoeud}{Symbole}$
+                        \State$NoeudCourant.enfants[Symbole] \gets NouveauNoeud$
+                    \EndIf
+                    \State$NoeudCourant \gets NoeudCourant.enfants[Symbole]$
+                \EndFor
+                
+                \vspace{0.1cm}
+                \State\Comment{\textbf{Étape 3~:} Ajout du pointeur à la feuille}
+                \If{$Pointeur \notin NoeudCourant.pointeurs$}
+                    \State$NoeudCourant.pointeurs \gets NoeudCourant.pointeurs \cup \{Pointeur\}$
+                \EndIf
+                
+            \EndProcedure
+
+        \end{algorithmic}
+    \end{algorithm}
+
+    \vspace{0.2cm}
+    Soit $n$ la taille d'un prédicat, i.e.~son nombre total de symboles (par exemple, pour un 
+    prédicat $\neg P(X, g(X, b))$, $n=6$ puisque sa \textit{p-string} est $\neg -P-*_1-g-*_1-b$). 
+    Évaluons la complexité de chaque étape de l'algorithme~:
+
+    \begin{itemize}
+        \item \textbf{Linéarisation (Étape 1)~:} La fonction de mise à plat effectue un parcours 
+        en profondeur du prédicat. Elle visite chaque nœud (symbole, fonction ou variable) exactement 
+        une fois, ce qui requiert un temps proportionnel au nombre de symboles, soit $\mathcal{O}(n)$.
+        
+        \item \textbf{Construction (Étape 2)~:} L'algorithme itère sur les $n$ symboles de la 
+        \textit{p-string}. Pour chaque symbole, la vérification de son existence parmi les enfants du 
+        nœud courant s'effectue en $\mathcal{O}(1)$ en moyenne, grâce à l'utilisation d'une table 
+        de hachage (\textit{Dictionnaire} en Python). La création et l'ajout d'un nœud, si nécessaire, 
+        se font également en temps constant $\mathcal{O}(1)$. Cette boucle s'exécute donc en $\mathcal{O}(n)$.
+        
+        \item \textbf{Mise à jour (Étape 3)~:} L'ajout du pointeur à la fin du chemin est une opération 
+        élémentaire en $\mathcal{O}(1)$.
+    \end{itemize}
+
+    \vspace{0.2cm}
+    La complexité temporelle globale de l'insertion d'un prédicat dans le \textit{discrimination tree} 
+    est donc strictement linéaire par rapport à la taille du prédicat~:
+    \[
+    \mathcal{O}(n)
+    \]
+
+    \vspace{0.2cm}
+    \noindent Du point de vue de la \textit{complexité spatiale}, dans le pire des cas (où le 
+    prédicat ne partage aucun préfixe avec les termes déjà indexés dans l'arbre), l'algorithme allouera 
+    exactement $n$ nouveaux nœuds en mémoire. La complexité spatiale par insertion est donc, elle aussi, 
+    au pire de $\mathcal{O}(n)$. Le partage de préfixes rend cependant cette empreinte mémoire bien plus 
+    faible en pratique.
+\end{paraph}
+
+\begin{paraph}{Filtrage structurel}
+    Le filtrage structurel est la première phase de la recherche. Il consiste à 
+    parcourir l'arbre en suivant la \textit{p-string} du terme requête. 
+    Contrairement à l'insertion, ce processus doit gérer le non-déterminisme 
+    induit par les variables présentes dans l'arbre (notées $*_i$) 
+    qui peuvent correspondre à n'importe quel sous-terme de la requête.
+
+    \begin{algorithm}[H]
+        \footnotesize
+        \caption{Filtrage structurel (Collecte de candidats)}
+        \label{alg:filtrage_dt}
+        \begin{algorithmic}[1]
+            \Procedure{CollecterCandidats}{$Noeud$, $Seq$, $i$, $Candidats$}
+                
+                \If{$i \ge \Call{Taille}{Seq}$} \Comment{Condition d'arrêt : fin de la séquence}
+                    \State $Candidats \gets Candidats \cup Noeud.pointeurs$
+                    \State \Return
+                \EndIf
+                
+                \State $s \gets Seq[i]$
+                
+                \State\Comment{\textbf{Cas 0~:} Signe du prédicat (recherche de l'opposé pour résolution)}
+                \If{$s \in \{\text{'+', '¬'}\}$}
+                    \State $oppose \gets (s == \text{'+'} ? \text{'¬'} : \text{'+'})$
+                    \If{$oppose \in Noeud.enfants$}
+                        \State \Call{CollecterCandidats}{$Noeud.enfants[oppose], Seq, i+1, Candidats$}
+                    \EndIf
+                    \State \Return
+                \EndIf
+
+                \State\Comment{\textbf{Cas 1~:} Symbole identique (hors variables)}
+                \If{$s \in Noeud.enfants$ \textbf{et} $s$ n'est pas une variable}
+                    \State \Call{CollecterCandidats}{$Noeud.enfants[s], Seq, i+1, Candidats$}
+                \EndIf
+
+                \State\Comment{\textbf{Cas 2~:} Variable dans la requête (symbole '?')}
+                \If{$s$ est une variable requête}
+                    \For{\textbf{chaque} $Enfant$ \textbf{dans} $Noeud.enfants$}
+                        \For{\textbf{chaque} $DernierNoeud$ \textbf{de} \Call{SousTermes}{Enfant, 1}}
+                            \State \Call{CollecterCandidats}{$DernierNoeud, Seq, i+1, Candidats$}
+                        \EndFor
+                    \EndFor
+                    \State \Return
+                \EndIf
+
+                \State\Comment{\textbf{Cas 3~:} Variable dans l'arbre (symbole '*')}
+                \State $prof \gets \Call{CalculerProfondeur}{i}$
+                \For{\textbf{chaque} $(symb, enfant)$ \textbf{dans} $Noeud.enfants$}
+                    \If{$symb$ est une variable arbre \textbf{et} $i + prof \le \Call{Taille}{Seq}$}
+                        \State \Call{CollecterCandidats}{$enfant, Seq, i + prof, Candidats$}
+                    \EndIf
+                \EndFor
+                
+            \EndProcedure
+        \end{algorithmic}
+    \end{algorithm}
+
+    \vspace{0.2cm}
+    \textbf{Analyse de complexité :}
+    Soit $n$ la taille du prédicat de requête et $M$ le nombre total de nœuds dans l'arbre.
+    \begin{itemize}
+        \item \textbf{Pire cas~:} Dans le cas d'une requête très générale ou d'un arbre fortement peuplé de variables, l'algorithme peut explorer plusieurs branches (backtracking). La complexité peut atteindre $\mathcal{O}(M)$ dans le pire des cas théorique.
+        \item \textbf{Cas moyen~:} Grâce à la structure d'index, on élimine massivement les branches incompatibles dès le début du parcours. La complexité moyenne est proche de $\mathcal{O}(n)$, rendant la recherche extrêmement performante par rapport à un parcours séquentiel de la base de données.
+    \end{itemize}
+\end{paraph}
+\newpage
+\begin{paraph}{Unification effective}
+    Une fois le filtrage structurel terminé, nous obtenons un ensemble de 
+    candidats qui \textit{ressemblent} à la requête. Cependant, l'arbre de 
+    discrimination «~standard » ne capture pas les contraintes de co-occurrence 
+    des variables (par exemple, que le premier et le second argument doivent 
+    être identiques). Il est donc nécessaire de procéder à une unification 
+    classique sur les candidats restants.
+
+    \vspace{0.2cm}
+    \textbf{Analyse de complexité~:}
+    Soit $k$ le nombre de candidats renvoyés par le filtrage ($k \ll \text{taille de la base}$).
+    \begin{itemize}
+        \item L'opération dominante est l'appel à l'algorithme d'unification pour chaque candidat.
+        \item Si l'unification est en $\mathcal{O}(n)$ (cas de \hyperref[sec:mm]{Martelli-Montanari} sans \textit{occur-check} coûteux), la complexité de cette phase est $\mathcal{O}(k \cdot n)$.
+    \end{itemize}
+    \textbf{Conclusion sur la performance~:} 
+    L'intérêt majeur du \textit{Discrimination Tree} réside dans sa capacité 
+    à maintenir $k$ très petit, souvent proche de 1, ce qui permet de passer 
+    d'une recherche en $\mathcal{O}(Base \cdot n)$ à une recherche quasi-linéaire 
+    $\mathcal{O}(n)$ par rapport à la taille de la requête.
+\end{paraph}
+
 \newpage
 
-\part{Résultats}
-\setcounter{section}{0}
-\section{Protocole de benchmarks}
-\section{Résultats}
+\section{Expérimentations}
+\subsection{Organisation et implémentation}
+\subsection{Protocole de benchmarks}
+\subsection{Résultats}
+\subsection{Analyse des résultats}
 
 \newpage
 
-\part*{Conclusion}
+\section*{Conclusion}
+\addcontentsline{toc}{section}{Conclusion}
+
+
+\newpage
+
+% --- Bibliographie --- %
+\printbibliography
 
 \end{document}
