@@ -179,60 +179,51 @@ de ce rapport.
 
 \section*{Introduction}                         % On ne le numérote pas  
 \addcontentsline{toc}{section}{Introduction}                                                  
-% Paragraphe 1 : Mise en abime du sujet / actualité ou autre
-En informatique, la représentation de l'information est un point 
-clé dans la réalisation de divers projets. Ainsi le choix des 
-\textbf{structures de données} représente une étape cruciale pour 
-le bon déroulement de tout projet. 
-
-En logique du premier ordre, ce sont les \textbf{termes} qui servent 
-de base afin de représenter des expressions symboliques construites 
-à partir de symboles de fonction, de constantes et de variables. 
-Représenter ces termes via la meilleure structure de donnée, la plus 
-adéquate, représente donc un point majeur dans tout travaux portés 
-à ce domaine.
-
-L’\textbf{unification} est une opération essentielle dans ce cadre. 
-Elle intervient notamment dans les moteurs d’inférence, les systèmes 
-de réécriture de termes, et les prouveurs logiques. Les différents 
-algorithmes connus d'unification sont parfois adaptés à certaines 
-structures de données précises, il est donc important de comparer 
-ces algorithmes et de diversifier ses choix pour parvenir aux résultats 
-les plus efficaces.
+% Paragraphe 1 : Mise en abime du sujet
+En informatique, le choix des \textbf{structures de données} est une décision 
+fondamentale~: elle conditionne directement l'efficacité des algorithmes qui 
+les manipulent. Ce principe, universel en programmation, prend une dimension 
+particulière dans le domaine de la \textbf{logique}, où la représentation 
+des objets manipulés doit non seulement être correcte, mais aussi permettre 
+un traitement automatique efficace. C'est précisément ce défi qui est au cœur 
+de ce rapport.
 
 \vspace{0.5cm}
 % Paragraphe 2 : Définitions des notions clés
-Une structure de données est une représentation permettant d'organiser, 
-traiter et stocker des données de manière efficace dans la mémoire d'un 
-ordinateur. Elle permet un meilleur accès et une manipulation plus 
-efficace des données afin de résoudre un problème spécifique. 
-
-Un terme est une expression qui consiste à nommer ou construire un 
-objet en logique. Cela peut être une variable, une constante ou une 
-fonction. Il est en quelque sorte le plus petit composant d'une formule 
-logique.
-
-L'unification consiste à déterminer s’il existe une substitution des 
-variables (i.e.~une affectation des variables $(X, Y , \ldots)$ 
-vers des termes $(a, b, f(a), \ldots)$) permettant de rendre identiques 
-deux termes.
+La \textbf{logique du premier ordre} est un langage formel permettant d'exprimer 
+des propriétés et des relations sur des objets. Elle repose sur des expressions 
+symboliques appelées \textbf{termes}, construits à partir de \textbf{variables}, 
+de \textbf{constantes} et de \textbf{symboles de fonction}. Ces termes constituent 
+la brique de base des \textbf{formules logiques}, et leur manipulation efficace 
+est un enjeu central dans de nombreux systèmes automatiques. Parmi les opérations 
+fondamentales sur ces termes, l'\textbf{unification} occupe une place de choix~: 
+elle consiste à déterminer s'il existe une \textbf{substitution} de variables 
+permettant de rendre deux termes identiques. Cette opération intervient notamment 
+dans les \textbf{moteurs d'inférence}, les \textbf{systèmes de réécriture de termes} 
+et les \textbf{prouveurs de théorèmes automatiques}.
 
 \vspace{0.5cm}
 % Paragraphe 3 : Présentation de la problématique
-Ainsi, dans le cadre de ce travail de recherche, nous nous demanderons 
-quelles sont les structures de données les plus adaptées pour 
-l'unification dans la logique du premier ordre. Le choix d'une 
-structure impactant l'efficacité d'un algorithme, nous réfléchirons 
-donc aussi aux meilleurs algorithmes d'unification à utiliser en 
-fonction de la structure de donnée choisie.
+Dans ce contexte, une question naturelle se pose~: quelles sont les 
+\textbf{structures de données} les plus adaptées pour représenter et manipuler 
+efficacement des termes dans le cadre de l'unification~? Le choix d'une structure 
+impactant directement l'efficacité des algorithmes qui l'exploitent, nous nous 
+interrogerons également sur les \textbf{algorithmes d'unification} les mieux 
+adaptés à chaque représentation. C'est autour de cette double problématique, 
+structures et algorithmes, que s'articule ce travail de recherche.
+
 
 \vspace{0.5cm}
 % Paragraphe 4 : Annonce du plan
-Nous commencerons par un rappel sur les différentes notions abordées 
-dans notre sujet. Ensuite nous présenterons plus en détails les 
-différentes structures de données que nous avons utilisées, et nous 
-finirons par la présentation des algorithmes d'unification connus sur 
-lesquels nous avons travaillé.
+Nous commencerons par établir les \textbf{généralités} nécessaires à la 
+compréhension du sujet~: logique des propositions, logique du premier ordre, 
+preuve automatisée et unification. Nous présenterons ensuite les 
+\textbf{structures de données} retenues pour représenter les termes et les 
+organiser en base, ainsi que les \textbf{algorithmes d'unification} étudiés, 
+en particulier le \textbf{discrimination tree}. Enfin, nous exposerons les 
+\textbf{résultats expérimentaux} obtenus lors de nos benchmarks, avant de 
+conclure sur les enseignements tirés de cette étude. L'ensemble du code source 
+est disponible dans le dépôt git du projet~: \url{https://github.com/Metheor31Game/M1-recherche}.
 
 \newpage
 \section{Généralités}
