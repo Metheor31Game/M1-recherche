@@ -517,29 +517,16 @@ Et l'on cherche à démontrer d'après les deux prémisses~:
 \end{remarque}
 
 \subsubsection{Forme clausale et réfutation}
-La mise sous \textit{forme clausale} consiste à transformer les formules de 
-la base de connaissances en un ensemble de \textit{clauses}, 
-i.e.~des disjonctions de littéraux, qui leur est logiquement équivalent. 
-Cette transformation se fait en plusieurs étapes~:
+La mise sous \textit{forme clausale} consiste à transformer un ensemble de formules
+\textit{clauses}, i.e.~des disjonctions de littéraux, qui leur est logiquement équivalent. 
 
-\begin{enumerate}
-    \item éliminer les implications et équivalences~;
-    \item faire descendre les négations au plus près des prédicats~;
-    \item standardiser les variables (renommer les variables si nécessaire)~;
-    \item mettre la formule sous forme prénexe (tous les quantificateurs en tête)~;
-    \item éliminer les quantificateurs existentiels (via un procédé nommé \textit{skolémisation});
-    \item supprimer les quantificateurs universels, qui deviennent implicites~;
-    \item mettre la partie restante sous forme de clauses.
-\end{enumerate}
-
+\vspace{0.2cm}
 Pour notre syllogisme, la formule 
 $\forall x\; (\mathit{Homme}(x) \rightarrow \mathit{Mortel}(x))$ 
 est d’abord réécrite sous la forme 
 $\forall x\; (\neg \mathit{Homme}(x) \vee \mathit{Mortel}(x))$, 
 en utilisant l’équivalence logique entre 
-$A \rightarrow B$ et $\neg A \vee B$. Aucune autre transformation n’est 
-ici nécessaire, car la formule est déjà en  forme prénexe et ne 
-contient pas de quantificateur existentiel.
+$A \rightarrow B$ et $\neg A \vee B$. 
 Les quantificateurs universels étant implicites, on obtient ainsi la clause 
 $\neg \mathit{Homme}(x) \vee \mathit{Mortel}(x)$.
 
@@ -602,7 +589,7 @@ Par exemple, si $t = g(X, Y)$, alors~:
     \sigma(t) = \sigma(g(X, Y)) = g(b, f(a))
 \]
 \end{paraph}
-\newpage
+
 \begin{paraph}{Unification}
 L'\textit{unification} consiste à déterminer s'il existe 
 une substitution $\sigma$, appelée \textit{unificateur}, 
@@ -728,7 +715,6 @@ peut alors dériver la contradiction en deux étapes~:
     \textit{clause vide} $\square$, témoin de la contradiction.
 \end{itemize}
 
-\vspace{0.2cm}
 La négation de $\mathit{Mortel}(\mathit{socrate})$ est donc incompatible 
 avec nos prémisses, ce qui prouve que $\mathit{Mortel}(\mathit{socrate})$ 
 est bien une conséquence du syllogisme. Cet exemple illustre le rôle 
@@ -739,6 +725,34 @@ de l'\textit{efficacité} de cette unification, en fonction des
 structures de données et des algorithmes utilisés, est précisément 
 l'objet du reste de ce rapport.
 \end{paraph}
+
+\vspace{0.2cm}
+Dans notre exemple, nous n'avons raisonné que sur trois clauses. Dans
+un système réel de \textit{recherche de preuve}, cet ensemble peut contenir
+des milliers de \textit{littéraux} issus de la mise sous \textit{forme clausale}
+de la base de connaissances initiale. On appelle \textit{base de connaissances} cet
+ensemble de clauses sur lequel le moteur d'inférence, i.e.~le composant logiciel chargé 
+d'appliquer les règles de déduction, opère~: c'est à partir
+de cette base que la \textit{règle de résolution} est appliquée de manière répétée,
+en cherchant à chaque étape des paries de littéraux unifiables.
+
+\vspace{0.2cm}
+L'efficacité de ce processus dépend donc directement de la façon dont cette 
+base est \textit{organisée} et \textit{stockée}~: parcourir
+l'intégralité de la base pour trouver un candidat à l'unification à chaque étape
+de résolution représente un coût prohibitif sur de grands ensembles.
+La question centrale deviant alors~: quelle \textit{structure de données} adopter
+pour stocker la base de connaissance de façon à rendre l'\textit{unification} la plus
+efficace possible~? C'est précisément l'objet de la partie suivante, 
+qui procédera en deux temps~: nous verrons d'abord comment représenter 
+un \textit{terme}, composante élémentaire de la base de connaissances, 
+avant de nous intéresser aux structures permettant de stocker et 
+d'interroger efficacement la base dans son ensemble. Notons que nous 
+nous concentrons sur la représentation d'un \textit{terme} plutôt que 
+d'un \textit{prédicat}, car un prédicat n'est autre qu'un 
+\textit{symbole de prédicat} appliqué à des \textit{termes}, sa 
+représentation découle donc naturellement de celle de ses composantes.
+
 \newpage
 \section{Structures de données et algorithmes}
 \subsection{Structures de données représentant un terme}
@@ -798,7 +812,7 @@ amène naturellement à proposer les \textit{arbres} comme structure de données
 pour représenter un terme.
 
 \subsubsection{Implémentation}
-Testons cette idée sur la base $B$, i.e.~un ensemble de termes, définie comme~:
+Testons cette idée sur la base $B$ définie comme~:
 \[
     B = \{a,\ X,\ Y,\ c,\ f(X, Y),\ g(Y),\ g(a),\ f(a, X)\}
 \]
@@ -945,18 +959,37 @@ capturée par l'\textit{arbre} lui-même.
 \end{remarque}
 
 \subsection{Structures de données représentant un ensemble de prédicats}
-Maintenant que la représentation d'un terme est acquise, 
+Maintenant que la représentation d'un \textit{terme} est acquise, 
 nous cherchons à évaluer quelle structure de données est la 
-plus \textit{efficace} pour unifier un prédicat donné avec un grand nombre 
-d'autres prédicats. Nous avons ainsi retenu trois structures 
-principales pour nos comparaisons~: les \textit{listes}, les \textit{ensembles} 
-et les \textit{dictionnaires}.
+plus \textit{efficace} pour stocker et interroger la 
+\textit{base de connaissances} en vue de l'\textit{unification}. 
+Pour comparer ces structures, nous nous concentrerons sur trois 
+opérations clés~:
+
+\begin{itemize}
+    \item l'\textbf{insertion}~: ajouter un nouveau littéral 
+    à la base~;
+    \item la \textbf{recherche}~: retrouver les candidats 
+    potentiels à l'unification avec un littéral requête~;
+    \item l'\textbf{unification}~: appliquer l'algorithme 
+    d'unification sur les candidats retenus.
+\end{itemize}
+
+\vspace{0.2cm}
+La \textit{suppression} n'est pas une opération pertinente dans 
+notre contexte~: dans un processus de \textit{résolution par 
+réfutation}, la base de connaissances reste fixe, on y ajoute 
+des clauses dérivées au fil des étapes, mais on ne supprime jamais 
+de clauses existantes. Cette opération ne sera donc pas prise en 
+compte dans notre analyse. Nous avons retenu trois structures 
+principales pour nos comparaisons~: les \textit{listes}, 
+les \textit{ensembles} et les \textit{dictionnaires}.
 
 \subsubsection{Liste}
 
 \begin{paraph}{Principe général}
     La liste est la structure séquentielle la plus élémentaire 
-    pour stocker notre ensemble (ou base) de prédicats. Elle conserve l'ordre 
+    pour stocker notre base de prédicats. Elle conserve l'ordre 
     d'insertion et autorise la présence de doublons. 
 \end{paraph}
 
@@ -1006,31 +1039,32 @@ et les \textit{dictionnaires}.
     deux fois dans la base.
 \end{paraph}
 
+\newpage
 \begin{paraph}{Avantages}
     \begin{itemize}
         \item \textbf{Élimination native des doublons~:} C'est son 
         atout principal. En filtrant les prédicats redondants dès 
-        l'insertion, l'ensemble réduit mécaniquement la taille $N$ 
+        l'insertion, l'ensemble réduit mécaniquement la taille 
         de la base. Cela garantit qu'un candidat ne sera jamais 
         unifié deux fois avec le même prédicat, économisant potentiellement 
         du temps.
         \item \textbf{Vérification d'existence immédiate~:} Si l'on 
         cherche une égalité stricte plutôt qu'une unification, l'ensemble permet de vérifier 
         la présence d'un prédicat en $\mathcal{O}(1)$ moyen, contre $\mathcal{O}(N)$ pour une 
-        liste.
+        liste de taille $N$.
     \end{itemize}
 \end{paraph}
-\newpage
+
 \begin{paraph}{Inconvénients}
     \begin{itemize}
         \item \textbf{Coût d'insertion des termes~:} Pour garantir 
-        l'unicité en $\mathcal{O}(1)$, lors de l'insertion, l'ensemble vérifie 
+        l'unicité en $\mathcal{O}(1)$ lors de l'insertion, l'ensemble vérifie 
         si le prédicat inséré n'est pas déjà présent, ce qui peut 
         prendre un peu de temps.
         \item \textbf{Absence de filtrage pour l'unification~:} Tout 
         comme la liste, l'ensemble ne permet pas de pré-sélectionner 
         les candidats à l'unification, e.g.~des littéraux de même tête et signes opposés. Il faut toujours itérer sur 
-        l'intégralité de l'ensemble, menant aussi à $\mathcal{O}(N)$ tentatives.
+        l'intégralité de l'ensemble, menant aussi à $\mathcal{O}(N)$ tentatives pour un ensemble de $N$ éléments.
     \end{itemize}
 \end{paraph}
 
@@ -1058,17 +1092,17 @@ et les \textit{dictionnaires}.
         \item \textbf{Filtrage des candidats~:} C'est la première 
         structure qui permet de réduire le nombre de tentatives 
         d'unification. Si l'on cherche à unifier le prédicat $P(f(X, Y), Y)$, 
-        on interroge le dictionnaire avec la clé \texttt{'P/2'}. 
-        On récupère instantanément uniquement les prédicats de la base 
-        partageant cette même racine. 
+        on interroge le dictionnaire avec la clé \texttt{'$\neg$P/2'}. 
+        On récupère instantanément uniquement les prédicats complémentaires,
+        i.e.~même prédicat avec signe opposé, de la base. 
         \item \textbf{Gain de performance en résolution~:} En évitant 
         les tentatives d'unification avec des prédicats structurellement 
         incompatibles, i.e.~symboles de prédicat différents, on passe d'une complexité 
         de recherche de $\mathcal{O}(N)$ à $\mathcal{O}(K)$, où $K$ est le nombre de 
-        prédicats partageant la même clé (avec $K \ll N$).
+        prédicats partageant la même clé et $N$ la taille du dictionnaire (avec $K \ll N$).
     \end{itemize}
 \end{paraph}
-
+\newpage
 \begin{paraph}{Inconvénients}
     \begin{itemize}
         \item \textbf{Complexité et coût mémoire~:} Organiser les 
@@ -1118,7 +1152,11 @@ et les \textit{dictionnaires}.
 
 \begin{paraph}{Fonctionnement de l'algorithme}
     Le déroulement de cet algorithme s'effectue en plusieurs 
-    étapes pour unifier deux littéraux~:
+    étapes pour unifier deux littéraux (voir Algorithme 1).
+
+    \vspace{0.2cm}
+    Pour trouver la substitution qui unifie deux termes, on utilise 
+    la fonction UnifierTermes, dont le fonctionnement est décrit dans l'algorithme 2 ci-après.
     \begin{algorithm}[H]
         \footnotesize
         \caption{Unification de deux littéraux (Robinson)}
@@ -1168,11 +1206,8 @@ et les \textit{dictionnaires}.
         \end{algorithmic}
     \end{algorithm}
 
-    \vspace{0.2cm}
-    Pour trouver la substitution qui unifie deux termes, on utilise 
-    la fonction UnifierTermes, dont le fonctionnement est le suivant~:
-
     \begin{algorithm}[H]
+    \footnotesize
     \caption{Unification de deux termes (Robinson)}
     \label{alg:unification_termes}
     \begin{algorithmic}[1]
