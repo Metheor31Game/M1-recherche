@@ -194,9 +194,9 @@ En informatique, le choix des \textbf{structures de données} est une décision
 fondamentale~: elle conditionne directement l'efficacité des algorithmes qui 
 les manipulent. Ce principe, universel en programmation, prend une dimension 
 particulière dans le domaine de la \textbf{logique}, où la représentation 
-des objets manipulés doit non seulement être correcte, mais aussi permettre 
-un traitement automatique efficace. C'est précisément ce défi qui est au cœur 
-de ce rapport.
+des objets manipulés doit non seulement refléter fidèlement une syntaxe 
+formelle stricte, mais aussi permettre un traitement automatique 
+efficace. C'est précisément ce défi qui est au cœur de ce rapport.
 
 \vspace{0.5cm}
 % Paragraphe 2 : Définitions des notions clés
@@ -329,16 +329,11 @@ Pour pouvoir étendre le champs de couverture de la
 \vspace{0.2cm}
 Cette logique permet la représentation de propriétés portant 
 sur des ensembles d'objets ou des relations. Pour les décrire 
-au sein de \textit{formules}, on se donne un \textit{alphabet} 
-composé des éléments suivants~:
+au sein de \textit{formules}, on se donne les éléments suivants~:
 \begin{itemize}
     \item Ensemble de \textit{variables}~: $x, y, z$, etc. Elles représentent des individus \textit{indéterminés}~;
-\end{itemize}
-On définit également ce que l'on appelle une \textit{signature}, 
-qui rend notre représentation unique, composée de deux ensembles~:
-\begin{itemize}
     \item Ensemble de symboles de \textit{fonctions}~: $f, g, h$, etc. Elles permettent de construire de nouveaux objets à partir d'objets existants, e.g.~$\mathit{pere}(\mathit{socrate})$ désigne le père de Socrate~;
-    \item Ensemble de symboles de \textit{prédicats}~: $P, Q, R$, etc. Ils expriment des propriétés ou des relations entre objets, e.g.~$\mathit{Homme}(\mathit{socrate})$ exprime que Socrate est un homme.
+    \item Ensemble de symboles de \textit{prédicats}~: $P, Q, R$, etc. Ils expriment des propriétés ou des relations entre objets, e.g.~$\mathit{Homme}(\mathit{socrate})$ exprime que Socrate est un homme. Par convention, leurs noms commencent par une majuscule.
 \end{itemize}
 On associe à ces fonctions et prédicats une \textit{arité} 
 (i.e.~le nombre d'arguments qu'ils prennent). Par exemple, 
@@ -753,7 +748,7 @@ La structure d'un terme est naturellement hiérarchique~: une fonction est
 composée de sous-termes, qui peuvent eux-mêmes être des fonctions, et ainsi 
 de suite. Cette imbrication définit la \textit{profondeur} du terme. Les 
 variables et les constantes, en revanche, sont toujours des \textit{feuilles}, 
-i.e.~elles n'ont pas de sous-termes et donc pas de profondeur.
+i.e.~elles n'ont pas de sous-termes, leur profondeur vaut $0$.
 
 \vspace{0.2cm}
 Considérons le terme $t = f(g(x, c), h(y), c)$, où $f$ est une 
@@ -784,9 +779,7 @@ amène naturellement à proposer les \textit{arbres} comme structure de données
 pour représenter un terme.
 
 \subsubsection{Implémentation}
-La structure hiérarchique d'un terme nous amène donc naturellement 
-à le représenter par un \textit{arbre}. Testons cette idée sur 
-la base $B$ définie comme~:
+Testons cette idée sur la base $B$, i.e.~un ensemble de termes, définie comme~:
 \[
     B = \{a,\ X,\ Y,\ c,\ f(X, Y),\ g(Y),\ g(a),\ f(a, X)\}
 \]
@@ -844,7 +837,7 @@ la base $B$ définie comme~:
 \vspace{0.2cm}
 Cette représentation capture bien la hiérarchie des termes. Cependant, elle 
 présente deux limites importantes. D'une part, rien ne distingue la variable 
-$X$ de la constante $a$, ce sont deux feuilles syntaxiquement identiques. 
+$X$ de la constante $a$, ce sont deux feuilles \textit{structurellement} identiques. 
 D'autre part, rien n'indique qu'un nœud $f$ doit avoir exactement $n$ fils, 
 l'arité de la fonction n'est pas encodée. Or ces deux informations sont 
 essentielles lors de l'unification~: une variable peut être substituée, une 
@@ -944,14 +937,15 @@ et les \textit{dictionnaires}.
 
 \begin{paraph}{Principe général}
     La liste est la structure séquentielle la plus élémentaire 
-    pour stocker notre base de prédicats. Elle conserve l'ordre 
+    pour stocker notre ensemble (ou base) de prédicats. Elle conserve l'ordre 
     d'insertion et autorise la présence de doublons. 
 \end{paraph}
 
 \begin{paraph}{Avantages}
     \begin{itemize}
         \item \textbf{Coût de construction quasi nul~:} L'ajout d'un 
-        prédicat dans la base d'unification se fait en $\mathcal{O}(1)$. 
+        prédicat dans la base d'unification, i.e.~l'ensemble des prédicats
+        sur lequels on veut chercher une unification, se fait en $\mathcal{O}(1)$. 
         Cela peut être avantageux dans les cas ou l'on souhaite 
         unifier sans faire de prétraitement, sur une base construite 
         à la volée et peu réutilisée.
@@ -967,7 +961,8 @@ et les \textit{dictionnaires}.
     \item \textbf{Comparaison exhaustive obligatoire~:} La contrepartie 
     de cette simplicité est l'obligation d'une recherche aveugle. 
     Pour unifier un candidat, il est impératif de le confronter 
-    un à un à tous les éléments de la liste ($\mathcal{O}(N)$  tentatives). 
+    un à un à tous les éléments de la liste 
+    (pour une liste de $N$ prédicats, $\mathcal{O}(N)$  tentatives). 
     Si l'on souhaite filtrer les prédicats incompatibles pour éviter 
     ce balayage systématique, un prétraitement devient alors obligatoire.
     \item \textbf{Redondance des calculs~:} La liste n'empêchant pas 
@@ -1353,7 +1348,8 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
     Un \textit{discrimination tree} est construit en insérant les termes de la 
     base sous forme aplatie (\textit{flatten})~: chaque terme est d'abord 
     linéarisé en une \textit{p-string} par un parcours préfixe, transformant ainsi 
-    sa structure hiérarchique en une séquence de symboles. Ces \textit{p-strings} 
+    sa structure hiérarchique en une séquence de symboles. Par exemple, le terme $f(g(a, b), a)$ se 
+    linéarise en $f-g-a-b-a$. Ces \textit{p-strings} 
     sont ensuite insérées dans un \textit{arbre}, de sorte que les préfixes communs 
     à plusieurs termes soient \textit{factorisés} au maximum en un unique chemin 
     partagé, évitant toute redondance et constituant ainsi l'index. Enfin, 
@@ -1506,7 +1502,7 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
     d'un prédicat requête $q$, lui-même linéarisé en \textit{p-string} par parcours préfixe. 
     Les variables de $q$ sont normalisées différemment de celles de l'index~: on utilise la 
     notation $?_i$ (contre $*_i$ pour les prédicats indexés), où $i$ reflète l'ordre 
-    d'apparition dans le parcours préfixe. Cette distinction est essentielle~: lors du 
+    d'apparition dans le parcours préfixe. Cette distinction, entre les variables et d'autres symboles, est essentielle~: lors du 
     filtrage, une variable $?_i$ du terme requête est compatible avec \textit{tout} nœud de 
     l'arbre, symbole concret ou variable $*_j$, tandis qu'un symbole concret de $q$ ne 
     peut correspondre qu'à un nœud identique. À l'issue de ce parcours, on obtient un ensemble de \textit{candidats}, i.e.~les prédicats de la base dont la \textit{p-string} est compatible avec celle de $q$. Il est a noté que pour notre version adaptée à la résolution de prédicats, si la \textit{p-string} de $q$ commence par $\neg$ (respectivement $+$) on filtrera les \textit{p-strings} en cherchant le signe opposé : $+$ (respectivement $\neg$).
