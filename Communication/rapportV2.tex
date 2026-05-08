@@ -81,8 +81,26 @@
 \definecolor{subsectioncolor}{RGB}{80, 80, 80}
 
 % --- Règles --- %
-\algdef{SE}[TRY]{Try}{EndTry}{\textbf{try}}{\textbf{end try}}
-\algdef{C}[TRY]{TRY}{Catch}[1]{\textbf{catch} #1}      
+\algrenewcommand\algorithmicprocedure{\textbf{Procédure}}
+\algrenewcommand\algorithmicfunction{\textbf{Fonction}}
+\algrenewcommand\algorithmicif{\textbf{Si}}
+\algrenewcommand\algorithmicthen{\textbf{alors}}
+\algrenewcommand\algorithmicelse{\textbf{Sinon}}
+\algrenewcommand\algorithmicfor{\textbf{Pour}}
+\algrenewcommand\algorithmicforall{\textbf{Pour tout}}
+\algrenewcommand\algorithmicdo{\textbf{faire}}
+\algrenewcommand\algorithmicwhile{\textbf{Tant que}}
+\algrenewcommand\algorithmicreturn{\textbf{Retourner}}
+\algrenewcommand\algorithmicrepeat{\textbf{Répéter}}
+\algrenewcommand\algorithmicuntil{\textbf{Jusqu'à}}
+\algrenewtext{EndIf}{\textbf{Fin si}}
+\algrenewtext{EndFor}{\textbf{Fin pour}}
+\algrenewtext{EndWhile}{\textbf{Fin tant que}}
+\algrenewtext{EndProcedure}{\textbf{Fin procédure}}
+\algrenewtext{EndFunction}{\textbf{Fin fonction}}
+\algdef{SE}[TRY]{Try}{EndTry}{\textbf{Essayer}}{\textbf{Fin essayer}}
+\algdef{C}[TRY]{TRY}{Catch}[1]{\textbf{Capturer} #1}    
+  
 \titleformat{\section}[hang]{\Large\bfseries}{\thesection.}{0.5em}{}
 \titleformat{\subsection}[hang]{\large\bfseries}{\thesubsection.}{0.5em}{}
 \titleformat{\subsubsection}[hang]{\large\bfseries}{\thesubsubsection.}{0.5em}{}
