@@ -46,11 +46,8 @@
 14. On pourra pour chaque couple (algo, structure) tester :
    - La **première** unification trouvée ;
    - **Toutes** les unifications possibles ;
-   - **Echec** d'unification.
 
-15. Faire **échouer** une unification avec des termes aléatoires et nombreux est très compliqué.
-
-16. Les différents tests devront être lancés depuis **la même machine**, dans **les mêmes conditions**.
+15. Les différents tests devront être lancés depuis **la même machine**, dans **les mêmes conditions**.
 
 ## Format d'entrée
 
@@ -58,7 +55,9 @@
 
 - Les différentes échelles testeront les mêmes signatures ;
 
-- Au sein de chaque échelle, plusieurs banques avec paramètres différents (profondeur max différente) ;
+- Au sein de chaque échelle, plusieurs banques avec paramètres différents 
+   * profondeur max différente (1, 5, 10, 20) ;
+   * Arité fixé à 10 ; 
 
 - Une signature par banque de données ;
    * Symboles de variables ;
@@ -70,13 +69,23 @@
    * Vérifier la "qualité" de l'aléa.
 
 - Générées dans des fichiers à part ;
-   * Format à réfléchir (.json, .txt compressé ou non, .py séparé).
+   * Format (.csv).
 
 ## Format de sortie
 
 - Doit être le même pour chaque test (comparaison plus rapide) ;
    * donc suivre le même format.
 
-- Fichier de sortie (dictionnaire par exemple) ;
-   * Clé : littéral unifiable ;
-   * Valeur : substitution.
+- Fichier de sortie contient :
+
+   * Jeu de donnée
+   * Algo
+   * Structure
+   * TouteUnif
+   * Iteration
+   * Temps de Pretraitement
+   * Temps Total
+   * La RAM
+   * Pourcentage CPU
+   * Nombre Unifications
+   
