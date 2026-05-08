@@ -100,7 +100,7 @@
 \algrenewtext{EndFunction}{\textbf{Fin fonction}}
 \algdef{SE}[TRY]{Try}{EndTry}{\textbf{Essayer}}{\textbf{Fin essayer}}
 \algdef{C}[TRY]{TRY}{Catch}[1]{\textbf{Capturer} #1}    
-  
+
 \titleformat{\section}[hang]{\Large\bfseries}{\thesection.}{0.5em}{}
 \titleformat{\subsection}[hang]{\large\bfseries}{\thesubsection.}{0.5em}{}
 \titleformat{\subsubsection}[hang]{\large\bfseries}{\thesubsubsection.}{0.5em}{}
@@ -205,8 +205,9 @@ de ce rapport.
 \setcounter{page}{1}                            % On commence à compter les pages
 \addtocontents{toc}{\setcounter{tocdepth}{3}}   % On recommence à afficher dans sommaire
 
-\section*{Introduction}                         % On ne le numérote pas  
-\addcontentsline{toc}{section}{Introduction}                                                  
+\phantomsection
+\addcontentsline{toc}{section}{Introduction}  
+\section*{Introduction}                         % On ne le numérote pas                                                  
 % Paragraphe 1 : Mise en abime du sujet
 En informatique, le choix des \textbf{structures de données} est une décision 
 fondamentale~: elle conditionne directement l'efficacité des algorithmes qui 
@@ -1902,7 +1903,7 @@ le filtrage structurel puis l'unification effective.
     \end{itemize}
 
     Toutefois, le passage de la théorie à la pratique en \textit{Python} a révélé 
-    certaines «~pythonneries\textregistered\footnote{Terme déposé par l'équipe 
+    certaines «~pythonneries\footnote{Terme déposé par l'équipe 
     de développement et ses encadrants. Désigne les spécificités, 
     parfois surprenantes, propres au langage Python.}~» qui ont nécessité 
     une attention particulière, comme la gestion des \textit{objets mutables}. 
