@@ -1207,6 +1207,8 @@ les \textit{ensembles} et les \textit{dictionnaires}.
 
         \end{algorithmic}
     \end{algorithm}
+    \textbf{Complexité temporelle :} $O(M \times 2^n)$. 
+    La recherche est linéaire par rapport au nombre $M$ de littéraux présents dans la structure. Elle dépend directement du coût d'une unification individuelle ($2^n$) multiplié par le nombre de candidats testés.
 
     \begin{algorithm}[H]
     \footnotesize
@@ -1262,6 +1264,9 @@ les \textit{ensembles} et les \textit{dictionnaires}.
     \end{algorithmic}
     \end{algorithm}
 \end{paraph}
+
+    \textbf{Complexité temporelle :} $O(2^n)$ dans le pire des cas, avec $n$ le nombre de noeuds des termes a unifier. 
+    Cette complexité exponentielle est due à la représentation des termes sous forme d'arbres et à l'application explicite des substitutions.
 
 \begin{remarque}
     $\Call{OccursCheck}{T_2, T_1}$ est la fonction booléenne vérifiant
