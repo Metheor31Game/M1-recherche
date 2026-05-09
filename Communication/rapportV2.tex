@@ -2145,7 +2145,42 @@ et la \textit{nature des données d'entrée}.
    potentiellement bien plus performants, mais leur efficacité dépend fortement de la nature des données et de la taille
    de la base.
 \end{paraph}
+
 \subsection{Analyse des résultats}
+
+L'exécution des campagnes de tests sur les 24 jeux de données affiche des différences majeures selon l'algorithme choisi, la structure de données utilisée et les paramètres intrinsèques des jeux (taille, profondeur, nombre de symboles de prédicats). L'analyse de ces résultats s'articule autour de quatre axes principaux.
+
+\begin{paraph}{L'impact de l'exhaustivité de la recherche (\textit{TouteUnif})}
+    Le facteur ayant la plus forte incidence sur le temps de calcul est le paramètre d'exhaustivité de l'unification. 
+    Lorsque l'algorithme doit s'arrêter à la première unification trouvée (\textit{TouteUnif = False}), les temps d'exécution sont globalement de l'ordre de la fraction de seconde. En revanche, la recherche de la totalité des unificateurs possibles (\textit{TouteUnif = True}) provoque une explosion exponentielle des temps de calcul, passant de quelques millisecondes à plus de 80 secondes sur certains jeux. Ce comportement s'explique par la nature du problème : l'algorithme doit explorer l'intégralité de l'arbre de recherche sans pouvoir bénéficier des coupes permises lorsqu'une seule solution est requise.
+\end{paraph}
+
+\newpage
+
+\begin{paraph}{Comparaison des algorithmes : La supériorité technique de l'Arbre}
+    Les résultats témoignent d'une fracture nette entre l'approche par Arbre et les algorithmes de Robinson et Martelli-Montanari (MM). 
+    L'algorithme basé sur l'Arbre s'impose comme le plus performant dans la majorité des scénarios de recherche intensive. Si l'on fait abstraction du temps de construction, sa phase de recherche pure est quasiment instantanée. Grâce à son mécanisme de filtrage par préfixes, il transforme l'unification en une simple lecture de chemin, là où Robinson et MM doivent parcourir la base de manière linéaire. Tant que la mémoire vive est suffisante pour l'accueillir, l'Arbre est systématiquement l'algorithme le plus rapide du benchmark.
+
+    À l'inverse, Robinson et MM affichent des performances très semblables et une grande robustesse sur des machines limitées. Leur consommation mémoire reste drastiquement inférieure (généralement sous la barre des 150 Mo), ce qui constitue leur principal atout face à la lourdeur de la structure d'Arbre.
+\end{paraph}
+
+\begin{paraph}{Influence des structures de données face à la topologie des jeux}
+    Le choix de la structure impose un compromis entre le temps de prétraitement et le temps d'unification, dont l'efficacité dépend de la « forme » du jeu de données :
+\begin{itemize}
+    \item \textbf{Les Listes :} Elles offrent un temps de prétraitement nul, mais leur parcours linéaire pénalise fortement lors de l'unification sur des termes à forte profondeur.
+    \item \textbf{Les Ensembles :} Leur force se révèle sur les jeux de grande taille mais de faible profondeur (redondance élevée). En éliminant les doublons, ils réduisent le nombre de tentatives d'unification.
+    \item \textbf{Les Dictionnaires :} C'est la structure optimale pour les signatures riches (par exemple 6~prédicats). Le dictionnaire agit comme un index, permettant d'ignorer instantanément les branches incompatibles.
+    \item \textbf{L'Arbre :} Il représente l'investissement maximal. Bien que coûteux à construire, il garantit le temps d'unification le plus bas.
+\end{itemize}
+\end{paraph}
+
+\begin{paraph}{Utilisation des ressources matérielles (CPU et RAM)}
+    L'observation des ressources système permet de mieux comprendre le comportement des implémentations. Pour Robinson et MM, l'utilisation du processeur se maintient constamment à 100 pourcent. Ils saturent la capacité de calcul sans temps mort, tout en conservant une empreinte RAM très faible. 
+
+    À l'inverse, on constate une chute de l'utilisation CPU pour l'algorithme par Arbre sur les jeux de 1 million d'éléments. Cela s'explique par un goulot d'étranglement mémoire (\textit{memory bottleneck}). La RAM physique étant saturée par la structure géante de l'arbre (dépassant parfois 16 Go), le système d'exploitation utilise le disque pour compenser le manque de RAM. Le CPU passe alors la majorité de son temps à attendre le transfert des données, ce qui fait s'effondrer les performances.
+\end{paraph}
+
+
 
 \newpage
 
