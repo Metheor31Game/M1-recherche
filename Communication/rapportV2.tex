@@ -1273,12 +1273,12 @@ les \textit{ensembles} et les \textit{dictionnaires}.
 \subsubsection{Martelli-Montanari}\label{sec:mm}
 
 \begin{paraph}{Origine et principe}
-    L’algorithme Martelli Montanari a été publié en 1982 par Alberto Martelli et Ugo
+    L’algorithme Martelli Montanari (MM) a été publié en 1982 par Alberto Martelli et Ugo
     Montanari dans la revue ACM \textit{Transactions on Programming Languages and Systems}.~\cite{martelli1982efficient}
     Élément clé dans l’étude de l’unification du premier ordre, sa principale contribution est
     de modéliser l'unification comme un système de transformation, offrant ainsi un cadre
-    formel qui permet de démontrer la correction de plusieurs algorithmes pratiques. Il
-    surpasse l'algorithme de Robinson en termes d'efficacité. Son objectif est de
+    formel qui permet de démontrer la correction de plusieurs algorithmes pratiques. Il est généralement considéré comme plus efficace que l'algorithme 
+    de Robinson dans le cas général ~\cite{martelli1982efficient}. Son objectif est de
     déterminer, pour un ensemble de termes du premier ordre, s'il existe une substitution
     qui les rend tous identiques deux à deux, et si tel est le cas, de produire l'unificateur le
     plus général sous une forme résolue.
@@ -1298,40 +1298,35 @@ les \textit{ensembles} et les \textit{dictionnaires}.
 
     \vspace{0.2cm}
 
-    \begin{algorithm}[H]
-    \caption{Création du système d'équations et unification de littéraux}\label{algo:lit_liste}
-    \begin{algorithmic}[1]
-    \Function{lit\_liste}{$l_1$, $\text{list\_litteraux}$, $\text{touteUnif}=True$}
-        \State $resultat \gets \emptyset$
-        \For{$l_2 \in \text{list\_litteraux}$} \Comment{Étape 1~: Comparaison de $l_1$ aux autres littéraux}
-            
-            \State\Comment{Étape 2~: Vérif. symbole, signe et arité}
-            \If{$l_1.\text{predicat} = l_2.\text{predicat}$ \textbf{and} $l_1.\text{sign} \neq l_2.\text{sign}$ \textbf{and} $l_1.\text{arity} = l_2.\text{arity}$} 
-                
-                \State$system \gets \text{TermSystem()}$ \Comment{Init.~du système de termes (équations)}
-                
-                \For{$(t_1, t_2) \in \text{zip}(l_1.\text{enfants}, l_2.\text{enfants})$}
-                    \State$system.\text{add}(t_1, t_2)$ \Comment{Étape 3~: Ajout des paires d'enfants}
-                \EndFor
-                
-                \State$mm \gets \text{MartelliMontanari}(system)$ \Comment{Étape 4~: Résolution via Martelli-Montanari}
-                
-                \Try
-                    \State$unificateur \gets mm.\text{solve}()$
-                    \State$resultat[l_2] \gets unificateur$
-                    \If{\textbf{not} $\text{touteUnif}$}
-                        \State\Return$resultat$ \Comment{Retour dès le premier succès}
-                    \EndIf
-                \Catch{\textit{UnificationError}}
-                    \State\textbf{pass} \Comment{Échec de l'unification, on continue}
-                \EndTry
-                
+\begin{algorithm}
+\caption{Création du système d'équations et unification de littéraux}
+\begin{algorithmic}[1]
+
+\Function{LitListe}{$l_1$, list\_litteraux, touteUnif $=$ Vrai}
+    \State $resultat \leftarrow \emptyset$
+    \ForAll{$l_2 \in$ list\_litteraux} \Comment{Étape 1 : Comparaison de $l_1$ aux autres littéraux}
+        \State \Comment{Étape 2 : Vérif. symbole, signe et arité}
+        \If{$l_1.prédicat = l_2.prédicat$ \textbf{et} $l_1.signe \neq l_2.signe$ \textbf{et} $l_1.arité = l_2.arité$}
+            \State $S \leftarrow \emptyset$ \Comment{Init. du système de termes (équations)}
+            \ForAll{$(t_1, t_2) \in (l_1.enfants, l_2.enfants)$}
+                \State Ajouter l'équation $t_1 = t_2$ à $S$ \Comment{Étape 3 : Ajout des paires d'enfants}
+            \EndFor
+            \State $\sigma \leftarrow$ \Call{MartelliMontanari}{$S$} \Comment{Étape 4 : Résolution via Martelli-Montanari}
+            \If{$\sigma$ existe}
+                \State $resultat[l_2] \leftarrow \sigma$
+                \If{\textbf{non} touteUnif}
+                    \State \Return $resultat$ \Comment{Retour dès le premier succès}
+                \EndIf
+            \Else
+                \State \textbf{continuer} \Comment{Échec de l'unification, on continue}
             \EndIf
-        \EndFor
-        \State \Return$resultat$
-    \EndFunction
-    \end{algorithmic}
-    \end{algorithm}
+        \EndIf
+    \EndFor
+    \State \Return $resultat$
+\EndFunction
+
+\end{algorithmic}
+\end{algorithm}
 
     \newpage
     \vspace{0.2cm}
@@ -1355,13 +1350,19 @@ les \textit{ensembles} et les \textit{dictionnaires}.
     \end{itemize}
 
     \vspace{0.2cm}
+
+    Bien que l'ordre d'application des règles ne change pas le résultat final, et de surplus l'algorithme
+    ne prescrive pas d'ordre strict entre les règles, 
+    appliquer \textit{Delete} et \textit{Décompose} en priorité 
+    réduit plus rapidement la taille du système et améliore 
+    les performances en pratique.
     Une fois que toutes les règles de transformation ont été appliquées 
     avec succès, le système d'équations est réduit à une forme 
     résolue, c'est-à-dire un ensemble d'équations de la forme 
     $\{x_1 \overset{?}{=} t_1, \dots, x_k \overset{?}{=} t_k\}$, 
     où chaque $x_i$ est une variable distincte n'apparaissant dans 
-    aucun des termes $t_j$. 
-    
+    aucun des termes $t_j$.
+
     \vspace{0.2cm}
     La substitution est alors construite 
     en lisant directement ces liaisons~: chaque variable $x_i$ 
@@ -1369,6 +1370,25 @@ les \textit{ensembles} et les \textit{dictionnaires}.
     du processus. Cette substitution 
     $\sigma = \{x_1 \mapsto t_1, \dots, x_k \mapsto t_k\}$ constitue 
     le MGU du système initial.
+
+    
+    \vspace{0.2cm}
+    \begin{paraph}{La complexité de l'algorithme}
+        La complexité de notre implémentation est $O(n^2 \cdot |t|)$, 
+    où $n$ désigne le nombre d'équations du système et $|t|$ la 
+    taille maximale d'un terme. Cette complexité est supérieure 
+    à la complexité théorique optimale de MM, qui est quasi-linéaire 
+    $O(n \cdot \alpha(n))$~\cite{martelli1982}. L'écart s'explique 
+    par trois facteurs : premièrement, la représentation des termes 
+    sous forme d'arbres récursifs implique que toute opération 
+    (\textit{get\_variables}, \textit{substitution}) nécessite un 
+    parcours complet de l'arbre en $O(|t|)$ ; deuxièmement, le 
+    recalcul systématique des variables à chaque itération sans 
+    mise en cache ; et troisièmement, la reconstruction explicite 
+    des termes lors des substitutions, au lieu d'une structure 
+    union-find qui permettrait des substitutions en temps 
+    quasi-constant $O(\alpha(n))$.
+    \end{paraph}
 
 \end{paraph}
 \subsection{Discrimination Tree}\label{sec:dt}
@@ -1968,6 +1988,70 @@ le filtrage structurel puis l'unification effective.
 \end{paraph}
 
 \subsection{Protocole de benchmarks}
+\textbf{ Remarques générales :}
+    \begin{enumerate}
+        \item Les \textbf{algorithmes} à tester sont : Robinson, Martelli-Montanari et le Discrimination Tree.
+        \item Les \textbf{structures de données} à tester sont : Listes, Ensembles, Dictionnaires et le Discrimination Tree.
+        \item D'après les points 1 et 2, le Discrimination Tree est un cas \textbf{à part}.
+        \item D'après les points précédents, il faudra donc tester :
+        \begin{itemize}
+            \item \textbf{Robinson} sur des \textbf{Listes}
+            \item \textbf{Robinson} sur des \textbf{Ensembles}
+            \item \textbf{Robinson} sur des \textbf{Dictionnaires}
+            \item \textbf{Martelli-Montanari} sur des \textbf{Listes}
+            \item \textbf{Martelli-Montanari} sur des \textbf{Ensembles}
+            \item \textbf{Martelli-Montanari} sur des \textbf{Dictionnaires}
+            \item \textbf{Discrimination Tree}
+        \end{itemize}
+        \item Ces tests doivent être effectués sur les mêmes \textbf{banques de données}.
+        \item La \textbf{génération de ces données} représente un enjeu important pour ce protocole.
+        \item Ces données devront être : \textbf{conséquentes} (en nombre), \textbf{représentatives} (en cas) et \textbf{variées}.
+        \item Les \textbf{résultats} de ces différents tests doivent être \textbf{identiques}.
+        \item Pour vérifier facilement que ces différents résultats soient les mêmes, ils doivent avoir le \textbf{même format}.
+        \item L'utilisation de Python ne doit \text{pas} être un facteur dans ces tests.
+        \item  Des mesures intéréssantes à envisager :
+        \begin{itemize}
+            \item Le temps d'exécution ;
+            \item Le \textbf{nombre d'opérations} effectuées ;
+            \item L'\textbf{espace mémoire} utilisé ;
+            \item La \textbf{taille} des termes (en nombre de caractères) ;
+            \item La \textbf{profondeur} des termes ;
+            \item La \textbf{taille} des query termes (en nombre de caractères) ;
+            \item La \textbf{profondeur} des query termes.
+        \end{itemize}
+        \item Il serait intéressant de tester plusieurs unifications (donc plusieurs query termes).
+        \item Il faudra préciser pour chaque tests les \textbf{paramètres} utilisés (signature de notre banque de données)
+        \item On pourra pour chaque couple (algo, structure) tester :
+        \begin{itemize}
+            \item \textbf{La première} unification trouvée ;
+            \item \textbf{Toutes} les unifications possibles ;
+        \end{itemize}
+        \item Les différents tests devront être lancés depuis \textbf{la même machine}, dans \textbf{les mêmes conditions}.
+   \end{enumerate}
+
+\textbf{Format d'entrée}
+    \begin{itemize}
+        \item Plusieurs échelles (10 000, 100 000 puis 1 000 000) ;
+        \item Les différentes échelles testeront les mêmes signatures ;
+        \item Au sein de chaque échelle, plusieurs banques avec paramètres différents :
+        \begin{itemize}
+            \item Profondeur max différente (1, 5, 10, 20) ;
+            \item Arité fixé à 10 ; 
+        \end{itemize}   
+        \item Une signature par banque de données:
+        \begin{itemize}
+            \item Symboles de variables ;
+            \item Symboles de fonctions et arités ;
+            \item Symboles de prédicats et arités ;
+            \item Symboles de constantes
+        \end{itemize}  
+        \item Littéraux aléatoires (Vérifier la "qualité" de l'aléa).      
+    \end{itemize}
+\textbf{Format de sortie}
+    \begin{itemize}
+        \item Un format de sortie facilement exploitable (CSV) ;
+        \item Fichier de sortie contient : Jeu de données, Algo utilisé, Structure de données, Toute Unification ou la première, Iteration, Temps de Pretraitement, Temps Total, la RAM utilisée, CPU, Nombre d'Unifications.
+    \end{itemize}
 \subsection{Résultats}
 \subsection{Analyse des résultats}
 

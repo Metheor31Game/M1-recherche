@@ -68,13 +68,13 @@
 - Littéraux aléatoires ;
    * Vérifier la "qualité" de l'aléa.
 
-- Générées dans des fichiers à part ;
-   * Format (.csv).
-
 ## Format de sortie
 
 - Doit être le même pour chaque test (comparaison plus rapide) ;
    * donc suivre le même format.
+
+- Générées dans des fichiers à part ;
+   * Format (.csv).
 
 - Fichier de sortie contient :
 
