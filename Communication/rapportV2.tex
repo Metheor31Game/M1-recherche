@@ -1378,19 +1378,20 @@ les \textit{ensembles} et les \textit{dictionnaires}.
     où $n$ désigne le nombre d'équations du système et $|t|$ la 
     taille maximale d'un terme. Cette complexité est supérieure 
     à la complexité théorique optimale de MM, qui est quasi-linéaire 
-    $O(n \cdot \alpha(n))$~\cite{martelli1982}. L'écart s'explique 
-    par trois facteurs : premièrement, la représentation des termes 
+    $O(n \cdot \alpha(n))$~\cite{martelli1982efficient}. L'écart s'explique 
+    par trois facteurs~: premièrement, la représentation des termes 
     sous forme d'arbres récursifs implique que toute opération 
     (\textit{get\_variables}, \textit{substitution}) nécessite un 
-    parcours complet de l'arbre en $O(|t|)$ ; deuxièmement, le 
+    parcours complet de l'arbre en $O(|t|)$~; deuxièmement, le 
     recalcul systématique des variables à chaque itération sans 
-    mise en cache ; et troisièmement, la reconstruction explicite 
+    mise en cache~; et troisièmement, la reconstruction explicite 
     des termes lors des substitutions, au lieu d'une structure 
     union-find qui permettrait des substitutions en temps 
     quasi-constant $O(\alpha(n))$.
     \end{paraph}
 
 \end{paraph}
+\newpage
 \subsection{Discrimination Tree}\label{sec:dt}
 
 \begin{avantpropos}
@@ -1453,6 +1454,7 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
     est essentielle pour la résolution~: on ne cherche à unifier un littéral 
     qu'avec des littéraux de signe opposé.
 
+\newpage
 \begin{paraph}{Exemple}
     Prenons la base $B$ définie comme suit~:
     \[
@@ -1488,7 +1490,6 @@ Nous les remercions à nouveau chaleureusement pour cette piste décisive.
     \end{tabular}
     \end{center}
 
-    \newpage
     L'exemple précédent nous donne donc le \textit{discrimination tree} suivant~:
 
     \begin{center}
@@ -1867,7 +1868,7 @@ le filtrage structurel puis l'unification effective.
         \item \textbf{Cas moyen~:} Grâce à la structure d'index, on élimine massivement les branches incompatibles dès le début du parcours. La complexité moyenne est proche de $\mathcal{O}(n)$, rendant la recherche extrêmement performante par rapport à un parcours séquentiel de la base de données.
     \end{itemize}
 \end{paraph}
-\newpage
+
 \begin{paraph}{Unification effective}
     Une fois le filtrage structurel terminé, nous obtenons un ensemble de 
     candidats qui \textit{ressemblent} à la requête. Cependant, l'arbre de 
@@ -2049,10 +2050,101 @@ le filtrage structurel puis l'unification effective.
     \end{itemize}
 \textbf{Format de sortie}
     \begin{itemize}
-        \item Un format de sortie facilement exploitable (CSV) ;
-        \item Fichier de sortie contient : Jeu de données, Algo utilisé, Structure de données, Toute Unification ou la première, Iteration, Temps de Pretraitement, Temps Total, la RAM utilisée, CPU, Nombre d'Unifications.
+        \item Un format de sortie facilement exploitable (CSV)~;
+        \item Fichier de sortie contient~: Jeu de données, Algo utilisé, Structure de données, Toute Unification ou la première, Iteration, Temps de Pretraitement, Temps Total, la RAM utilisée, CPU, Nombre d'Unifications.
     \end{itemize}
-\subsection{Résultats}
+\subsection{Hypothèses}
+Dans une démarche scientifique rigoureuse, il est essentiel de 
+formuler des \textit{hypothèses} avant d'observer les résultats 
+expérimentaux. Cela permet de ne pas se contenter d'une lecture 
+passive des mesures, mais de \textit{confronter} les observations 
+à une réflexion théorique préalable~: distinguer les résultats 
+\textit{attendus} des résultats \textit{surprenants}, identifier 
+les cas limites, et orienter l'interprétation. Les hypothèses 
+que nous formulons ici sont issues de notre analyse théorique 
+des structures et algorithmes étudiés, elles seront 
+systématiquement confrontées aux mesures expérimentales dans 
+la section d'analyse.
+
+\vspace{0.2cm}
+Nous organisons ces hypothèses selon trois axes~: les 
+\textit{algorithmes}, les \textit{structures de données}, 
+et la \textit{nature des données d'entrée}.
+
+\begin{paraph}{Hypothèses sur les algorithmes}
+    Du point de vue des algorithmes, nous anticipons une bien meilleure efficacité
+    du \textit{discrimination tree} dans le cas où l'on cherche toutes les unifications
+    possible avec un littéral requête. En effet, la phase de filtrage éliminie rapidement 
+    les candidats non-unifiables, réduisant considérablement le nombre d'appels à l'algorithme d'unification effectif.
+
+    \vspace{0.2cm}
+    En revanche, dans le cas où l'on ne cherche que la première unification possible, cet
+    avantage devient moins évident~: le coût de construction et de parcours de l'index peut
+    s'avérer supérieur au gain apporté par le filtrage, notamment si le premier candidat
+    unifiable se trouve en début de base. Dans ce cas, un parcours séquentiel simple pourrait s'avérer plus rapide.
+
+    \vspace{0.2cm}
+    Concernant les deux algorithmes plus classiques, i.e.~\textit{Robinson et Martelli-Montanari},
+    nous ancitipons une légère supériorité de \textit{Martelli-Montanari} sur \textit{Robinson}. Ce
+    dernier constitue la base historique de l'unification, tandis que \textit{Martelli-Montanari}
+    apporte un cadre formel plus optimisé, notamment grâce à son système de transformation de
+    règles qui évite certains recalculs inutiles.
+\end{paraph}
+
+\begin{paraph}{Hypothèses sur les structures de données}
+    Du point vue des structures de données, la notion centrale est celle de \textit{compromis construction/utilisation}~:
+    plus une structure est sophistiquée, plus sa construction est coûteuse, et plus il faut
+    amortir ce coût sur un grand nombre d'unifications pour en tirer un bénéfice réel.
+
+    \vspace{0.2cm}
+    Ainsi, la \textit{liste} et l'\textit{ensemble}, bien que peu coûteux à construire, imposent un parcours
+    exhaustif de la base à chaque recherche. Leur avantage réside dans leur simplicité~: ils sont performants
+    sur des bases de petite taille ou lorsque la base n'est utilisée qu'une seule fois.
+
+    \vspace{0.2cm}
+    Le dictionnaire introduit une première forme d'indexation qui réduit le nombre de candidats
+    à tester. Cependant son coût de construction reste non négligeable~: sur des bases de petite taille ou des bases non réutilisées, 
+    le temps investi dans l'indexation risque de na pas être amorti.
+
+    \vspace{0.2cm}
+    Ce constat est encore plus marqué pour le \textit{discrimination tree}~: sa construction est
+    particulièrement coûteuse, et son avantage ne se manifeste pleinement que sur des grandes bases,
+    lorsque la base est réutilisée pour de nombreuses requêtes, et que l'on cherche toutes les unifications possibles.
+    Sur des bases de petite taille, des bases non réutilisées, ou lorsqu'on ne cherche qu'une seule unification, sa 
+    construction peut s'avérer contre productive.
+\end{paraph}
+\newpage
+\begin{paraph}{Hypothèses sur la nature des données d'entrées}
+    La nature des données d'entrée joue un rôle déterminant dans l'efficacité relative
+    des structures. On distingue deux profils de comportement~:
+
+    \vspace{0.2cm}
+    La \textit{liste} et l'\textit{ensemble} sont robustes face à la nature des données~: 
+    leur comportement reste linéaire quelle que soit la structure des prédicats. La taille de la base est le seul
+    facteur véritablement déterminant pour ces deux structures.
+
+    \vspace{0.2cm}
+    Le \textit{dictionnaire} et le \textit{discrimination tree} en revanche sont sensibles à la nature
+    des données. Pour le \textit{dictionnaire} une base présentant de nombreux symboles de prédicat
+    différents favorise des groupes petits et donc une recherche efficace. À l'inverse, une base dominée
+    par un seul symbole de prédicat fait dégénérer le \textit{dictionnaire} en une simple \textit{liste}.
+
+    \vspace{0.2cm}
+    Pour le \textit{discrimination tree}, une base naturelle présentant de nombreux préfixes communs
+    favorise la factorisation de l'arbre~: celui-ci reste compact et le filtrage est très séléctif.
+    À l'inverse, une base dont les prédicats partagent peu ou pas de préfixe communs réduit considérablement
+    l'intéret de la factorisation, l'arbre dégénère alors et le filtrage perd en efficacité. De plus,
+    une base dense en variables réduit aussi l'efficacité du filtrage~: les variables
+    étant compatibles avec tout noeud lors du parcours, peu de branches sont éliminées.
+    À l'opposé, une base composée majoritairement de prédicats sans variables favorise un filtrage très séléctif, 
+    maximisant l'avantage du \textit{discrimination tree}.
+
+   \vspace{0.2cm}
+   En résumé, \textit{liste} et \textit{ensemble} offrent des performances prévisibles et robustes au prix
+   d'une efficacité limitée sur de grandes bases. Le \textit{dictionnaire} et le \textit{discrimination tree} sont
+   potentiellement bien plus performants, mais leur efficacité dépend fortement de la nature des données et de la taille
+   de la base.
+\end{paraph}
 \subsection{Analyse des résultats}
 
 \newpage
