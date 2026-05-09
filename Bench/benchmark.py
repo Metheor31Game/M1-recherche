@@ -3,7 +3,7 @@ import sys
 import time
 import tracemalloc  # mesure fine de l'allocation mémoire côté Python
 import psutil       # mesure système (RAM résidente, CPU du processus)
-import gzip
+import csv
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from Util.Litteral.Litteral import Litteral
 from typing import List, Tuple
@@ -115,7 +115,7 @@ def _afficher_mesures(algo: str, structure: str, candidats: List[str], mesures: 
     print("=" * 70)
 
 
-def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
+def benchmark(candidats: List[str], filename: str, algo: str, structure: str, touteUnif: bool = True, pretraitement: bool = True):
     """
     Mesure temps, RAM et CPU de manière uniforme pour permettre la comparaison.
 
@@ -125,23 +125,19 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
       - algo      : "arbre" | "robinson" | "mm"
       - structure : structure de données utilisée par l'algo (pour Robinson/MM)
     """
-    touteUnif = True
-    pretraitement = True
-
     # --- chargement des données ---
     print("Début déserialisation")
     predList = deserialiser(os.path.basename(filename), False)
     print(f"Chargé {len(predList)} littéraux")
 
-    # Parsing de TOUS les candidats en objets Litteral.
-    # On le fait HORS de la zone chronométrée pour ne mesurer que l'algo lui-même.
+    # Parsing de tous les candidats en objets Litteral.
+    # On le fait hors de la zone chronométrée pour ne mesurer que l'algo lui-même.
     print(f"Parsing de {len(candidats)} candidats")
     realCandidats = [Litteral.from_string(c) for c in candidats]
 
     # --- Phase algo : on dispatche vers la bonne fonction de bench ---
     print("Debut algo")
     if algo == "arbre":
-        # L'arbre de discrimination n'a pas de paramètre "structure"
         mesures = _mesurer_ressources(
             benchmark_arbre_discrimination,
             predList, realCandidats, touteUnif
@@ -162,16 +158,9 @@ def benchmark(candidats: List[str], filename: str, algo: str, structure: str):
     _afficher_mesures(algo, structure, candidats, mesures)
     return mesures
 
+
+
 if __name__ == "__main__":
-    filename = "jeu5"
-    file = os.path.join(
-        os.path.dirname(__file__),
-        "..",
-        "Util",
-        "Serialisation",
-        "Output",
-        filename,
-    )
 
     listeCandidats1 = [
         "¬P(U, V, W)",
@@ -572,6 +561,74 @@ if __name__ == "__main__":
         "U(k(U, V), l(W, X), m(Y, Z, a), n(U, b), o(V, c), p(W, d), q(X, e), r(Y, f), Z, a)"
     ]
 
-    benchmark(listeCandidats5, file, "robinson", "dictionnaire")
-    # benchmark(listeCandidats5, file, "mm", "dictionnaire")
-    # benchmark(listeCandidats5, file, "arbre", "liste")
+    jeux_candidats = {
+        "jeu1" : listeCandidats1,
+        "jeu2" : listeCandidats2,
+        "jeu3" : listeCandidats3,
+        "jeu4" : listeCandidats4,
+        "jeu5" : listeCandidats5,
+        "jeu6" : listeCandidats6,
+        "jeu7" : listeCandidats7,
+        "jeu8" : listeCandidats8,
+        "jeu9" : listeCandidats9,
+        "jeu10" : listeCandidats10,
+        "jeu11" : listeCandidats11,
+        "jeu12" : listeCandidats12,
+        "jeu13" : listeCandidats13,
+        "jeu14" : listeCandidats14,
+        "jeu15" : listeCandidats15,
+        "jeu16" : listeCandidats16,
+        "jeu17" : listeCandidats17,
+        "jeu18" : listeCandidats18,
+        "jeu19" : listeCandidats19,
+        "jeu20" : listeCandidats20,
+        "jeu21" : listeCandidats21,
+        "jeu22" : listeCandidats22,
+        "jeu23" : listeCandidats23,
+        "jeu24" : listeCandidats24,
+    }
+
+    if len(sys.argv) < 6: # On attend 5 arguments + le nom du script
+        print("Usage: python benchmark.py <jeu> <algo> <structure> <touteUnif> <iteration>")
+        sys.exit(1)
+
+    nom_jeu = sys.argv[1]
+    algo = sys.argv[2]
+    structure = sys.argv[3]
+    touteUnif = (sys.argv[4].lower() == "true")
+    iteration = sys.argv[5]
+
+    candidats = jeux_candidats[nom_jeu]
+
+    # Chemin du fichier de données
+    file = os.path.join(os.path.dirname(__file__), "..", "Util", "Serialisation", "Output", nom_jeu)
+
+    # Lancement du benchmark
+    mesures = benchmark(candidats, file, algo, structure, touteUnif=touteUnif)
+
+    # --- Sauvegarde dans le CSV spécifique à l'ALGO ---
+    fichier_csv = f"brut_{algo}.csv" # Un fichier par algo
+    fichier_existe = os.path.exists(fichier_csv)
+    
+    with open(fichier_csv, mode='a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        # En-tête si nouveau fichier
+        if not fichier_existe:
+            writer.writerow(["Jeu", "Algo", "Structure", "TouteUnif", "Iteration", "Temps_Pretraitement", "Temps_Total", "RAM_Pic_Mo", "CPU_Percent", "Nb_Unifications"])
+        
+        tps_pre, liste_resultats = mesures["resultat_algo"]
+        nb_unif_total = sum(n for _, n in liste_resultats) # Somme de tous les n (nb d'unifs)
+        
+        # 3. ÉCRITURE DE LA LIGNE COMPLÈTE
+        writer.writerow([
+            nom_jeu, 
+            algo, 
+            structure, 
+            touteUnif,
+            iteration,
+            tps_pre, 
+            mesures["temps_total_s"], 
+            mesures["ram_pic_tracemalloc_Mo"],
+            mesures["cpu_percent"],
+            nb_unif_total
+        ])
