@@ -22,10 +22,9 @@ def synthetiser_csv(fichier_entree, fichier_sortie):
             # Extraction des données numériques
             tps_pre = float(row['Temps_Pretraitement'])
             tps_tot = float(row['Temps_Total'])
-            tps_unif = tps_tot - tps_pre  # <-- Le calcul du temps d'unif !
+            tps_unif = tps_tot - tps_pre
             ram = float(row['RAM_Pic_Mo'])
             cpu = float(row['CPU_Percent'])
-            nb_unif = int(row['Nb_Unifications'])
 
             # Ajout aux mesures du groupe
             groupes[cle].append({
@@ -34,7 +33,6 @@ def synthetiser_csv(fichier_entree, fichier_sortie):
                 'tps_tot': tps_tot,
                 'ram': ram,
                 'cpu': cpu,
-                'nb_unif': nb_unif
             })
 
     # 2. CALCUL DES MOYENNES ET ÉCRITURE
@@ -44,8 +42,8 @@ def synthetiser_csv(fichier_entree, fichier_sortie):
         # Nouvel en-tête avec les colonnes demandées (+ les unifications)
         writer.writerow([
             "Jeu", "Algo", "Structure", "TouteUnif",
-            "Temps_Pretraitement_Moyen", "Temps_Unification_Moyen", 
-            "Temps_Total_Moyen", "RAM_Pic_Moyen", "CPU_Moyen", "Nb_Unifications"
+            "Temps_Pretraitement_Moyen(s)", "Temps_Unification_Moyen(s)", 
+            "Temps_Total_Moyen(s)", "RAM_Pic_Moyen(Mo)", "CPU_Moyen(%)"
         ])
 
         for cle, mesures in groupes.items():
@@ -57,8 +55,6 @@ def synthetiser_csv(fichier_entree, fichier_sortie):
             moy_tps_tot = sum(m['tps_tot'] for m in mesures) / nb_mesures
             moy_ram = sum(m['ram'] for m in mesures) / nb_mesures
             moy_cpu = sum(m['cpu'] for m in mesures) / nb_mesures
-            moy_nb_unif = sum(m['nb_unif'] for m in mesures) / nb_mesures
-
             # Écriture de la ligne consolidée
             writer.writerow([
                 cle[0], cle[1], cle[2], cle[3], # Jeu, Algo, Structure, TouteUnif
@@ -67,7 +63,6 @@ def synthetiser_csv(fichier_entree, fichier_sortie):
                 round(moy_tps_tot, 6),
                 round(moy_ram, 2),
                 round(moy_cpu, 1),
-                int(moy_nb_unif)
             ])
             
     print(f"Fichier synthétisé généré : {fichier_sortie} (à partir de {len(groupes)} configurations)")
