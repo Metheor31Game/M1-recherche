@@ -20,6 +20,8 @@
 \usepackage{dirtree}
 \usepackage{cancel}
 \usepackage{hyperref}
+\usepackage{float}
+
 
 % Configuration biblatex
 \usepackage[
@@ -1205,6 +1207,8 @@ les \textit{ensembles} et les \textit{dictionnaires}.
 
         \end{algorithmic}
     \end{algorithm}
+    \textbf{Complexité temporelle :} $O(M \times 2^n)$. 
+    La recherche est linéaire par rapport au nombre $M$ de littéraux présents dans la structure. Elle dépend directement du coût d'une unification individuelle ($2^n$) multiplié par le nombre de candidats testés.
 
     \begin{algorithm}[H]
     \footnotesize
@@ -1260,6 +1264,9 @@ les \textit{ensembles} et les \textit{dictionnaires}.
     \end{algorithmic}
     \end{algorithm}
 \end{paraph}
+
+    \textbf{Complexité temporelle :} $O(2^n)$ dans le pire des cas, avec $n$ le nombre de noeuds des termes a unifier. 
+    Cette complexité exponentielle est due à la représentation des termes sous forme d'arbres et à l'application explicite des substitutions.
 
 \begin{remarque}
     $\Call{OccursCheck}{T_2, T_1}$ est la fonction booléenne vérifiant
@@ -2048,11 +2055,46 @@ le filtrage structurel puis l'unification effective.
         \end{itemize}  
         \item Littéraux aléatoires (Vérifier la "qualité" de l'aléa).      
     \end{itemize}
-\textbf{Format de sortie}
+    On a donc 24 jeux de données différents, structurés en deux grandes campagnes de tests permettant d'isoler l'influence de la diversité des prédicats :
+
     \begin{itemize}
-        \item Un format de sortie facilement exploitable (CSV)~;
-        \item Fichier de sortie contient~: Jeu de données, Algo utilisé, Structure de données, Toute Unification ou la première, Iteration, Temps de Pretraitement, Temps Total, la RAM utilisée, CPU, Nombre d'Unifications.
+        \item \textbf{Jeux 1 à 12 (Signature restreinte) :} Utilisation de 3 symboles de prédicats $\{P, Q, R\}$.
+        \item \textbf{Jeux 13 à 24 (Signature étendue) :} Utilisation de 6 symboles de prédicats $\{P, Q, R, S, T, U\}$.
     \end{itemize}
+
+    \newpage
+
+    Pour chacune de ces deux campagnes, nous avons croisé quatre niveaux de profondeur avec trois échelles de taille, comme l'illustre la répartition des jeux 13 à 24 ci-dessous :
+
+    \begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|c|}
+    \hline
+    \textbf{Profondeur / Taille} & \textbf{10 000} & \textbf{100 000} & \textbf{1 000 000} \\ \hline
+    \textbf{Profondeur 1}        & Jeu 13          & Jeu 14           & Jeu 15             \\ \hline
+    \textbf{Profondeur 5}        & Jeu 16          & Jeu 17           & Jeu 18             \\ \hline
+    \textbf{Profondeur 10}       & Jeu 19          & Jeu 20           & Jeu 21             \\ \hline
+    \textbf{Profondeur 20}       & Jeu 22          & Jeu 23           & Jeu 24             \\ \hline
+    \end{tabular}
+    \caption{Répartition des jeux de données pour la signature étendue}
+    \end{table}
+
+    Cette organisation nous permet d'analyser précisément comment les algorithmes réagissent lorsque l'on fait varier un seul facteur (par exemple la profondeur) tout en gardant les autres (taille et signature) constants.
+    
+\vspace{0.2cm}
+\textbf{Protocole de mesure et format de sortie}
+
+    Chacun de nos test sont exécutés dix fois. Pour chaque série, nous retirons le pire temps et le meilleur afin d'éliminer d'éventuels biais ponctuels, puis nous calculons la moyenne des résultats restants.
+
+    \begin{itemize}
+        \item L'export des données s'effectue sous un format facilement exploitable (CSV) ;
+        \item Le fichier de sortie contient les données suivantes : jeu de données, algorithme, structure de données utilisée, mode d'unification (exhaustive ou première occurrence), temps de prétraitement, temps total, consommation de RAM et charge CPU.
+    \end{itemize}
+
+    \begin{remarque}
+        Un fichier CSV intermédiaire est également généré. Il contient l'intégralité des itérations ainsi que le nombre total d'unifications réalisées, ce qui permet de vérifier la cohérence des résultats.
+    \end{remarque}
+
 \subsection{Hypothèses}
 Dans une démarche scientifique rigoureuse, il est essentiel de 
 formuler des \textit{hypothèses} avant d'observer les résultats 
@@ -2148,36 +2190,36 @@ et la \textit{nature des données d'entrée}.
 
 \subsection{Analyse des résultats}
 
-L'exécution des campagnes de tests sur les 24 jeux de données affiche des différences majeures selon l'algorithme choisi, la structure de données utilisée et les paramètres intrinsèques des jeux (taille, profondeur, nombre de symboles de prédicats). L'analyse de ces résultats s'articule autour de quatre axes principaux.
+L'analyse des mesures obtenues sur les 24 jeux de données permet de confirmer certaines de nos hypothèses initiales, et d'en infirmer d'autres.
 
-\begin{paraph}{L'impact de l'exhaustivité de la recherche (\textit{TouteUnif})}
-    Le facteur ayant la plus forte incidence sur le temps de calcul est le paramètre d'exhaustivité de l'unification. 
-    Lorsque l'algorithme doit s'arrêter à la première unification trouvée (\textit{TouteUnif = False}), les temps d'exécution sont globalement de l'ordre de la fraction de seconde. En revanche, la recherche de la totalité des unificateurs possibles (\textit{TouteUnif = True}) provoque une explosion exponentielle des temps de calcul, passant de quelques millisecondes à plus de 80 secondes sur certains jeux. Ce comportement s'explique par la nature du problème : l'algorithme doit explorer l'intégralité de l'arbre de recherche sans pouvoir bénéficier des coupes permises lorsqu'une seule solution est requise.
+\begin{paraph}{Validation des hypothèses algorithmiques}
+    Nos prévisions concernant l'efficacité du \textit{discrimination tree} se confirment : il s'impose comme l'algorithme le plus performant pour la recherche exhaustive (\textit{TouteUnif = True}). Une fois l'arbre construit, le temps de recherche pure est quasi instantané, validant l'idée que le filtrage par préfixes réduit drastiquement le nombre d'appels à l'unification. 
+
+    Cependant, l'impact du paramètre \textit{TouteUnif} est encore plus important qu'anticipé. Sur le \textbf{jeu 6}, le passage à une recherche exhaustive fait exploser le temps global à 43 secondes pour Robinson, et jusqu'à 80 secondes sur les jeux les plus denses. Comme supposé, le parcours séquentiel (\textit{Robinson/MM}) contraste bien avec l'absence de coupes dans l'arbre de recherche. Concernant le duel Robinson vs Martelli-Montanari, les résultats valident une légère supériorité de \textit{MM} sur les structures complexes, bien que les deux conservent une robustesse exemplaire avec une consommation RAM stable sous les 150 Mo.
 \end{paraph}
 
-\newpage
-
-\begin{paraph}{Comparaison des algorithmes : La supériorité technique de l'Arbre}
-    Les résultats témoignent d'une fracture nette entre l'approche par Arbre et les algorithmes de Robinson et Martelli-Montanari (MM). 
-    L'algorithme basé sur l'Arbre s'impose comme le plus performant dans la majorité des scénarios de recherche intensive. Si l'on fait abstraction du temps de construction, sa phase de recherche pure est quasiment instantanée. Grâce à son mécanisme de filtrage par préfixes, il transforme l'unification en une simple lecture de chemin, là où Robinson et MM doivent parcourir la base de manière linéaire. Tant que la mémoire vive est suffisante pour l'accueillir, l'Arbre est systématiquement l'algorithme le plus rapide du benchmark.
-
-    À l'inverse, Robinson et MM affichent des performances très semblables et une grande robustesse sur des machines limitées. Leur consommation mémoire reste drastiquement inférieure (généralement sous la barre des 150 Mo), ce qui constitue leur principal atout face à la lourdeur de la structure d'Arbre.
+\begin{paraph}{Le compromis construction/utilisation des structures}
+    L'expérience valide la notion de \textit{compromis construction/utilisation} évoquée dans nos hypothèses :
+    \begin{itemize}
+        \item \textbf{Listes et Ensembles :} Comme prévu, leur temps de prétraitement est nul ou infime. Elles restent performantes sur de petites bases, mais leur parcours linéaire devient un handicap majeur sur les jeux de grande taille. L'utilisation des \textit{ensembles} confirme son intérêt sur les jeux à forte redondance en réduisant le nombre de tentatives d'unification.
+        \item \textbf{Dictionnaires :} L'hypothèse sur l'indexation par prédicats est vérifiée. Sur les jeux possédant une signature riche (6 prédicats contre 3), le dictionnaire surpasse les listes en ignorant les branches incompatibles. Le surcoût de construction est ici largement amorti par la rapidité de l'unification.
+        \item \textbf{Arbre de Discrimination :} Il représente, comme anticipé, l'investissement maximal. Si par contre sa phase de recherche est la plus rapide, son coût de construction est colossal sur les très grandes bases. Sur les jeux d'un million de termes, la structure dépasse les 16 Go de RAM, le système d'exploitation devait déplacer ses données sur le disque dur, ralentissant massivement la vitesse d'exécution du processeur.
+    \end{itemize}
 \end{paraph}
 
-\begin{paraph}{Influence des structures de données face à la topologie des jeux}
-    Le choix de la structure impose un compromis entre le temps de prétraitement et le temps d'unification, dont l'efficacité dépend de la « forme » du jeu de données :
-\begin{itemize}
-    \item \textbf{Les Listes :} Elles offrent un temps de prétraitement nul, mais leur parcours linéaire pénalise fortement lors de l'unification sur des termes à forte profondeur.
-    \item \textbf{Les Ensembles :} Leur force se révèle sur les jeux de grande taille mais de faible profondeur (redondance élevée). En éliminant les doublons, ils réduisent le nombre de tentatives d'unification.
-    \item \textbf{Les Dictionnaires :} C'est la structure optimale pour les signatures riches (par exemple 6~prédicats). Le dictionnaire agit comme un index, permettant d'ignorer instantanément les branches incompatibles.
-    \item \textbf{L'Arbre :} Il représente l'investissement maximal. Bien que coûteux à construire, il garantit le temps d'unification le plus bas.
-\end{itemize}
+\begin{paraph}{Sensibilité à la nature des données}
+    Les tests confirment que la structure des données d'entrée dicte l'efficacité des algorithmes indexés :
+    
+    \vspace{0.2cm}
+    Pour le \textbf{dictionnaire}, les performances sont optimales lorsque les symboles de prédicats sont variés. À l'inverse, nous avons observé qu'une base dominée par un seul symbole fait converger ses performances vers celles d'une liste simple, confirmant notre hypothèse de "dégénérescence" de la structure.
+
+    \vspace{0.2cm}
+    Pour l'\textbf{arbre de discrimination}, l'efficacité du filtrage est maximale sur les bases "naturelles" présentant des préfixes communs. Cependant, conformément à nos craintes, la densité de variables dans certains jeux de données réduit la sélectivité de l'arbre. Les variables étant compatibles avec tous les nœuds, l'algorithme est contraint d'explorer de nombreuses branches, ce qui limite le gain apporté par la factorisation.
 \end{paraph}
 
-\begin{paraph}{Utilisation des ressources matérielles (CPU et RAM)}
-    L'observation des ressources système permet de mieux comprendre le comportement des implémentations. Pour Robinson et MM, l'utilisation du processeur se maintient constamment à 100 pourcent. Ils saturent la capacité de calcul sans temps mort, tout en conservant une empreinte RAM très faible. 
-
-    À l'inverse, on constate une chute de l'utilisation CPU pour l'algorithme par Arbre sur les jeux de 1 million d'éléments. Cela s'explique par un goulot d'étranglement mémoire (\textit{memory bottleneck}). La RAM physique étant saturée par la structure géante de l'arbre (dépassant parfois 16 Go), le système d'exploitation utilise le disque pour compenser le manque de RAM. Le CPU passe alors la majorité de son temps à attendre le transfert des données, ce qui fait s'effondrer les performances.
+\begin{paraph}{Bilan des ressources matérielles}
+    Une observation non anticipée dans nos hypothèses concerne le comportement du CPU face à la saturation mémoire. Pour \textit{Robinson} et \textit{MM}, le CPU est sollicité à 100 pourcent, confirmant qu'ils sont limités uniquement par la puissance de calcul. 
+    Pour l'Arbre, la chute de l'utilisation CPU sur les jeux massifs illustre parfaitement le goulot d'étranglement mémoire : le processeur passe plus de la moitié de son temps à attendre les données stockées sur le disque suite à la saturation de la RAM. Cela démontre que si l'Arbre est théoriquement supérieur, il est le seul algorithme dont l'efficacité est physiquement limitée par le matériel disponible (RAM).
 \end{paraph}
 
 
