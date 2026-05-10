@@ -2292,7 +2292,22 @@ L'analyse des mesures obtenues sur les 24 jeux de données permet de confirmer c
 
 \section*{Conclusion}
 \addcontentsline{toc}{section}{Conclusion}
+    Ce travail avait pour objectif d'explorer et de comparer les structures de données et les algorithmes adaptés à l'unification en logique du premier ordre. À travers une progression allant des fondements théoriques jusqu'aux expérimentations, plusieurs enseignements majeurs se dégagent.
 
+    \vspace{0.3cm}
+    Sur le plan théorique, nous avons établi que le choix d'une structure de données ne peut s'effectuer indépendamment de l'algorithme qui l'exploite, ni des caractéristiques des données manipulées. La liste et l'ensemble offrent une simplicité et une prévisibilité appréciables, mais se heurtent inévitablement à la barrière du parcours exhaustif sur de grandes bases. Le dictionnaire constitue un premier pas vers l'indexation et réduit significativement le nombre de candidats à tester, à condition que la signature soit suffisamment variée. L'arbre de discrimination, quant à lui, représente l'aboutissement de cette logique d'indexation : en linéarisant les termes en p-strings par parcours préfixe et en factorisant les préfixes communs, il permet d'éliminer massivement les candidats non-unifiables lors de la phase de filtrage, avant d'appliquer une unification classique sur les seuls candidats retenus.
+
+    \vspace{0.3cm}
+    Les expérimentations ont globalement confirmé nos hypothèses initiales, tout en révélant des nuances importantes. L'arbre de discrimination s'impose sans ambiguïté comme la structure la plus performante pour la recherche exhaustive sur de grandes bases, confirmant les propriétés théoriques qui avaient motivé son inclusion dans cette étude. Cependant, son coût de construction et surtout son empreinte mémoire dépassant les 16 Go sur les jeux d'un million de termes constituent des limites concrètes qui ne peuvent être ignorées dans un contexte matériel réel. À l'inverse, Robinson et Martelli-Montanari font preuve d'une robustesse remarquable avec une consommation mémoire stable, et Martelli-Montanari confirme sa légère supériorité algorithmique sur Robinson, conformément à l'analyse théorique. Le facteur le plus déterminant s'avère être le paramètre TouteUnif, passer de la recherche de la première unification à la recherche exhaustive fait basculer l'avantage de manière décisive en faveur de l'arbre de discrimination, dont le filtrage par préfixes prend alors tout son sens.
+
+    \vspace{0.3cm}
+    En définitive, il n'existe pas de combinaison universellement optimale, le choix dépend du contexte d'utilisation. Pour une base de petite taille ou une unification ponctuelle, la liste ou le dictionnaire associés à Robinson ou Martelli-Montanari suffisent largement. Pour une base de grande taille réutilisée intensivement dans un contexte de recherche exhaustive, l'arbre de discrimination est théoriquement supérieur, sous réserve de disposer des ressources matérielles nécessaires.
+
+    \vspace{0.3cm}
+    Plusieurs pistes d'amélioration restent ouvertes. L'implémentation de Martelli-Montanari pourrait être optimisée en s'approchant de sa complexité quasi-linéaire théorique grâce à une structure union-find. La représentation des termes sous forme de graphes avec partage de sous-termes, évoquée dans le rapport, constituerait une direction naturelle pour réduire les coûts de l'occur-check et des substitutions.
+    
+    \vspace{0.3cm} 
+    Ce projet nous aura, au-delà des résultats techniques, confrontés à la réalité du travail de recherche : la distance entre la complexité théorique et les performances expérimentales, l'importance du protocole de benchmark, et la nécessité d'adapter constamment ses hypothèses aux observations. C'est précisément cette rigueur méthodologique, autant que les résultats eux-mêmes, qui constitue l'apport principal de ce travail.
 
 \newpage
 % Les annexes %
