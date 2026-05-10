@@ -2259,31 +2259,38 @@ L'analyse des mesures obtenues sur les 24 jeux de données permet de confirmer c
 \begin{paraph}{Validation des hypothèses algorithmiques}
     Nos prévisions concernant l'efficacité du \textit{discrimination tree} se confirment : il s'impose comme l'algorithme le plus performant pour la recherche exhaustive (\textit{TouteUnif = True}). Une fois l'arbre construit, le temps de recherche pure est quasi instantané, validant l'idée que le filtrage par préfixes réduit drastiquement le nombre d'appels à l'unification. 
 
-    Cependant, l'impact du paramètre \textit{TouteUnif} est encore plus important qu'anticipé. Sur le \textbf{jeu 6}, le passage à une recherche exhaustive fait exploser le temps global à 43 secondes pour Robinson, et jusqu'à 80 secondes sur les jeux les plus denses. Comme supposé, le parcours séquentiel (\textit{Robinson/MM}) contraste bien avec l'absence de coupes dans l'arbre de recherche. Concernant le duel Robinson vs Martelli-Montanari, les résultats valident une légère supériorité de \textit{MM} sur les structures complexes, bien que les deux conservent une robustesse exemplaire avec une consommation RAM stable sous les 150 Mo.
+    Cependant, l'impact du paramètre \textit{TouteUnif} est encore plus important qu'anticipé. Sur le \textbf{jeu 6}, le passage à une recherche exhaustive fait exploser le temps global à 43 secondes pour Robinson (comme on peut le voir en Annexe \ref{annexe:Robinson}, Figure \ref{fig:rob liste TRUE}), et jusqu'à 80 secondes sur les jeux les plus denses. Comme supposé, le parcours séquentiel (\textit{Robinson/MM}) contraste bien avec l'absence de coupes dans l'arbre de recherche. Concernant le duel Robinson vs Martelli-Montanari, les résultats valident une légère supériorité de \textit{MM} sur les structures complexes, bien que les deux conservent une robustesse exemplaire avec une consommation RAM stable sous les 150 Mo (cf. Annexes \ref{annexe:Robinson} et \ref{annexe:MM}).
 \end{paraph}
 
 \begin{paraph}{Le compromis construction/utilisation des structures}
     L'expérience valide la notion de \textit{compromis construction/utilisation} évoquée dans nos hypothèses :
     \begin{itemize}
         \item \textbf{Listes et Ensembles :} Comme prévu, leur temps de prétraitement est nul ou infime. Elles restent performantes sur de petites bases, mais leur parcours linéaire devient un handicap majeur sur les jeux de grande taille. L'utilisation des \textit{ensembles} confirme son intérêt sur les jeux à forte redondance en réduisant le nombre de tentatives d'unification.
-        \item \textbf{Dictionnaires :} L'hypothèse sur l'indexation par prédicats est vérifiée. Sur les jeux possédant une signature riche (6 prédicats contre 3), le dictionnaire surpasse les listes en ignorant les branches incompatibles. Le surcoût de construction est ici largement amorti par la rapidité de l'unification.
-        \item \textbf{Arbre de Discrimination :} Il représente, comme anticipé, l'investissement maximal. Si par contre sa phase de recherche est la plus rapide, son coût de construction est colossal sur les très grandes bases. Sur les jeux d'un million de termes, la structure dépasse les 16 Go de RAM, le système d'exploitation devait déplacer ses données sur le disque dur, ralentissant massivement la vitesse d'exécution du processeur.
+        \item \textbf{Dictionnaires :} L'hypothèse sur l'indexation par prédicats est vérifiée. Sur les jeux possédant une signature riche (6 prédicats contre 3), le dictionnaire surpasse les listes en ignorant les branches incompatibles. Le surcoût de construction est ici largement amorti par la rapidité de l'unification (visible sur la Figure \ref{fig:mm dictionnaire TRUE}).
+        \item \textbf{Arbre de Discrimination :} Il représente, comme anticipé, l'investissement maximal. Si par contre sa phase de recherche est la plus rapide, son coût de construction est colossal sur les très grandes bases. Sur les jeux d'un million de termes, la structure dépasse les 16 Go de RAM (illustré par les tableaux de l'Annexe \ref{annexe:DT}), le système d'exploitation devait déplacer ses données sur le disque dur, ralentissant massivement la vitesse d'exécution du processeur.
     \end{itemize}
 \end{paraph}
 
 \begin{paraph}{Sensibilité à la nature des données}
     Les tests confirment que la structure des données d'entrée dicte l'efficacité des algorithmes indexés :
-    
+
     \vspace{0.2cm}
     Pour le \textbf{dictionnaire}, les performances sont optimales lorsque les symboles de prédicats sont variés. À l'inverse, nous avons observé qu'une base dominée par un seul symbole fait converger ses performances vers celles d'une liste simple, confirmant notre hypothèse de "dégénérescence" de la structure.
 
     \vspace{0.2cm}
-    Pour l'\textbf{arbre de discrimination}, l'efficacité du filtrage est maximale sur les bases "naturelles" présentant des préfixes communs. Cependant, conformément à nos craintes, la densité de variables dans certains jeux de données réduit la sélectivité de l'arbre. Les variables étant compatibles avec tous les nœuds, l'algorithme est contraint d'explorer de nombreuses branches, ce qui limite le gain apporté par la factorisation.
+    Pour l'\textbf{arbre de discrimination}, l'efficacité du filtrage est maximale sur les bases "naturelles" présentant des préfixes communs (voir les évolutions en Annexe \ref{annexe:graphiques}). Cependant, conformément à nos craintes, la densité de variables dans certains jeux de données réduit la sélectivité de l'arbre. Les variables étant compatibles avec tous les nœuds, l'algorithme est contraint d'explorer de nombreuses branches, ce qui limite le gain apporté par la factorisation.
 \end{paraph}
 
 \begin{paraph}{Bilan des ressources matérielles}
     Une observation non anticipée dans nos hypothèses concerne le comportement du CPU face à la saturation mémoire. Pour \textit{Robinson} et \textit{MM}, le CPU est sollicité à 100 pourcent, confirmant qu'ils sont limités uniquement par la puissance de calcul. 
-    Pour l'Arbre, la chute de l'utilisation CPU sur les jeux massifs illustre parfaitement le goulot d'étranglement mémoire : le processeur passe plus de la moitié de son temps à attendre les données stockées sur le disque suite à la saturation de la RAM. Cela démontre que si l'Arbre est théoriquement supérieur, il est le seul algorithme dont l'efficacité est physiquement limitée par le matériel disponible (RAM).
+    Pour l'Arbre, la chute de l'utilisation CPU sur les jeux massifs illustre parfaitement le goulot d'étranglement mémoire (chute visible jusqu'à 26 pourcent sur la Figure \ref{fig:arbre TRUE}) : le processeur passe plus de la moitié de son temps à attendre les données stockées sur le disque suite à la saturation de la RAM. Cela démontre que si l'Arbre est théoriquement supérieur, il est le seul algorithme dont l'efficacité est physiquement limitée par le matériel disponible (RAM).
+\end{paraph}
+
+\begin{paraph}{Analyse des graphiques \ref{annexe:graphiques}}
+    En comparant le temps d'unification par rapport au nombre de littéraux, on se rend compte que l'évolution est proportionnelle pour les algorithmes de Robinson et de Martelli-Montanari (cf. \ref{fig:tpsUnif_nb_lit_rob_et_MM}). Concernant l'arbre de discrimination, on constate bien à la Figure \ref{fig:tpsUnif_nb_lit_DT} qu'il est extrêmement efficace lorsqu'il y a peu de littéraux, mais que son temps d'exécution explose dès lors qu'on approche du million de littéraux, ce qui est la conséquence directe du goulot d'étranglement mémoire évoqué précédemment.
+    
+    Ensuite, si maintenant on décide de comparer le temps d'unification par rapport à la profondeur des jeux de tests (cf. \ref{fig:tpsUnif_prof_rob_et_MM}), on constate que lorsqu'il y a une plus grande disparité de symboles de prédicats, les temps d'unification sont légèrement plus courts, ce qui s'explique par le fait que la probabilité d'unifier un littéral avec un autre dans ce genre de base de données est moindre. Cela se confirme avec l'arbre de discrimination sur la Figure \ref{fig:tpsUnif_prof_DT}.
+    On remarque tout de même un pic chez Martelli-Montanari et l'arbre de discrimination lorsqu'on a une profondeur de 10 et 6 symboles de prédicats, mais on ne sait pas comment expliquer l'inexistence de ce pic chez Robinson.
 \end{paraph}
 
 
@@ -2413,24 +2420,28 @@ L'analyse des mesures obtenues sur les 24 jeux de données permet de confirmer c
     \centering
     \includegraphics[width=0.8\textwidth]{img/bench/tpsUnif_nb_lit_rob_et_MM.png}
     \caption{Temps d'unification par nombre de littéraux pour Robinson (à gauche) et MM (à droite) \\ Un point bleu correspond à un jeu de test }
+    \label{fig:tpsUnif_nb_lit_rob_et_MM}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{img/bench/tpsUnif_nb_lit_DT.png}
     \caption{Temps d'unification par nombre de littéraux pour l'arbre de discrimination \\ Un point bleu correspond à un jeu de test }
+    \label{fig:tpsUnif_nb_lit_DT}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{img/bench/tpsUnif_prof_rob_et_MM.png}
     \caption{Temps d'unification en fonction de la profondeur des données de Robinson (à gauche) et MM (à droite) \\ Une courbe correspond à un nombre de symbole de prédicats donné }
+    \label{fig:tpsUnif_prof_rob_et_MM}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{img/bench/tpsUnif_prof_DT.png}
     \caption{Temps d'unification en fonction de la profondeur des données de l'arbre de discrimination \\ Une courbe correspond à un nombre de symbole de prédicats donné }
+    \label{fig:tpsUnif_prof_DT}
 \end{figure}
 
 \newpage
