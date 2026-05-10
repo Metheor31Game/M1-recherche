@@ -1,5 +1,5 @@
 #serialisation
-Util/Serialisation/Output/
+src/unification/utils/Output/
 
 # Python
 __pycache__/
@@ -27,9 +27,6 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
-
-# Local scripts
-clean_pycache.sh
 
 !.gitignore
 !*.tex
