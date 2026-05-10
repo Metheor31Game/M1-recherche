@@ -1,0 +1,275 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{none/global//global/global/global}
+    \entry{lieber2024cours}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=a3b99fb38619abe67492bfbbfe180a39}{%
+           family={Lieber},
+           familyi={L\bibinitperiod},
+           given={Jean},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Université de Lorraine}%
+      }
+      \strng{namehash}{a3b99fb38619abe67492bfbbfe180a39}
+      \strng{fullhash}{a3b99fb38619abe67492bfbbfe180a39}
+      \strng{fullhashraw}{a3b99fb38619abe67492bfbbfe180a39}
+      \strng{bibnamehash}{a3b99fb38619abe67492bfbbfe180a39}
+      \strng{authorbibnamehash}{a3b99fb38619abe67492bfbbfe180a39}
+      \strng{authornamehash}{a3b99fb38619abe67492bfbbfe180a39}
+      \strng{authorfullhash}{a3b99fb38619abe67492bfbbfe180a39}
+      \strng{authorfullhashraw}{a3b99fb38619abe67492bfbbfe180a39}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{Cours de L3}
+      \field{note}{Consulté le : 07/05/2026}
+      \field{title}{Une introduction à la(des) logique(s) à destination d’étudiants de licence informatique}
+      \field{year}{2024}
+    \endentry
+    \entry{robinson1965machine}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=c50835fcaec02fbc2384b8ffb6a4a490}{%
+           family={Robinson},
+           familyi={R\bibinitperiod},
+           given={John\bibnamedelima Alan},
+           giveni={J\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {ACM New York, NY, USA}%
+      }
+      \strng{namehash}{c50835fcaec02fbc2384b8ffb6a4a490}
+      \strng{fullhash}{c50835fcaec02fbc2384b8ffb6a4a490}
+      \strng{fullhashraw}{c50835fcaec02fbc2384b8ffb6a4a490}
+      \strng{bibnamehash}{c50835fcaec02fbc2384b8ffb6a4a490}
+      \strng{authorbibnamehash}{c50835fcaec02fbc2384b8ffb6a4a490}
+      \strng{authornamehash}{c50835fcaec02fbc2384b8ffb6a4a490}
+      \strng{authorfullhash}{c50835fcaec02fbc2384b8ffb6a4a490}
+      \strng{authorfullhashraw}{c50835fcaec02fbc2384b8ffb6a4a490}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of the ACM (JACM)}
+      \field{number}{1}
+      \field{title}{A machine-oriented logic based on the resolution principle}
+      \field{volume}{12}
+      \field{year}{1965}
+      \field{pages}{23\bibrangedash 41}
+      \range{pages}{19}
+    \endentry
+    \entry{martelli1982efficient}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=7b10e35d5de8d5e6636feb0860ebc978}{%
+           family={Martelli},
+           familyi={M\bibinitperiod},
+           given={Alberto},
+           giveni={A\bibinitperiod}}}%
+        {{hash=b4e778cc0867adfe94fd9c508074dfda}{%
+           family={Montanari},
+           familyi={M\bibinitperiod},
+           given={Ugo},
+           giveni={U\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {ACM New York, NY, USA}%
+      }
+      \strng{namehash}{90edefd4cf2ab3c7296c516f53335ad1}
+      \strng{fullhash}{90edefd4cf2ab3c7296c516f53335ad1}
+      \strng{fullhashraw}{90edefd4cf2ab3c7296c516f53335ad1}
+      \strng{bibnamehash}{90edefd4cf2ab3c7296c516f53335ad1}
+      \strng{authorbibnamehash}{90edefd4cf2ab3c7296c516f53335ad1}
+      \strng{authornamehash}{90edefd4cf2ab3c7296c516f53335ad1}
+      \strng{authorfullhash}{90edefd4cf2ab3c7296c516f53335ad1}
+      \strng{authorfullhashraw}{90edefd4cf2ab3c7296c516f53335ad1}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ACM Transactions on Programming Languages and Systems (TOPLAS)}
+      \field{number}{2}
+      \field{title}{An efficient unification algorithm}
+      \field{volume}{4}
+      \field{year}{1982}
+      \field{pages}{258\bibrangedash 282}
+      \range{pages}{25}
+    \endentry
+    \entry{TermIndexing}{inbook}{}{}
+      \name{author}{3}{}{%
+        {{hash=7b9ee9579ecb95f47e97029239596e8f}{%
+           family={Sekar},
+           familyi={S\bibinitperiod},
+           given={R.},
+           giveni={R\bibinitperiod}}}%
+        {{hash=bd0b49aac8ddccb3f3b7a996853f9eb2}{%
+           family={Ramakrishnan},
+           familyi={R\bibinitperiod},
+           given={I.\bibnamedelimi V.},
+           giveni={I\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+        {{hash=e50601e4532a3894411413925585a523}{%
+           family={Voronkov},
+           familyi={V\bibinitperiod},
+           given={Andrei},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {NLD}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier Science Publishers B. V.}%
+      }
+      \strng{namehash}{89e5424e35fd7c66384cb09b20fd22b3}
+      \strng{fullhash}{89e5424e35fd7c66384cb09b20fd22b3}
+      \strng{fullhashraw}{89e5424e35fd7c66384cb09b20fd22b3}
+      \strng{bibnamehash}{89e5424e35fd7c66384cb09b20fd22b3}
+      \strng{authorbibnamehash}{89e5424e35fd7c66384cb09b20fd22b3}
+      \strng{authornamehash}{89e5424e35fd7c66384cb09b20fd22b3}
+      \strng{authorfullhash}{89e5424e35fd7c66384cb09b20fd22b3}
+      \strng{authorfullhashraw}{89e5424e35fd7c66384cb09b20fd22b3}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Handbook of Automated Reasoning}
+      \field{isbn}{0444508120}
+      \field{title}{Term indexing}
+      \field{year}{2001}
+      \field{pages}{1853\bibrangedash 1964}
+      \range{pages}{112}
+    \endentry
+    \entry{DT}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=d98519e7df513ddab8dc7b0dffb1d404}{%
+           family={Nivelle},
+           familyi={N\bibinitperiod},
+           given={Hans},
+           giveni={H\bibinitperiod},
+           prefix={de},
+           prefixi={d\bibinitperiod}}}%
+      }
+      \strng{namehash}{d98519e7df513ddab8dc7b0dffb1d404}
+      \strng{fullhash}{d98519e7df513ddab8dc7b0dffb1d404}
+      \strng{fullhashraw}{d98519e7df513ddab8dc7b0dffb1d404}
+      \strng{bibnamehash}{d98519e7df513ddab8dc7b0dffb1d404}
+      \strng{authorbibnamehash}{d98519e7df513ddab8dc7b0dffb1d404}
+      \strng{authornamehash}{d98519e7df513ddab8dc7b0dffb1d404}
+      \strng{authorfullhash}{d98519e7df513ddab8dc7b0dffb1d404}
+      \strng{authorfullhashraw}{d98519e7df513ddab8dc7b0dffb1d404}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We present a modification of the unification algorithm that is adapted to the extraction of simultaneously unifiable literals from discrimination trees. The algorithm is useful for efficient implementation of binary resolution, hyperresolution, and paramodulation. The algorithm is able to traverse simultaneously more than one discrimination tree and to construct a unifier at the same time. In this way backtracking is reduced.}
+      \field{isbn}{1573-0670}
+      \field{journaltitle}{Journal of Automated Reasoning}
+      \field{number}{1}
+      \field{title}{An Algorithm for the Retrieval of Unifiers from Discrimination Trees}
+      \field{volume}{20}
+      \field{year}{1998}
+      \field{pages}{5\bibrangedash 25}
+      \range{pages}{21}
+      \verb{doi}
+      \verb 10.1023/A:1005992522805
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1023/A:1005992522805
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1023/A:1005992522805
+      \endverb
+      \warn{\item article entry 'DT' (biblio.bib): Invalid format '1998/04/01' of date field 'date' - ignoring}
+    \endentry
+    \entry{Eval}{inproceedings}{}{}
+      \name{author}{4}{}{%
+        {{hash=72bfdc74b3cc50ed25e7206b90789dbf}{%
+           family={Nieuwenhuis},
+           familyi={N\bibinitperiod},
+           given={Robert},
+           giveni={R\bibinitperiod}}}%
+        {{hash=a94db931e1fe8376a6a9fd2619d6cb75}{%
+           family={Hillenbrand},
+           familyi={H\bibinitperiod},
+           given={Thomas},
+           giveni={T\bibinitperiod}}}%
+        {{hash=ae9bee8133c9476b634c3c16421aaabe}{%
+           family={Riazanov},
+           familyi={R\bibinitperiod},
+           given={Alexandre},
+           giveni={A\bibinitperiod}}}%
+        {{hash=e50601e4532a3894411413925585a523}{%
+           family={Voronkov},
+           familyi={V\bibinitperiod},
+           given={Andrei},
+           giveni={A\bibinitperiod}}}%
+      }
+      \name{editor}{3}{}{%
+        {{hash=8c4ba0a2bbed11bccf9d81ded27b3f1f}{%
+           family={Goré},
+           familyi={G\bibinitperiod},
+           given={Rajeev},
+           giveni={R\bibinitperiod}}}%
+        {{hash=ca160c679b5acca2b3506dcb2bcc9166}{%
+           family={Leitsch},
+           familyi={L\bibinitperiod},
+           given={Alexander},
+           giveni={A\bibinitperiod}}}%
+        {{hash=a41b38c2580f5bb8c574d84f66e0856a}{%
+           family={Nipkow},
+           familyi={N\bibinitperiod},
+           given={Tobias},
+           giveni={T\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Berlin, Heidelberg}%
+      }
+      \list{publisher}{1}{%
+        {Springer Berlin Heidelberg}%
+      }
+      \strng{namehash}{cb8b73378e1fd8021166d9eecfecba5d}
+      \strng{fullhash}{551e72a2b056a28630c80fb3284a96a3}
+      \strng{fullhashraw}{551e72a2b056a28630c80fb3284a96a3}
+      \strng{bibnamehash}{cb8b73378e1fd8021166d9eecfecba5d}
+      \strng{authorbibnamehash}{cb8b73378e1fd8021166d9eecfecba5d}
+      \strng{authornamehash}{cb8b73378e1fd8021166d9eecfecba5d}
+      \strng{authorfullhash}{551e72a2b056a28630c80fb3284a96a3}
+      \strng{authorfullhashraw}{551e72a2b056a28630c80fb3284a96a3}
+      \strng{editorbibnamehash}{d2beb4e3453e2d4616e2125b67b30192}
+      \strng{editornamehash}{d2beb4e3453e2d4616e2125b67b30192}
+      \strng{editorfullhash}{d2beb4e3453e2d4616e2125b67b30192}
+      \strng{editorfullhashraw}{d2beb4e3453e2d4616e2125b67b30192}
+      \field{sortinit}{6}
+      \field{sortinithash}{b33bc299efb3c36abec520a4c896a66d}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The problem of term indexing can be formulated abstractly as follows (see [19]). Given a set L of indexed terms, a binary relation R over terms (called the retrieval condition) and a term t (called the query term), identify the subset M of L that consists of the terms l such that R(l; t) holds. Terms in M will be called the candidate terms. Typical retrieval conditions used in first-order theorem proving are matching, generalization, unifiability, and syntactic equality. Such a retrieval of candidate terms in theorem proving is interleaved with insertion of terms to L, and deletion of them from L.}
+      \field{booktitle}{Automated Reasoning}
+      \field{isbn}{978-3-540-45744-2}
+      \field{title}{On the Evaluation of Indexing Techniques for Theorem Proving}
+      \field{year}{2001}
+      \field{pages}{257\bibrangedash 271}
+      \range{pages}{15}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
