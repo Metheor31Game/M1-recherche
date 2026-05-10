@@ -7,6 +7,11 @@ __pycache__/
 *$py.class
 *.so
 
+*.egg-info/
+.eggs/
+dist/
+build/
+
 # Virtual environments
 .venv/
 venv/
@@ -25,4 +30,42 @@ Thumbs.db
 
 # Local scripts
 clean_pycache.sh
+
+!.gitignore
+!*.tex
+!*.png
+!*.bib
+
+
+
+# TeX auxiliary files (explicitly ignore in case of nested .gitignore issues)
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.synctex(busy)
+*.bbl
+*.blg
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ilg
+*.ind
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+*.run.xml
+*.bcf
+*-blx.bib
+*.dvi
+*.xdv
 
