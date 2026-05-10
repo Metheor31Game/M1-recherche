@@ -2295,6 +2295,145 @@ L'analyse des mesures obtenues sur les 24 jeux de données permet de confirmer c
 
 
 \newpage
+% Les annexes %
+\appendix
+
+\section{Résultats de l'arbre de discrimination}
+\label{annexe:DT}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/arbre_TRUE.png}
+    \caption{Arbre de discrimination pour toutes les unifications}
+    \label{fig:arbre TRUE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/arbre_FALSE.png}
+    \caption{Arbre de discrimination pour la première unification}
+    \label{fig:arbre FALSE}
+\end{figure}
+
+\section{Résultats de l'algorithme de Robinson}
+\label{annexe:Robinson}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/rob_liste_TRUE.png}
+    \caption{Robinson pour toutes les unifications}
+    \label{fig:rob liste TRUE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/rob_liste_FALSE.png}
+    \caption{Robinson (Liste) pour la première unification}
+    \label{fig:rob liste FALSE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/rob_ensemble_TRUE.png}
+    \caption{Robinson (Ensemble) pour toutes les unifications}
+    \label{fig:rob ensemble TRUE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/rob_ensemble_FALSE.png}
+    \caption{Robinson (Ensemble) pour la première unification}
+    \label{fig:rob ensemble FALSE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/rob_dictionnaire_TRUE.png}
+    \caption{Robinson (Dictionnaire) pour toutes les unifications}
+    \label{fig:rob dictionnaire TRUE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/rob_dictionnaire_FALSE.png}
+    \caption{Robinson (Dictionnaire) pour la première unification}
+    \label{fig:rob dictionnaire FALSE}
+\end{figure}
+
+
+\section{Résultats de l'algorithme Martelli-Montanari}
+\label{annexe:MM}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/mm_liste_TRUE.png}
+    \caption{Martelli-Montanari (Liste) pour toutes les unifications}
+    \label{fig:mm liste TRUE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/mm_liste_FALSE.png}
+    \caption{Martelli-Montanari (Liste) pour la première unification}
+    \label{fig:mm liste FALSE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/mm_ensemble_TRUE.png}
+    \caption{Martelli-Montanari (Ensemble) pour toutes les unifications}
+    \label{fig:mm ensemble TRUE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/mm_ensemble_FALSE.png}
+    \caption{Martelli-Montanari (Ensemble) pour la première unification}
+    \label{fig:mm ensemble FALSE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/mm_dictionnaire_TRUE.png}
+    \caption{Martelli-Montanari (Dictionnaire) pour toutes les unifications}
+    \label{fig:mm dictionnaire TRUE}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/mm_dictionnaire_FALSE.png}
+    \caption{Martelli-Montanari (Dictionnaire) pour la première unification}
+    \label{fig:mm dictionnaire FALSE}
+\end{figure}
+
+\section{Graphiques}
+\label{annexe:graphiques}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/tpsUnif_nb_lit_rob_et_MM.png}
+    \caption{Temps d'unification par nombre de littéraux pour Robinson (à gauche) et MM (à droite) \\ Un point bleu correspond à un jeu de test }
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/tpsUnif_nb_lit_DT.png}
+    \caption{Temps d'unification par nombre de littéraux pour l'arbre de discrimination \\ Un point bleu correspond à un jeu de test }
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/tpsUnif_prof_rob_et_MM.png}
+    \caption{Temps d'unification en fonction de la profondeur des données de Robinson (à gauche) et MM (à droite) \\ Une courbe correspond à un nombre de symbole de prédicats donné }
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/bench/tpsUnif_prof_DT.png}
+    \caption{Temps d'unification en fonction de la profondeur des données de l'arbre de discrimination \\ Une courbe correspond à un nombre de symbole de prédicats donné }
+\end{figure}
+
+\newpage
 
 % --- Bibliographie --- %
 \printbibliography
